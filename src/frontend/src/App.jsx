@@ -2,12 +2,12 @@ import {useEffect, useState} from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import {Testfetch} from "./services/test.js";
+import {fetchTest} from "./services/test.js";
 
 function App() {
     useEffect(() => {
         const fetchData = async () => {
-            await Testfetch();
+            await fetchTest();
         }
         fetchData();
     },[]);

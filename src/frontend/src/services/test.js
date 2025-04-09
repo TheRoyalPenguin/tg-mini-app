@@ -1,8 +1,8 @@
 import axios from "axios";
 
-export const Testfetch = async () => {
+export const fetchTest = async () => {
     try{
-        let response = await axios.get('http://localhost:48348/api/test');
+        let response = await axios.get('/api/test');
         console.log(response);
     }
     catch (e){
