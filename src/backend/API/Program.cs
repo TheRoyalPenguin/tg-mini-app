@@ -1,3 +1,7 @@
+using Application.Services;
+using Core.Interfaces;
+using Persistence.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSwaggerGen();
@@ -11,6 +15,9 @@ builder.Services.AddCors(options =>
         policy.AllowAnyMethod();
     });
 });
+
+builder.Services.AddScoped<ITestService, TestService>();
+builder.Services.AddScoped<ITestRepository, TestRepository>();
 
 var app = builder.Build();
 

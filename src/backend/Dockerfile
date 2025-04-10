@@ -7,16 +7,18 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-COPY WebApp/WebApp.csproj ./WebApp/
+COPY API/API.csproj ./API/
+COPY Application/Application.csproj ./Application/
+COPY Core/Core.csproj ./Core/
+COPY Persistence/Persistence.csproj ./Persistence/
 COPY WebApp.sln .
 
 RUN dotnet restore WebApp.sln
 
 COPY . .
 
-WORKDIR /src/WebApp
+WORKDIR /src/API
 RUN dotnet build -c $BUILD_CONFIGURATION -o /app/build
-
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
@@ -26,4 +28,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-ENTRYPOINT ["dotnet", "WebApp.dll"]
+ENTRYPOINT ["dotnet", "API.dll"]
