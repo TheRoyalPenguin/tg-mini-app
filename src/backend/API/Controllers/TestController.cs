@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Core.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
-namespace WebApp.Controllers;
+namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class TestController: ControllerBase
+public class TestController(ITestService testService): ControllerBase
 {
     [HttpGet]
     public IActionResult Get()
