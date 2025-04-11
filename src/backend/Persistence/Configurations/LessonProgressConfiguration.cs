@@ -12,10 +12,9 @@ public class LessonProgressConfiguration : IEntityTypeConfiguration<LessonProgre
         
         builder.HasKey(lp => lp.Id)
             .HasName("lessons_progress_pkey");
-        
+
         builder.Property(lp => lp.Id)
-            .HasColumnName("lesson_progress_id")
-            .HasDefaultValueSql("uuid_generate_v4()");
+            .HasColumnName("lesson_progress_id");
         
         builder.Property(lp => lp.IsLessonCompleted)
             .HasColumnName("is_lesson_completed")

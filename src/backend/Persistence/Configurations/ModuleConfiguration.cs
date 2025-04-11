@@ -15,8 +15,7 @@ public class ModuleConfiguration : IEntityTypeConfiguration<ModuleEntity>
             .HasName("modules_pkey");
 
         builder.Property(m => m.Id)
-            .HasColumnName("module_id")
-            .HasDefaultValueSql("uuid_generate_v4()");
+            .HasColumnName("module_id");
 
         builder.Property(m => m.Title)
             .HasColumnName("module_title")

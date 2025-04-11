@@ -12,10 +12,9 @@ public class ResourceConfiguration : IEntityTypeConfiguration<ResourceEntity>
         
         builder.HasKey(r => r.Id)
             .HasName("resource_pkey");
-        
+
         builder.Property(r => r.Id)
-            .HasColumnName("resource_id")
-            .HasDefaultValueSql("uuid_generate_v4()");
+            .HasColumnName("resource_id");
 
         builder.Property(r => r.Title)
             .HasColumnName("resource_title")

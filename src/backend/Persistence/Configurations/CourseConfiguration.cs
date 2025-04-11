@@ -12,10 +12,9 @@ public class CourseConfiguration : IEntityTypeConfiguration<CourseEntity>
         
         builder.HasKey(c => c.Id)
             .HasName("courses_pkey");
-        
+
         builder.Property(c => c.Id)
-            .HasColumnName("course_id")
-            .HasDefaultValueSql("uuid_generate_v4()");
+            .HasColumnName("course_id");
         
         builder.Property(c => c.Title)
             .HasColumnName("course_title")

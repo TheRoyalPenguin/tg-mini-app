@@ -14,11 +14,10 @@ public class TestConfiguration : IEntityTypeConfiguration<TestEntity>
             .HasName("testiki_pkey");
 
         builder.Property(t => t.Id)
-            .HasColumnName("testiki_id")
-            .HasDefaultValueSql("uuid_generate_v4()");
+            .HasColumnName("id");
 
         builder.Property(t => t.Content)
-            .HasColumnName("testiki_content")
+            .HasColumnName("content")
             .HasMaxLength(100);
         
         builder.HasIndex(t => t.Content)

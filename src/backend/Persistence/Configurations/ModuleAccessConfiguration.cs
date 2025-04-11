@@ -14,8 +14,7 @@ public class ModuleAccessConfiguration : IEntityTypeConfiguration<ModuleAccessEn
             .HasName("module_accesses_pkey");
 
         builder.Property(ma => ma.Id)
-            .HasColumnName("module_access_id")
-            .HasDefaultValueSql("uuid_generate_v4()");
+            .HasColumnName("module_access_id");
         
         builder.Property(ma => ma.IsModuleCompleted)
             .HasColumnName("is_module_completed")

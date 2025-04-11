@@ -14,8 +14,7 @@ public class LessonConfiguration : IEntityTypeConfiguration<LessonEntity>
             .HasName("lessons_pk");
 
         builder.Property(l => l.Id)
-            .HasColumnName("lesson_id")
-            .HasDefaultValueSql("uuid_generate_v4()");
+            .HasColumnName("lesson_id");
 
         builder.Property(l => l.Title)
             .HasColumnName("lesson_title")

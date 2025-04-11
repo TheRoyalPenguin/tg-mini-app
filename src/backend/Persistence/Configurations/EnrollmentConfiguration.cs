@@ -12,10 +12,9 @@ public class EnrollmentConfiguration : IEntityTypeConfiguration<EnrollmentEntity
         
         builder.HasKey(e => e.Id)
             .HasName("enrollments_pkey");
-        
+
         builder.Property(e => e.Id)
-            .HasColumnName("enrollment_id")
-            .HasDefaultValueSql("uuid_generate_v4()");
+            .HasColumnName("enrollment_id");
         
         builder.Property(e => e.IsCourseCompleted)
             .HasColumnName("is_course_completed")

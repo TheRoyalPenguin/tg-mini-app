@@ -12,10 +12,9 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         
         builder.HasKey(u => u.Id)
             .HasName("users_pkey");
-        
+
         builder.Property(u => u.Id)
-            .HasColumnName("user_id")
-            .HasDefaultValueSql("uuid_generate_v4()");
+            .HasColumnName("user_id");
         
         builder.Property(u => u.Login)
             .HasColumnName("user_telegram_tag")
