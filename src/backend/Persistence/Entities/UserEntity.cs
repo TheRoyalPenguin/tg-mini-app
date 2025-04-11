@@ -14,12 +14,7 @@ public class UserEntity
     public required int RoleId { get; set; }
     public RoleEntity Role { get; set; }
     
-    public List<CourseEntity> Courses { get; set; }
     public List<EnrollmentEntity> Enrollments { get; set; } = [];
-    
-    public List<ModuleEntity> Modules { get; set; } = [];
     public List<ModuleAccessEntity> ModuleAccesses { get; set; } = [];
-    
-    public List<LessonEntity> Lessons { get; set; } = [];
     public List<LessonProgressEntity> LessonsProgress { get; set; } = [];
 }

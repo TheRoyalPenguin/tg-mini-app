@@ -7,6 +7,5 @@ public class CourseEntity
     public required string Description { get; set; }
 
     public List<ModuleEntity> Modules { get; set; } = [];
-    public List<UserEntity> Students { get; set; } = [];
     public List<EnrollmentEntity> Enrollments { get; set; } = [];
 }

@@ -12,7 +12,7 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250411150801_Initial")]
+    [Migration("20250411162007_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -24,21 +24,6 @@ namespace Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("CourseEntityUserEntity", b =>
-                {
-                    b.Property<int>("CoursesId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("StudentsId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("CoursesId", "StudentsId");
-
-                    b.HasIndex("StudentsId");
-
-                    b.ToTable("CourseEntityUserEntity");
-                });
 
             modelBuilder.Entity("Persistence.Entities.CourseEntity", b =>
                 {
@@ -134,15 +119,10 @@ namespace Persistence.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("lesson_title");
 
-                    b.Property<int?>("UserEntityId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id")
                         .HasName("lessons_pk");
 
                     b.HasIndex("ModuleId");
-
-                    b.HasIndex("UserEntityId");
 
                     b.ToTable("lessons", (string)null);
                 });
@@ -247,15 +227,10 @@ namespace Persistence.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("module_title");
 
-                    b.Property<int?>("UserEntityId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id")
                         .HasName("modules_pkey");
 
                     b.HasIndex("CourseId");
-
-                    b.HasIndex("UserEntityId");
 
                     b.ToTable("modules", (string)null);
                 });
@@ -382,21 +357,6 @@ namespace Persistence.Migrations
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("CourseEntityUserEntity", b =>
-                {
-                    b.HasOne("Persistence.Entities.CourseEntity", null)
-                        .WithMany()
-                        .HasForeignKey("CoursesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Persistence.Entities.UserEntity", null)
-                        .WithMany()
-                        .HasForeignKey("StudentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Persistence.Entities.EnrollmentEntity", b =>
                 {
                     b.HasOne("Persistence.Entities.CourseEntity", "Course")
@@ -423,10 +383,6 @@ namespace Persistence.Migrations
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Persistence.Entities.UserEntity", null)
-                        .WithMany("Lessons")
-                        .HasForeignKey("UserEntityId");
 
                     b.Navigation("Module");
                 });
@@ -477,10 +433,6 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Persistence.Entities.UserEntity", null)
-                        .WithMany("Modules")
-                        .HasForeignKey("UserEntityId");
-
                     b.Navigation("Course");
                 });
 
@@ -522,13 +474,9 @@ namespace Persistence.Migrations
                 {
                     b.Navigation("Enrollments");
 
-                    b.Navigation("Lessons");
-
                     b.Navigation("LessonsProgress");
 
                     b.Navigation("ModuleAccesses");
-
-                    b.Navigation("Modules");
                 });
 #pragma warning restore 612, 618
         }
