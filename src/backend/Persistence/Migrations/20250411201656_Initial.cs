@@ -67,7 +67,7 @@ namespace Persistence.Migrations
                 {
                     user_id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    user_telegram_tag = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    user_telegram_id = table.Column<long>(type: "bigint", nullable: false),
                     user_first_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     user_last_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     user_patronymic = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
@@ -289,9 +289,9 @@ namespace Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_users_user_telegram_tag",
+                name: "IX_users_user_telegram_id",
                 table: "users",
-                column: "user_telegram_tag",
+                column: "user_telegram_id",
                 unique: true);
         }
 

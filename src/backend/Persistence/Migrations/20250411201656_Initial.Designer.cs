@@ -12,7 +12,7 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250411162007_Initial")]
+    [Migration("20250411201656_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -307,12 +307,6 @@ namespace Persistence.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_banned");
 
-                    b.Property<string>("Login")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("user_telegram_tag");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -343,16 +337,20 @@ namespace Persistence.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("user_last_name");
 
+                    b.Property<long>("TgId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_telegram_id");
+
                     b.HasKey("Id")
                         .HasName("users_pkey");
-
-                    b.HasIndex("Login")
-                        .IsUnique();
 
                     b.HasIndex("PhoneNumber")
                         .IsUnique();
 
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("TgId")
+                        .IsUnique();
 
                     b.ToTable("users", (string)null);
                 });

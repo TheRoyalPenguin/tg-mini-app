@@ -15,10 +15,9 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 
         builder.Property(u => u.Id)
             .HasColumnName("user_id");
-        
-        builder.Property(u => u.Login)
-            .HasColumnName("user_telegram_tag")
-            .HasMaxLength(255);
+
+        builder.Property(u => u.TgId)
+            .HasColumnName("user_telegram_id");
         
         builder.Property(u => u.Name)
             .HasColumnName("user_first_name")
@@ -44,7 +43,7 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
             .HasColumnName("role_id")
             .HasDefaultValue(0);
 
-        builder.HasIndex(u => u.Login)
+        builder.HasIndex(u => u.TgId)
             .IsUnique();
         
         builder.HasIndex(u => u.PhoneNumber)
