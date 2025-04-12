@@ -1,5 +1,8 @@
+using API.Extensions;
 using Application.Services;
 using Core.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Persistence;
 using Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,12 +22,21 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<ITestRepository, TestRepository>();
 
+builder.Services.AddPostgresDb(builder.Configuration);
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+// Автоматическое применение миграций
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate();
 }
 
 app.UseCors();
