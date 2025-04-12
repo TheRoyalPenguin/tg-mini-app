@@ -20,7 +20,7 @@ services:
     depends_on:
       - postgres
       - minio
-      
+  
   postgres:
     image: postgres:15
     container_name: postgres
@@ -32,7 +32,7 @@ services:
       POSTGRES_DB: barsdb
     volumes:
       - db_data:/var/lib/postgresql/data
-      
+
   minio:
     image: minio/minio
     container_name: minio
@@ -45,9 +45,16 @@ services:
     command: server /data --console-address ":9001"
     volumes:
       - minio_data:/data
+  
+  bot:
+    build:
+      context: ./tg-bot
+      dockerfile: Dockerfile
+    depends_on:
+      - backend
+    environment:
+      - BACKEND_URL=http://backend:8080
 
 volumes:
   db_data:
   minio_data:
-      
-  
