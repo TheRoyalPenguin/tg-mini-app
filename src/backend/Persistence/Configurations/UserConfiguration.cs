@@ -38,6 +38,9 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         builder.Property(u => u.IsBanned)
             .HasColumnName("is_banned")
             .HasDefaultValue(false);
+
+        builder.Property(u => u.RegisteredAt)
+            .HasColumnName("registered_datetime");
         
         builder.Property(u => u.RoleId)
             .HasColumnName("role_id")
