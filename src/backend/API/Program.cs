@@ -1,6 +1,8 @@
+using API.Configurations;
 using API.Extensions;
 using Application.Services;
 using Core.Interfaces;
+using Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Persistence.Repositories;
@@ -23,6 +25,7 @@ builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<ITestRepository, TestRepository>();
 
 builder.Services.AddPostgresDb(builder.Configuration);
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 
