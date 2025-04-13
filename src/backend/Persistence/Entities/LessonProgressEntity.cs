@@ -2,7 +2,7 @@ namespace Persistence.Entities;
 
 public class LessonProgressEntity
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
     public required bool IsLessonCompleted { get; set; }
     public required DateOnly LastActivityDate { get; set; }
     

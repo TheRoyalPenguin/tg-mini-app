@@ -2,7 +2,7 @@ namespace Persistence.Entities;
 
 public class ModuleAccessEntity
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
     public required bool IsModuleCompleted { get; set; }
     public DateOnly CompletionDate { get; set; }
     
