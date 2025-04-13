@@ -25,9 +25,7 @@ public class Program
             cancellationToken: cts.Token
             );
 
-        Console.WriteLine("Нажмите клавишу enter, чтобы остановить бота.");
-        Console.ReadLine();
-        cts.Cancel();
+        await Task.Delay(-1, cts.Token);
     }
 
     private static Task HandleErrorAsync(ITelegramBotClient client, Exception exception, HandleErrorSource source, CancellationToken token)
