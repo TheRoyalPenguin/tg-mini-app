@@ -2,7 +2,7 @@ namespace Persistence.Entities;
 
 public class ModuleEntity
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
     public required string Title { get; set; }
     public required string Description { get; set; }
     

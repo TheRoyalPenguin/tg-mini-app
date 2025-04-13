@@ -2,7 +2,7 @@ namespace Persistence.Entities;
 
 public class UserEntity
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
     public required long TgId { get; set; }
     
     public required string Name { get; set; }
