@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="EfCore.Conventions" Version="2.0.2" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.4" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.4" />

@@ -1,3 +1,6 @@
+using EfCore.Conventions.Attributes;
+using Microsoft.EntityFrameworkCore;
+
 namespace Persistence.Entities;
 
 public class ModuleEntity
@@ -6,6 +9,7 @@ public class ModuleEntity
     public required string Title { get; set; }
     public required string Description { get; set; }
     
+    [OnDelete(DeleteBehavior.Cascade)]
     public required int CourseId { get; set; }
     public CourseEntity Course { get; set; }
     
