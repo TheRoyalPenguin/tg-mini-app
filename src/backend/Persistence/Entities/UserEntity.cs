@@ -10,7 +10,8 @@ public class UserEntity
     public required string Patronymic { get; set; }
     public required string PhoneNumber { get; set; }
     public required bool IsBanned { get; set; } = false;
-    
+    public required DateTime RegisteredAt { get; set; }
+
     public required int RoleId { get; set; }
     public RoleEntity Role { get; set; }
     
