@@ -12,7 +12,10 @@ public class MappingProfile : Profile
         CreateMap<EnrollmentEntity, Enrollment>().ReverseMap();
         CreateMap<LessonEntity, Lesson>().ReverseMap();
         CreateMap<LessonProgressEntity, LessonProgress>().ReverseMap();
-        CreateMap<ModuleAccessEntity, ModuleAccess>().ReverseMap();
+        CreateMap<ModuleAccessEntity, ModuleAccess>()
+            .ReverseMap()
+            .ForMember(dest => dest.User, opt => opt.Ignore())
+            .ForMember(dest => dest.Module, opt => opt.Ignore());
         CreateMap<ModuleEntity, Module>().ReverseMap();
         CreateMap<ResourceEntity, Resource>().ReverseMap();
         CreateMap<RoleEntity, Role>().ReverseMap();

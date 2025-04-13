@@ -7,4 +7,5 @@ public class ModuleAccess
     public DateOnly? CompletionDate { get; set; }
     public required int UserId { get; set; }
     public required int ModuleId { get; set; }
+    public required Module Module { get; set; }
 }
