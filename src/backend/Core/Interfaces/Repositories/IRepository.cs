@@ -1,10 +1,12 @@
+using Core.Utils;
+
 namespace Core.Interfaces;
 
 public interface IRepository<TKey,T>
 {
-    Task<T> AddAsync(T entity);
-    Task<T> UpdateAsync(T entity);
-    Task DeleteAsync(T entity);
-    Task<T?> GetByIdAsync(TKey id);
-    Task<ICollection<T>> GetAllAsync();
+    Task<Result<T>> AddAsync(T entity);
+    Task<Result<T>> UpdateAsync(T entity);
+    Task<Result> DeleteAsync(T entity);
+    Task<Result<T?>> GetByIdAsync(TKey id);
+    Task<Result<ICollection<T>>> GetAllAsync();
 }
