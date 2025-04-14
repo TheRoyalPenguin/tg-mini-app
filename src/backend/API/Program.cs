@@ -2,7 +2,8 @@ using API.Configurations;
 using API.Extensions;
 using Application.Services;
 using Core.Interfaces;
-using Core.Models;
+using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Persistence.Repositories;
@@ -23,6 +24,9 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<ITestRepository, TestRepository>();
+
+builder.Services.AddScoped<ITelegramAuthService, TelegramAuthService>();
+builder.Services.AddScoped<ITelegramUserRepository, TelegramUserRepository>();
 
 builder.Services.AddPostgresDb(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
