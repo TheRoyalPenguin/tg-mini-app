@@ -1,8 +1,9 @@
 using Core.Models;
+using Core.Utils;
 
 namespace Core.Interfaces;
 
 public interface IEnrollmentRepository : IRepository<int, Enrollment>
 {
-    Task<ICollection<Course>> GetCourseTitlesByUserId(int id);
+    Task<Result<ICollection<Course>>> GetCoursessByUserId(int id);
 }
