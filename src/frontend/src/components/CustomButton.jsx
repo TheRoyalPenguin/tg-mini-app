@@ -1,10 +1,11 @@
 import React from "react";
-import '../styles/AuthPage.css'
 
 const CustomButton = function(props) {
     return (
-        <button style={{backgroundColor:props.color, cursor:"pointer"}} className="CustomButton">{props.text}</button>
-    )
+        <button className={`mt-[13px] w-[300px] h-[50px] rounded-[15px] text-[18px] text-white hover:opacity-70 ${props.className}`}>
+            {props.text}
+        </button>
+    );
 }
 
 export default CustomButton;

@@ -1,19 +1,28 @@
 import React from "react";
 import CustomButton from "./CustomButton";
-import '../styles/CoursePage.css'
 
 const CoursePage = function() {
     return (
-        <div className="CoursePage">
-            <img src="/images/universal_element_3.png" className="universal_element_coursePage"></img>
-            <p className="title_coursePage">Готов прокачать <br></br>навыки Тим Лида?</p>
-            <p className="text_coursePage">Выберите тему, чтобы начать<br></br>обучение. После прохождения<br></br>каждой темы - краткий тест.<br></br>Удачи!</p>
-            <CustomButton text={"Блок 1"} color={"#0f9fff"}></CustomButton>
-            <CustomButton text={"Блок 2"} color={"#3ebfff"}></CustomButton>
-            <CustomButton text={"Блок 3"} color={"#fec810"}></CustomButton>
-            <CustomButton text={"Блок 4"} color={"#f87c14"}></CustomButton>
+        <div className="flex flex-col items-center justify-center h-screen text-center bg-[#f7f8fc]">
+            <img 
+                src="/images/universal_element_3.png" 
+                className="w-[250px]" 
+                alt="universal_element"
+            />
+            <p className="font-sans mt-[10px] font-bold text-[28px]">
+                Готов прокачать <br />навыки Тим Лида?
+            </p>
+            <p className="font-sans text-[16px]">
+                Выберите тему, чтобы начать<br />обучение. После прохождения<br />каждой темы - краткий тест.<br />Удачи!
+            </p>
+            <div className="flex flex-col space-y-[13px]">
+                <CustomButton text="Блок 1" className="bg-[#0f9fff]" />
+                <CustomButton text="Блок 2" className="bg-[#3ebfff]" />
+                <CustomButton text="Блок 3" className="bg-[#fec810]" />
+                <CustomButton text="Блок 4" className="bg-[#f87c14]" />
+            </div>
         </div>
-    )
+    );
 }
 
 export default CoursePage;
