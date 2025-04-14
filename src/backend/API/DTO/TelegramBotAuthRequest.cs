@@ -1,10 +1,9 @@
-﻿namespace Core.Models;
+﻿namespace API.DTO;
 
-public class TgUserModel
+public class TelegramBotAuthRequest
 {
     public required long TgId { get; set; }
     public required string Name { get; set; }
     public required string Surname { get; set; }
-    public required string Patronymic { get; set; }
     public required string PhoneNumber { get; set; }
 }

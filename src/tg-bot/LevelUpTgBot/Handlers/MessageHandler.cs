@@ -44,17 +44,15 @@ public class MessageHandler
 
         var userInfo = new
         {
-            telegramId = contact.UserId,
-            phone = contact.PhoneNumber,
-            firstName = contact.FirstName,
-            lastName = contact.LastName
+            TgId = contact.UserId,
+            PhoneNumber = contact.PhoneNumber,
+            Name = contact.FirstName,
+            Surname = contact.LastName == null ? "" : contact.LastName
         };
 
-        //bool isSuccess = await _backendService.SendDataAsync(userInfo, "api/auth/telegram-bot");
-        bool isSuccess = true;
+        bool isSuccess = await _backendService.SendDataAsync(userInfo, "api/auth/telegram-bot");
         if (!isSuccess)
         {
-            await _telegramService.SafeSendMessageAsync(chatId, "Контакт не получен. Попробуйте снова.", token);
             await _commandHandler.ResendPhoneRequest(chatId, token);
             return;
         }
