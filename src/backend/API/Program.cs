@@ -2,6 +2,7 @@ using API.Configurations;
 using API.Extensions;
 using Application.Services;
 using Core.Interfaces;
+using Core.Interfaces.Services;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -23,6 +24,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<ITestRepository, TestRepository>();
+builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 
 builder.Services.AddPostgresDb(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
