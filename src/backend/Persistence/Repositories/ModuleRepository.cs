@@ -31,7 +31,7 @@ public class ModuleRepository(AppDbContext appDbContext, IMapper mapper) : IModu
         try
         {
             var moduleEntity = await appDbContext.Modules
-                .FirstOrDefaultAsync(ь => ь.Id == model.Id);
+                .FirstOrDefaultAsync(m => m.Id == model.Id);
 
             if (moduleEntity == null)
                 return Result<Module>.Failure("Module entity not found")!;
@@ -54,7 +54,23 @@ public class ModuleRepository(AppDbContext appDbContext, IMapper mapper) : IModu
         try
         {
             await appDbContext.Modules
-                .Where(ь => ь.Id == model.Id)
+                .Where(m => m.Id == model.Id)
+                .ExecuteDeleteAsync();
+            
+            return Result.Success();
+        }
+        catch (Exception e)
+        {
+            return Result.Failure($"Failed to delete module: {e.Message}");
+        }
+    }
+    
+    public async Task<Result> DeleteAsync(int id)
+    {
+        try
+        {
+            await appDbContext.Modules
+                .Where(m => m.Id == id)
                 .ExecuteDeleteAsync();
             
             return Result.Success();
@@ -71,7 +87,7 @@ public class ModuleRepository(AppDbContext appDbContext, IMapper mapper) : IModu
         {
             var moduleEntity = await appDbContext.Modules
                 .AsNoTracking()
-                .FirstOrDefaultAsync(ь => ь.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (moduleEntity == null)
                 return Result<Module?>.Success(null);

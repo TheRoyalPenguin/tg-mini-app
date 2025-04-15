@@ -30,6 +30,14 @@ public class ModuleService(IModuleRepository moduleRepository) : IModuleService
             ? Result.Success()
             : Result.Failure(repositoryResult.ErrorMessage!);
     }
+    
+    public async Task<Result> DeleteModuleAsync(int id)
+    {
+        var repositoryResult = await moduleRepository.DeleteAsync(id);
+        return repositoryResult.IsSuccess 
+            ? Result.Success()
+            : Result.Failure(repositoryResult.ErrorMessage!);
+    }
 
     public async Task<Result<Module?>> GetModuleByIdAsync(int id)
     {
