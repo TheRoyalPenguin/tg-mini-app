@@ -48,9 +48,9 @@ public class EnrollmentService : IEnrollmentService
         return Result<Enrollment>.Success(result.Data);
     }
 
-    public async Task<Result> DeleteAsync(Enrollment enrollment)
+    public async Task<Result> DeleteAsync(int id)
     {
-        var result = await repository.DeleteAsync(enrollment);
+        var result = await repository.DeleteAsync(id);
         if (!result.IsSuccess)
         {
             return Result.Failure(result.ErrorMessage);

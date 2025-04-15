@@ -111,4 +111,20 @@ public class EnrollmentRepository : IEnrollmentRepository
             return Result<ICollection<Course>>.Failure($"Failed to get courses by user id: {ex.Message}");
         }
     }
+    
+    public async Task<Result> DeleteAsync(int id)
+    {
+        try
+        {
+            await context.Enrollments
+                .Where(m => m.Id == id)
+                .ExecuteDeleteAsync();
+            
+            return Result.Success();
+        }
+        catch (Exception e)
+        {
+            return Result.Failure($"Failed to delete module: {e.Message}");
+        }
+    }
 }
