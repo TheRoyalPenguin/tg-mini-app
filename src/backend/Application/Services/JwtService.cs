@@ -33,7 +33,7 @@ public class JwtService : IJwtService
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var keyString = _configuration["AppSettings:KeyString"];
+            var keyString = _configuration["Jwt:Key"];
 
             if (string.IsNullOrEmpty(keyString))
             {
