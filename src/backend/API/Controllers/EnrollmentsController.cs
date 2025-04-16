@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using API.DTO.Enrollment;
 using AutoMapper;
 using Core.Interfaces.Services;
@@ -22,9 +23,19 @@ public class EnrollmentsController : ControllerBase
 
     [Authorize]
     [HttpGet("availablecourses")]
-    public async Task<ActionResult<ICollection<string>>> GetEnrollments()
+    public async Task<ActionResult<ICollection<string>>> GetAvailableCourses()
     {
-        throw new ArgumentException();
+        // Получение ID пользователя из JWT
+        var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
+        {
+            return Unauthorized("Не удалось определить ID пользователя из токена.");
+        }
+
+        var result = await enrollmentService.GetCourseTitlesByUserId(userId);
+
+        return result.IsSuccess ? Ok(result.Data) : Problem(result.ErrorMessage);
     }
     
     [HttpGet("all")]
