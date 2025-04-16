@@ -4,6 +4,8 @@ using Application.Services;
 using Core.Interfaces;
 using Core.Interfaces.Services;
 using Core.Models;
+using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Persistence.Repositories;
@@ -16,7 +18,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:3000");
+        policy.WithOrigins("http://localhost:3000", "http://frontend:3000", "https://levelupapp.hopto.org/", "https://levelupapp.hopto.org");
         policy.AllowAnyHeader();
         policy.AllowAnyMethod();
     });
@@ -26,6 +28,11 @@ builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<ITestRepository, TestRepository>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+
+builder.Services.AddScoped<IJwtService, JwtService>();
+
+builder.Services.AddScoped<ITelegramAuthService, TelegramAuthService>();
+builder.Services.AddScoped<ITelegramUserRepository, TelegramUserRepository>();
 
 builder.Services.AddPostgresDb(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
