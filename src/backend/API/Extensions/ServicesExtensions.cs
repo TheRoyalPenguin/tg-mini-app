@@ -9,6 +9,5 @@ public static class ServicesExtensions
     {
         services.AddDbContext<AppDbContext>(
             options => { options.UseNpgsql(configuration.GetConnectionString(nameof(AppDbContext))); });
-        
     }
 }
