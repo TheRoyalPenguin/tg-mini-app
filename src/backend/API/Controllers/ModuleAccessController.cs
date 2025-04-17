@@ -12,8 +12,8 @@ public class ModuleAccessController(
     IModuleAccessService moduleAccessService,
     IMapper mapper) : ControllerBase
 {
-    [HttpGet("All")]
-    public async Task<IActionResult> GetAll()
+    [HttpGet]
+    public async Task<IActionResult> GetAllAsync()
     {
         var serviceResult = await moduleAccessService.GetAllModuleAccessesAsync();
 
@@ -22,8 +22,8 @@ public class ModuleAccessController(
             : Problem(serviceResult.ErrorMessage);
     }
     
-    [HttpPost("New")]
-    public async Task<IActionResult> Create([FromBody] NewModuleAccessRequest request)
+    [HttpPost]
+    public async Task<IActionResult> CreateAsync([FromBody] NewModuleAccessRequest request)
     {
         var model = mapper.Map<ModuleAccess>(request);
 
@@ -33,8 +33,8 @@ public class ModuleAccessController(
             : Problem(serviceResult.ErrorMessage);
     }
     
-    [HttpPut("Update")]
-    public async Task<IActionResult> Update([FromBody] UpdateModuleAccessRequest request)
+    [HttpPut]
+    public async Task<IActionResult> UpdateAsync([FromBody] UpdateModuleAccessRequest request)
     {
         var model = mapper.Map<ModuleAccess>(request);
 
@@ -44,8 +44,8 @@ public class ModuleAccessController(
             : Problem(serviceResult.ErrorMessage);
     }
     
-    [HttpDelete("Delete")]
-    public async Task<IActionResult> Delete([FromBody] DeleteModuleAccessRequest request)
+    [HttpDelete]
+    public async Task<IActionResult> DeleteAsync([FromBody] DeleteModuleAccessRequest request)
     {
         var model = mapper.Map<ModuleAccess>(request);
         
@@ -55,8 +55,8 @@ public class ModuleAccessController(
             : Problem(serviceResult.ErrorMessage);
     }
     
-    [HttpGet("GetById/{moduleAccessId:int}")]
-    public async Task<IActionResult> GetModuleAccessById([FromRoute] int moduleAccessId)
+    [HttpGet("{moduleAccessId:int}")]
+    public async Task<IActionResult> GetModuleAccessByIdAsync([FromRoute] int moduleAccessId)
     {
         var serviceResult = await moduleAccessService.GetModuleAccessByIdAsync(moduleAccessId);
         
@@ -65,8 +65,8 @@ public class ModuleAccessController(
             : Problem(serviceResult.ErrorMessage);
     }
     
-    [HttpGet("GetByCourseId/{courseId:int}")]
-    public async Task<IActionResult> GetModuleAccessesByCourseId([FromRoute] int courseId)
+    [HttpGet("courses/{courseId:int}")]
+    public async Task<IActionResult> GetModuleAccessesByCourseIdAsync([FromRoute] int courseId)
     {
         var serviceResult = await moduleAccessService.GetModuleAccessesByCourseIdAsync(courseId);
         
@@ -75,8 +75,8 @@ public class ModuleAccessController(
             : Problem(serviceResult.ErrorMessage);
     }
     
-    [HttpGet("GetByModuleId/{moduleId:int}")]
-    public async Task<IActionResult> GetModuleAccessesByModuleId([FromRoute] int moduleId)
+    [HttpGet("modules/{moduleId:int}")]
+    public async Task<IActionResult> GetModuleAccessesByModuleIdAsync([FromRoute] int moduleId)
     {
         var serviceResult = await moduleAccessService.GetModuleAccessesByModuleIdAsync(moduleId);
         
@@ -85,8 +85,8 @@ public class ModuleAccessController(
             : Problem(serviceResult.ErrorMessage);
     }
     
-    [HttpGet("GetByUserId/{userId:int}")]
-    public async Task<IActionResult> GetModuleAccessesByUserId([FromRoute] int userId)
+    [HttpGet("users/{userId:int}")]
+    public async Task<IActionResult> GetModuleAccessesByUserIdAsync([FromRoute] int userId)
     {
         var serviceResult = await moduleAccessService.GetModuleAccessesByUserIdAsync(userId);
         
@@ -95,8 +95,8 @@ public class ModuleAccessController(
             : Problem(serviceResult.ErrorMessage);
     }
     
-    [HttpGet("GetByUserIdAndCourseId/{userId:int}/{courseId:int}")]
-    public async Task<IActionResult> GetModuleAccessesForUserByCourseId([FromRoute] int userId, [FromRoute] int courseId)
+    [HttpGet("users/{userId:int}/courses/{courseId:int}")]
+    public async Task<IActionResult> GetModuleAccessesForUserByCourseIdAsync([FromRoute] int userId, [FromRoute] int courseId)
     {
         var serviceResult = await moduleAccessService.GetModuleAccessesForUserByCourseIdAsync(userId, courseId);
         

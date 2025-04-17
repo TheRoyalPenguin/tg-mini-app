@@ -13,8 +13,8 @@ public class ModuleController(
     IModuleService moduleService,
     IMapper mapper) : ControllerBase
 {
-    [HttpGet("All")]
-    public async Task<IActionResult> GetAll()
+    [HttpGet]
+    public async Task<IActionResult> GetAllAsync()
     {
         var serviceResult = await moduleService.GetAllModulesAsync();
 
@@ -23,8 +23,8 @@ public class ModuleController(
             : Problem(serviceResult.ErrorMessage);
     }
     
-    [HttpPost("New")]
-    public async Task<IActionResult> Create([FromBody] NewModuleRequest request)
+    [HttpPost]
+    public async Task<IActionResult> CreateAsync([FromBody] NewModuleRequest request)
     {
         var model = mapper.Map<Module>(request);
 
@@ -34,8 +34,8 @@ public class ModuleController(
             : Problem(serviceResult.ErrorMessage);
     }
     
-    [HttpPut("Update")]
-    public async Task<IActionResult> Update([FromBody] UpdateModuleRequest request)
+    [HttpPut]
+    public async Task<IActionResult> UpdateAsync([FromBody] UpdateModuleRequest request)
     {
         var model = mapper.Map<Module>(request);
 
@@ -45,8 +45,8 @@ public class ModuleController(
             : Problem(serviceResult.ErrorMessage);
     }
     
-    [HttpDelete("Delete/{moduleId:int}")]
-    public async Task<IActionResult> Delete([FromRoute] int moduleId)
+    [HttpDelete("{moduleId:int}")]
+    public async Task<IActionResult> DeleteAsync(int moduleId)
     {
         var serviceResult = await moduleService.DeleteModuleAsync(moduleId);
         
@@ -55,8 +55,8 @@ public class ModuleController(
             : Problem(serviceResult.ErrorMessage);
     }
     
-    [HttpGet("GetById/{moduleId:int}")]
-    public async Task<IActionResult> GetModuleById([FromRoute] int moduleId)
+    [HttpGet("{moduleId:int}")]
+    public async Task<IActionResult> GetModuleByIdAsync(int moduleId)
     {
         var serviceResult = await moduleService.GetModuleByIdAsync(moduleId);
         
@@ -65,8 +65,8 @@ public class ModuleController(
             : Problem(serviceResult.ErrorMessage);
     }
     
-    [HttpGet("GetByCourseId/{courseId:int}")]
-    public async Task<IActionResult> GetModulesByCourseId([FromRoute] int courseId)
+    [HttpGet("courses/{courseId:int}")]
+    public async Task<IActionResult> GetModulesByCourseIdAsync(int courseId)
     {
         var serviceResult = await moduleService.GetModulesByCourseIdAsync(courseId);
         
