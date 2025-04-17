@@ -162,6 +162,7 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
         var query = appDbContext.ModuleAccesses
             .AsNoTracking()
             .Include(ma => ma.Module)
+            .Include(ma => ma.Module.Resources)
             .Where(predicate);
 
         var entities = await query.ToListAsync();

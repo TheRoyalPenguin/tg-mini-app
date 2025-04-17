@@ -21,5 +21,4 @@ public class UserEntity
     
     public List<EnrollmentEntity> Enrollments { get; set; } = [];
     public List<ModuleAccessEntity> ModuleAccesses { get; set; } = [];
-    public List<LessonProgressEntity> LessonsProgress { get; set; } = [];
 }
