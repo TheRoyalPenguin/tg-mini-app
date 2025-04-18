@@ -5,18 +5,17 @@ import CustomButton from "./CustomButton";
 
 const AuthPage = () => {
   const botLink = "https://t.me/LevelUpAppBot?start=confirmPhone";
-  const [initData, setInitData] = useState("")
+  const [initData, setInitData] = useState("");
 
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [patronymic, setPatronymic] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("")
 
   useEffect(() => {
     if (window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
 
-      setInitData(tg.initData)
+      setInitData(tg.initData);
 
       // tg.initDataUnsafe – объект с данными пользователя, получаем его и сохраняем в состоянии
       const data = tg.initDataUnsafe;
@@ -36,7 +35,6 @@ const AuthPage = () => {
           name: name,
           surname: surname,
           patronymic: patronymic,
-          phoneNumber: phoneNumber,
         };
 
         const response = await axios.post(
