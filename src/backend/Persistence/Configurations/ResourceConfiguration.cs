@@ -20,9 +20,8 @@ public class ResourceConfiguration : IEntityTypeConfiguration<ResourceEntity>
             .HasColumnName("resource_type")
             .HasMaxLength(20);
 
-        builder.Property(r => r.Json)
-            .HasColumnName("resource_json")
-            .HasConversion<string>();
+        builder.Property(r => r.JsonUri)
+            .HasColumnName("resource_json_uri");
 
         builder.Property(r => r.ModuleId)
             .HasColumnName("module_id");

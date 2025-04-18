@@ -7,7 +7,7 @@ public class ResourceEntity
 {
     public int Id { get; set; }
     public required string Type { get; set; }
-    public required string Json { get; set; }
+    public required string JsonUri { get; set; }
     
     [OnDelete(DeleteBehavior.Restrict)]
     public required int ModuleId { get; set; }
