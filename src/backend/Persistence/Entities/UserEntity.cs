@@ -1,3 +1,6 @@
+using EfCore.Conventions.Attributes;
+using Microsoft.EntityFrameworkCore;
+
 namespace Persistence.Entities;
 
 public class UserEntity
@@ -10,12 +13,12 @@ public class UserEntity
     public required string Patronymic { get; set; }
     public required string PhoneNumber { get; set; }
     public required bool IsBanned { get; set; } = false;
-    //public required DateTime RegisteredAt { get; set; }
+    public required DateTime RegisteredAt { get; set; }
 
+    [OnDelete(DeleteBehavior.Restrict)]
     public required int RoleId { get; set; }
     public RoleEntity Role { get; set; }
     
     public List<EnrollmentEntity> Enrollments { get; set; } = [];
     public List<ModuleAccessEntity> ModuleAccesses { get; set; } = [];
-    public List<LessonProgressEntity> LessonsProgress { get; set; } = [];
 }

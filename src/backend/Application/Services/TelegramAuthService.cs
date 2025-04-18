@@ -19,46 +19,47 @@ public class TelegramAuthService : ITelegramAuthService
 
         if (user == null)
         {
-            var newUser = new User
+            user = new User
             {
                 TgId = tgId,
                 PhoneNumber = phoneNumber,
                 Name = name,
                 Surname = surname,
                 Patronymic = "",
-                RoleId = 0
-                //RegisteredAt = DateTime.UtcNow
+                RoleId = 0,
+                RegisteredAt = DateTime.UtcNow
             };
 
-            await _telegramUserRepository.AddAsync(newUser);
+            await _telegramUserRepository.AddAsync(user);
         }
         else
         {
             user.PhoneNumber = phoneNumber;
             user.Name = string.IsNullOrEmpty(user.Name) ? name : user.Name;
             user.Surname = string.IsNullOrEmpty(user.Surname) ? surname : user.Surname;
+            user.RegisteredAt = DateTime.UtcNow;
         }
 
         await _telegramUserRepository.SaveChangesAsync();
         return Result<User>.Success(user);
     }
 
-    public async Task<Result<User>> AuthenticateViaMiniAppAsync(long tgId, string name, string surname, string patronymic, string phoneNumber)
+    public async Task<Result<User>> AuthenticateViaMiniAppAsync(long tgId, string name, string surname, string patronymic)
     {
         var user = await _telegramUserRepository.GetByTelegramIdAsync(tgId);
 
         if (user == null)
         {
 
-            var newUser = new User
+            user = new User
             {
                 TgId = tgId,
-                PhoneNumber = phoneNumber,
+                PhoneNumber = "",
                 Name = name,
                 Surname = surname,
                 Patronymic = patronymic,
-                RoleId = 0
-                //RegisteredAt = DateTime.UtcNow
+                RoleId = 0,
+                RegisteredAt = DateTime.UtcNow
             };
 
             await _telegramUserRepository.AddAsync(user);
@@ -68,7 +69,7 @@ public class TelegramAuthService : ITelegramAuthService
             user.Name = string.IsNullOrEmpty(user.Name) ? name : user.Name;
             user.Surname = string.IsNullOrEmpty(user.Surname) ? surname : user.Surname;
             user.Patronymic = string.IsNullOrEmpty(user.Patronymic) ? patronymic : user.Patronymic;
-            user.PhoneNumber = string.IsNullOrEmpty(user.PhoneNumber) ? phoneNumber : user.PhoneNumber;
+            user.RegisteredAt = DateTime.UtcNow;
         }
 
         await _telegramUserRepository.SaveChangesAsync();

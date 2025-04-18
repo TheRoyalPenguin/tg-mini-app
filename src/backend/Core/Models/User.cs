@@ -10,5 +10,5 @@ public class User
     public required string PhoneNumber { get; set; }
     public bool IsBanned { get; set; } = false;
     public required int RoleId { get; set; }
-    //public required DateTime RegisteredAt { get; set; }
+    public required DateTime RegisteredAt { get; set; }
 }

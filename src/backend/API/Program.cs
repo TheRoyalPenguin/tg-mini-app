@@ -1,3 +1,4 @@
+using System.Text;
 using API.Configurations;
 using API.Extensions;
 using Application.Services;
@@ -6,11 +7,54 @@ using Core.Interfaces.Services;
 using Core.Models;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Persistence;
 using Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<IJwtService, JwtService>();
+
+var jwtSection = builder.Configuration.GetSection("Jwt");
+
+var keyString = jwtSection["Key"];
+if (string.IsNullOrEmpty(keyString))
+    throw new InvalidOperationException("JWT Key отсутствует в конфигурации!");
+
+var key = Encoding.UTF8.GetBytes(keyString);
+
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = true;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+
+            // Если нужно будет проверять Issuer/Audience
+            // ValidateIssuer           = true,
+            // ValidIssuer             = issuer,
+            // ValidateAudience         = true,
+            // ValidAudience           = audience,
+
+            ValidateIssuer = false,  // пока не используем
+            ValidateAudience = false,  // пока не используем
+
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
@@ -28,8 +72,6 @@ builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<ITestRepository, TestRepository>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
-
-builder.Services.AddScoped<IJwtService, JwtService>();
 
 builder.Services.AddScoped<ITelegramAuthService, TelegramAuthService>();
 builder.Services.AddScoped<ITelegramUserRepository, TelegramUserRepository>();
@@ -53,6 +95,10 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseCors();
+
+app.UseAuthentication();  // происходит проверка JWT
+app.UseAuthorization();   // применяется [Authorize]
+
 app.MapControllers();
 
 app.Run();

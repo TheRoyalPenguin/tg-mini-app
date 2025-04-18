@@ -8,6 +8,6 @@ public static class ServicesExtensions
     public static void AddPostgresDb(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<AppDbContext>(
-            options => { options.UseNpgsql(configuration.GetConnectionString(nameof(AppDbContext))); });
+            options => options.UseNpgsql(configuration.GetConnectionString(nameof(AppDbContext))));
     }
 }

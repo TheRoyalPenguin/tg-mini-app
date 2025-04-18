@@ -5,17 +5,21 @@ import CustomButton from "./CustomButton";
 
 const AuthPage = () => {
   const botLink = "https://t.me/LevelUpAppBot?start=confirmPhone";
-  const [userData, setUserData] = useState(null);
-  const [surname, setSurname] = useState("");
+  const [initData, setInitData] = useState("");
+
   const [name, setName] = useState("");
+  const [surname, setSurname] = useState("");
   const [patronymic, setPatronymic] = useState("");
 
   useEffect(() => {
-    if (window.Telegram && window.Telegram.WebApp) {
+    if (window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
+
+      setInitData(tg.initData);
+
       // tg.initDataUnsafe – объект с данными пользователя, получаем его и сохраняем в состоянии
       const data = tg.initDataUnsafe;
-      setUserData(data);
+
       if (data) {
         setName(data.first_name || "");
         setSurname(data.last_name || "");
@@ -24,19 +28,17 @@ const AuthPage = () => {
   }, []);
 
   const handleAuth = async () => {
-    if (userData) {
+    if (initData) {
       try {
         const payload = {
-          tgId: userData.user?.id,
+          initData: initData,
           name: name,
           surname: surname,
           patronymic: patronymic,
-          phoneNumber: userData.phone_number || "",
-          hash: userData.hash
         };
 
         const response = await axios.post(
-          "https://levelupapp.hopto.org:443/api/auth/telegram-mini-app",
+          "http://localhost:5090/api/auth/telegram-mini-app",
           payload
         );
         console.log("Ответ от сервера:", response.data);
@@ -91,9 +93,8 @@ const AuthPage = () => {
         className="mt-[13px] bg-[#f87c14] w-[300px] h-[50px] rounded-[15px] text-[18px] text-white hover:opacity-70"
       />
 
-      {userData ? (
+      {initData ? (
         <div className="mt-[20px]">
-          <p>Здравствуйте, {userData.first_name}!</p>
           <CustomButton
             text="Войти"
             onClick={handleAuth}
