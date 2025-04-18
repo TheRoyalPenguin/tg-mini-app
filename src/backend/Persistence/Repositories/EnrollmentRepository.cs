@@ -19,35 +19,40 @@ public class EnrollmentRepository : IEnrollmentRepository
         this.mapper = mapper;
     }
 
-    public async Task<Result<Enrollment>> AddAsync(Enrollment entity)
+    public async Task<Result<Enrollment>> AddAsync(Enrollment enrollment)
     {
         try
         {
-            var enrollmentEntity = mapper.Map<EnrollmentEntity>(entity);
-            await context.Enrollments.AddAsync(enrollmentEntity);
+            var entity = mapper.Map<EnrollmentEntity>(enrollment);
+            await context.Enrollments.AddAsync(entity);
             await context.SaveChangesAsync();
-            return Result<Enrollment>.Success(entity);
+
+            var savedModel = mapper.Map<Enrollment>(entity);
+            return Result<Enrollment>.Success(savedModel);
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            return Result<Enrollment>.Failure($"Failed to add enrollment: {ex.Message}");
+            return Result<Enrollment>.Failure($"Failed to add module: {e.Message}");
         }
     }
 
-    public async Task<Result<Enrollment>> UpdateAsync(Enrollment entity)
+    public async Task<Result<Enrollment>> UpdateAsync(Enrollment enrollment)
     {
         try
         {
-            var enrollmentEntity = mapper.Map<EnrollmentEntity>(entity);
-            context.Enrollments.Update(enrollmentEntity);
+            var entity = mapper.Map<EnrollmentEntity>(enrollment);
+            context.Enrollments.Update(entity);
             await context.SaveChangesAsync();
-            return Result<Enrollment>.Success(entity);
+
+            var updatedModel = mapper.Map<Enrollment>(entity);
+            return Result<Enrollment>.Success(updatedModel);
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            return Result<Enrollment>.Failure($"Failed to update enrollment: {ex.Message}");
+            return Result<Enrollment>.Failure($"Failed to update module: {e.Message}");
         }
     }
+
 
     public async Task<Result> DeleteAsync(Enrollment entity)
     {
