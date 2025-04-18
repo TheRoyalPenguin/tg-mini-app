@@ -56,8 +56,7 @@ public class TelegramAuthController : ControllerBase
             tgId,
             request.Name,
             request.Surname,
-            request.Patronymic,
-            request.PhoneNumber);
+            request.Patronymic);
 
         var user = result.Data;
         var token = _jwtService.GenerateJwtToken(user).Data;
