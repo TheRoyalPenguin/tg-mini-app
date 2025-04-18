@@ -13,17 +13,16 @@ public class EnrollmentService : IEnrollmentService
         this.repository = repository;
     }
 
-    public async Task<Result<ICollection<string>>> GetCourseTitlesByUserId(int id)
+    public async Task<Result<ICollection<Course>>> GetCoursesByUserId(int id)
     {
         var coursesResult = await repository.GetCoursessByUserId(id);
 
         if (!coursesResult.IsSuccess)
         {
-            return Result<ICollection<string>>.Failure(coursesResult.ErrorMessage);
+            return Result<ICollection<Course>>.Failure(coursesResult.ErrorMessage);
         }
 
-        var courseTitles = coursesResult.Data.Select(c => c.Title).ToList();
-        return Result<ICollection<string>>.Success(courseTitles);
+        return Result<ICollection<Course>>.Success(coursesResult.Data);
     }
     
     public async Task<Result<Enrollment>> AddAsync(Enrollment enrollment)

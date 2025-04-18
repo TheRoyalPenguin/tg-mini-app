@@ -23,9 +23,8 @@ public class EnrollmentsController : ControllerBase
 
     [Authorize]
     [HttpGet("availablecourses")]
-    public async Task<ActionResult<ICollection<string>>> GetAvailableCourses()
+    public async Task<ActionResult<ICollection<AvailableCourseInfoDto>>> GetAvailableCourses()
     {
-        // Получение ID пользователя из JWT
         var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
 
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
@@ -33,9 +32,18 @@ public class EnrollmentsController : ControllerBase
             return Unauthorized("Не удалось определить ID пользователя из токена.");
         }
 
-        var result = await enrollmentService.GetCourseTitlesByUserId(userId);
+        var result = await enrollmentService.GetCoursesByUserId(userId);
 
-        return result.IsSuccess ? Ok(result.Data) : Problem(result.ErrorMessage);
+        if (!result.IsSuccess)
+        {
+            return Problem(result.ErrorMessage);
+        }
+
+        var courseDtos = result.Data
+            .Select(c => new AvailableCourseInfoDto { Id = c.Id, Title = c.Title })
+            .ToList();
+
+        return Ok(courseDtos);
     }
     
     [HttpGet("all")]
