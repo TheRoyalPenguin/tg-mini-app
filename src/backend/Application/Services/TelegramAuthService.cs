@@ -26,8 +26,8 @@ public class TelegramAuthService : ITelegramAuthService
                 Name = name,
                 Surname = surname,
                 Patronymic = "",
-                RoleId = 0
-                //RegisteredAt = DateTime.UtcNow
+                RoleId = 0,
+                RegisteredAt = DateTime.UtcNow
             };
 
             await _telegramUserRepository.AddAsync(newUser);
@@ -57,8 +57,8 @@ public class TelegramAuthService : ITelegramAuthService
                 Name = name,
                 Surname = surname,
                 Patronymic = patronymic,
-                RoleId = 0
-                //RegisteredAt = DateTime.UtcNow
+                RoleId = 0,
+                RegisteredAt = DateTime.UtcNow
             };
 
             await _telegramUserRepository.AddAsync(user);

@@ -16,11 +16,15 @@ public class ResourceConfiguration : IEntityTypeConfiguration<ResourceEntity>
         builder.Property(r => r.Id)
             .HasColumnName("resource_id");
 
-        builder.Property(r => r.Title)
-            .HasColumnName("resource_title")
-            .HasMaxLength(100);
+        builder.Property(r => r.Type)
+            .HasColumnName("resource_type")
+            .HasMaxLength(20);
 
-        builder.Property(r => r.LessonId)
-            .HasColumnName("lesson_id");
+        builder.Property(r => r.Json)
+            .HasColumnName("resource_json")
+            .HasConversion<string>();
+
+        builder.Property(r => r.ModuleId)
+            .HasColumnName("module_id");
     }
 }

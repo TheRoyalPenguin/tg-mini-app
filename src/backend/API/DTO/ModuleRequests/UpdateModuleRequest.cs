@@ -1,10 +1,9 @@
-namespace Core.Models;
+namespace API.DTO;
 
-public class Module
+public class UpdateModuleRequest
 {
-    public int Id { get; set; }
+    public required int Id { get; set; }
     public required string Title { get; set; }
     public required string Description { get; set; }
     public required int CourseId { get; set; }
-    public List<Resource> Resources { get; set; }
 }
