@@ -1,6 +1,10 @@
-﻿namespace Core.Interfaces.Services;
+﻿using Core.Models;
+using Core.Utils;
+
+namespace Core.Interfaces.Services;
 
 public interface ITelegramAuthService
 {
-    Task AuthenticateViaBotAsync(long TgId, string Name, string Surname, string PhoneNumber);
+    Task<Result<User>> AuthenticateViaBotAsync(long tgId, string name, string surname, string phoneNumber);
+    Task<Result<User>> AuthenticateViaMiniAppAsync(long tgId, string name, string surname, string patronymic, string phoneNumber);
 }
