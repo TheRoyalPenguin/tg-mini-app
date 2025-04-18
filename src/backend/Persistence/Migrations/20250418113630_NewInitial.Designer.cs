@@ -12,8 +12,8 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250411201656_Initial")]
-    partial class Initial
+    [Migration("20250418113630_NewInitial")]
+    partial class NewInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -95,76 +95,6 @@ namespace Persistence.Migrations
                     b.ToTable("enrollments", (string)null);
                 });
 
-            modelBuilder.Entity("Persistence.Entities.LessonEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("lesson_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("lesson_description");
-
-                    b.Property<int>("ModuleId")
-                        .HasColumnType("integer")
-                        .HasColumnName("module_id");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("lesson_title");
-
-                    b.HasKey("Id")
-                        .HasName("lessons_pk");
-
-                    b.HasIndex("ModuleId");
-
-                    b.ToTable("lessons", (string)null);
-                });
-
-            modelBuilder.Entity("Persistence.Entities.LessonProgressEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("lesson_progress_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsLessonCompleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_lesson_completed");
-
-                    b.Property<DateOnly>("LastActivityDate")
-                        .HasColumnType("date")
-                        .HasColumnName("lesson_last_activity_date");
-
-                    b.Property<int>("LessonId")
-                        .HasColumnType("integer")
-                        .HasColumnName("lesson_id");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("lessons_progress_pkey");
-
-                    b.HasIndex("LessonId");
-
-                    b.HasIndex("UserId", "LessonId")
-                        .IsUnique();
-
-                    b.ToTable("lessons_progress", (string)null);
-                });
-
             modelBuilder.Entity("Persistence.Entities.ModuleAccessEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -244,20 +174,25 @@ namespace Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("LessonId")
-                        .HasColumnType("integer")
-                        .HasColumnName("lesson_id");
-
-                    b.Property<string>("Title")
+                    b.Property<string>("JsonUri")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("resource_title");
+                        .HasColumnType("text")
+                        .HasColumnName("resource_json_uri");
+
+                    b.Property<int>("ModuleId")
+                        .HasColumnType("integer")
+                        .HasColumnName("module_id");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("resource_type");
 
                     b.HasKey("Id")
                         .HasName("resource_pkey");
 
-                    b.HasIndex("LessonId");
+                    b.HasIndex("ModuleId");
 
                     b.ToTable("resources", (string)null);
                 });
@@ -325,6 +260,10 @@ namespace Persistence.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("user_phone_number");
 
+                    b.Property<DateTime>("RegisteredAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("registered_datetime");
+
                     b.Property<int>("RoleId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -374,36 +313,6 @@ namespace Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Persistence.Entities.LessonEntity", b =>
-                {
-                    b.HasOne("Persistence.Entities.ModuleEntity", "Module")
-                        .WithMany("Lessons")
-                        .HasForeignKey("ModuleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Module");
-                });
-
-            modelBuilder.Entity("Persistence.Entities.LessonProgressEntity", b =>
-                {
-                    b.HasOne("Persistence.Entities.LessonEntity", "Lesson")
-                        .WithMany()
-                        .HasForeignKey("LessonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Persistence.Entities.UserEntity", "User")
-                        .WithMany("LessonsProgress")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Lesson");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Persistence.Entities.ModuleAccessEntity", b =>
                 {
                     b.HasOne("Persistence.Entities.ModuleEntity", "Module")
@@ -436,13 +345,13 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Persistence.Entities.ResourceEntity", b =>
                 {
-                    b.HasOne("Persistence.Entities.LessonEntity", "Lesson")
-                        .WithMany()
-                        .HasForeignKey("LessonId")
+                    b.HasOne("Persistence.Entities.ModuleEntity", "Module")
+                        .WithMany("Resources")
+                        .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Lesson");
+                    b.Navigation("Module");
                 });
 
             modelBuilder.Entity("Persistence.Entities.UserEntity", b =>
@@ -465,14 +374,12 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Persistence.Entities.ModuleEntity", b =>
                 {
-                    b.Navigation("Lessons");
+                    b.Navigation("Resources");
                 });
 
             modelBuilder.Entity("Persistence.Entities.UserEntity", b =>
                 {
                     b.Navigation("Enrollments");
-
-                    b.Navigation("LessonsProgress");
 
                     b.Navigation("ModuleAccesses");
                 });
