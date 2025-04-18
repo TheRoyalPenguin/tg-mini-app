@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class NewInitial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -73,6 +73,7 @@ namespace Persistence.Migrations
                     user_patronymic = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     user_phone_number = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     is_banned = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    registered_datetime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     role_id = table.Column<int>(type: "integer", nullable: false, defaultValue: 0)
                 },
                 constraints: table =>
@@ -87,20 +88,20 @@ namespace Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "lessons",
+                name: "resources",
                 columns: table => new
                 {
-                    lesson_id = table.Column<int>(type: "integer", nullable: false)
+                    resource_id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    lesson_title = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    lesson_description = table.Column<string>(type: "text", nullable: false),
+                    resource_type = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    resource_json_uri = table.Column<string>(type: "text", nullable: false),
                     module_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("lessons_pk", x => x.lesson_id);
+                    table.PrimaryKey("resource_pkey", x => x.resource_id);
                     table.ForeignKey(
-                        name: "FK_lessons_modules_module_id",
+                        name: "FK_resources_modules_module_id",
                         column: x => x.module_id,
                         principalTable: "modules",
                         principalColumn: "module_id",
@@ -164,54 +165,6 @@ namespace Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "lessons_progress",
-                columns: table => new
-                {
-                    lesson_progress_id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    is_lesson_completed = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    lesson_last_activity_date = table.Column<DateOnly>(type: "date", nullable: false),
-                    user_id = table.Column<int>(type: "integer", nullable: false),
-                    lesson_id = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("lessons_progress_pkey", x => x.lesson_progress_id);
-                    table.ForeignKey(
-                        name: "FK_lessons_progress_lessons_lesson_id",
-                        column: x => x.lesson_id,
-                        principalTable: "lessons",
-                        principalColumn: "lesson_id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_lessons_progress_users_user_id",
-                        column: x => x.user_id,
-                        principalTable: "users",
-                        principalColumn: "user_id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "resources",
-                columns: table => new
-                {
-                    resource_id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    resource_title = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    lesson_id = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("resource_pkey", x => x.resource_id);
-                    table.ForeignKey(
-                        name: "FK_resources_lessons_lesson_id",
-                        column: x => x.lesson_id,
-                        principalTable: "lessons",
-                        principalColumn: "lesson_id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_enrollments_course_id",
                 table: "enrollments",
@@ -221,22 +174,6 @@ namespace Persistence.Migrations
                 name: "IX_enrollments_user_id_course_id",
                 table: "enrollments",
                 columns: new[] { "user_id", "course_id" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_lessons_module_id",
-                table: "lessons",
-                column: "module_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_lessons_progress_lesson_id",
-                table: "lessons_progress",
-                column: "lesson_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_lessons_progress_user_id_lesson_id",
-                table: "lessons_progress",
-                columns: new[] { "user_id", "lesson_id" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -261,9 +198,9 @@ namespace Persistence.Migrations
                 column: "course_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_resources_lesson_id",
+                name: "IX_resources_module_id",
                 table: "resources",
-                column: "lesson_id");
+                column: "module_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_roles_role_level",
@@ -302,9 +239,6 @@ namespace Persistence.Migrations
                 name: "enrollments");
 
             migrationBuilder.DropTable(
-                name: "lessons_progress");
-
-            migrationBuilder.DropTable(
                 name: "module_accesses");
 
             migrationBuilder.DropTable(
@@ -314,13 +248,10 @@ namespace Persistence.Migrations
                 name: "users");
 
             migrationBuilder.DropTable(
-                name: "lessons");
+                name: "modules");
 
             migrationBuilder.DropTable(
                 name: "roles");
-
-            migrationBuilder.DropTable(
-                name: "modules");
 
             migrationBuilder.DropTable(
                 name: "courses");
