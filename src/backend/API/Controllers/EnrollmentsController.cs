@@ -55,10 +55,10 @@ public class EnrollmentsController : ControllerBase
             : Problem(serviceResult.ErrorMessage);
     }
     
-    [HttpDelete("Delete/{moduleId:int}")]
-    public async Task<IActionResult> Delete([FromRoute] int moduleId)
+    [HttpDelete("Delete/{enrollmentId:int}")]
+    public async Task<IActionResult> Delete([FromRoute] int enrollmentId)
     {
-        var serviceResult = await enrollmentService.DeleteAsync(moduleId);
+        var serviceResult = await enrollmentService.DeleteAsync(enrollmentId);
         
         return serviceResult.IsSuccess 
             ? Ok() 
