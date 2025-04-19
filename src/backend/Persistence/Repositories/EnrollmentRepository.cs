@@ -40,8 +40,19 @@ public class EnrollmentRepository : IEnrollmentRepository
     {
         try
         {
-            var entity = mapper.Map<EnrollmentEntity>(enrollment);
-            context.Enrollments.Update(entity);
+            var entity = await context.Enrollments.FindAsync(enrollment.Id);
+            if (entity == null)
+            {
+                return Result<Enrollment>.Failure($"Enrollment with Id {enrollment.Id} not found.");
+            }
+
+            // Обновляем поля
+            entity.IsCourseCompleted = enrollment.IsCourseCompleted;
+            entity.EnrollmentDate = enrollment.EnrollmentDate;
+            entity.CompletionDate = enrollment.CompletionDate.Value;
+            entity.UserId = enrollment.UserId;
+            entity.CourseId = enrollment.CourseId;
+
             await context.SaveChangesAsync();
 
             var updatedModel = mapper.Map<Enrollment>(entity);
@@ -49,9 +60,10 @@ public class EnrollmentRepository : IEnrollmentRepository
         }
         catch (Exception e)
         {
-            return Result<Enrollment>.Failure($"Failed to update module: {e.Message}");
+            return Result<Enrollment>.Failure($"Failed to update enrollment: {e.Message}");
         }
     }
+
 
 
     public async Task<Result> DeleteAsync(Enrollment entity)
