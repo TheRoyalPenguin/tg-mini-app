@@ -7,6 +7,7 @@ using Core.Interfaces.Services;
 using Core.Models;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -76,6 +77,14 @@ builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 builder.Services.AddScoped<ITelegramAuthService, TelegramAuthService>();
 builder.Services.AddScoped<ITelegramUserRepository, TelegramUserRepository>();
 
+builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
+builder.Services.AddScoped<IModuleService, ModuleService>();
+
+builder.Services.AddScoped<IModuleAccessRepository, ModuleAccessRepository>();
+builder.Services.AddScoped<IModuleAccessService, ModuleAccessService>();
+
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+
 builder.Services.AddPostgresDb(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
@@ -87,12 +96,20 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Автоматическое применение миграций
+// Автоматическое применение миграций и добавление дефолтной роди
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
+    
+    var roleRepo = scope.ServiceProvider.GetRequiredService<IRoleRepository>();
+    await roleRepo!.AddAsync(new Role()
+    {
+        Name = "User",
+        RoleLevel = 0
+    });
 }
+
 
 app.UseCors();
 
