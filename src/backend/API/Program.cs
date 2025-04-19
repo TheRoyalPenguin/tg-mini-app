@@ -5,6 +5,7 @@ using Application.Services;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -83,12 +84,20 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Автоматическое применение миграций
+// Автоматическое применение миграций и добавление дефолтной роди
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
+    
+    var roleRepo = scope.ServiceProvider.GetService<IRoleRepository>();
+    await roleRepo!.AddAsync(new Role()
+    {
+        Name = "User",
+        RoleLevel = 0
+    });
 }
+
 
 app.UseCors();
 
