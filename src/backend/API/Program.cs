@@ -3,6 +3,8 @@ using API.Configurations;
 using API.Extensions;
 using Application.Services;
 using Core.Interfaces;
+using Core.Interfaces.Services;
+using Core.Models;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
@@ -69,6 +71,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<ITestRepository, TestRepository>();
+builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 
 builder.Services.AddScoped<ITelegramAuthService, TelegramAuthService>();
 builder.Services.AddScoped<ITelegramUserRepository, TelegramUserRepository>();

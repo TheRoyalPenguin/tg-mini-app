@@ -1,3 +1,4 @@
+using API.DTO.Enrollment;
 using AutoMapper;
 using Core.Models;
 using Persistence.Entities;
@@ -24,5 +25,7 @@ public class MappingProfile : Profile
         CreateMap<RoleEntity, Role>().ReverseMap();
         CreateMap<TestEntity, Test>().ReverseMap();
         CreateMap<UserEntity, User>().ReverseMap();
+        CreateMap<CreateEnrollmentDto, Enrollment>();
+        CreateMap<UpdateEnrollmentDto, Enrollment>();
     }
 }
