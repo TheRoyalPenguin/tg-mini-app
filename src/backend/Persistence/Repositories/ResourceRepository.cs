@@ -54,17 +54,47 @@ public class ResourceRepository : IResourceRepository
 
     public async Task<Result<Resource?>> GetByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var entity = await context.Resources.FindAsync(id);
+            if (entity == null)
+                return Result<Resource?>.Failure($"Resource with id: {id} not found");
+
+            var resource = mapper.Map<Resource>(entity);
+            return Result<Resource?>.Success(resource);
+        }
+        catch (Exception ex)
+        {
+            return Result<Resource?>.Failure($"Failed to get resource by ID: {ex.Message}");
+        }
     }
 
     public async Task<Result<ICollection<Resource>>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        try
+        {
+            var entities = await context.Resources.ToListAsync();
+            var resources = mapper.Map<ICollection<Resource>>(entities);
+            return Result<ICollection<Resource>>.Success(resources);
+        }
+        catch (Exception ex)
+        {
+            return Result<ICollection<Resource>>.Failure($"Failed to get all resources: {ex.Message}");
+        }
     }
 
-    public async Task<IEnumerable<TestingQuestion>> GetAllByModuleIdAsync(int moduleId)
+    public async Task<Result<ICollection<Resource>>> GetAllByModuleIdAsync(int moduleId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var entities = await context.Resources.Where(r => r.ModuleId == moduleId).ToListAsync();
+            var resources = mapper.Map<ICollection<Resource>>(entities);
+            return Result<ICollection<Resource>>.Success(resources);
+        }
+        catch (Exception e)
+        {
+            return Result<ICollection<Resource>>.Failure($"Failed to get resources: {e.Message}");
+        }
     }
 
     public async Task<Result> DeleteAsync(int id)
