@@ -1,4 +1,5 @@
 using API.DTO.Enrollment;
+using API.DTO.Testing;
 using AutoMapper;
 using Core.Models;
 using Persistence.Entities;
@@ -27,5 +28,8 @@ public class MappingProfile : Profile
         CreateMap<UserEntity, User>().ReverseMap();
         CreateMap<CreateEnrollmentDto, Enrollment>();
         CreateMap<UpdateEnrollmentDto, Enrollment>();
+        CreateMap<SubmitAnswersDto, SubmitAnswersCommand>().ReverseMap();
+        CreateMap<SubmitAnswersResultDto, SubmitAnswersResult>().ReverseMap();
+        CreateMap<TestingQuestionDto, TestingQuestion>().ReverseMap();
     }
 }

@@ -1,8 +1,10 @@
-﻿using Core.Utils;
+﻿using Core.Models;
+using Core.Utils;
 
 namespace Core.Interfaces.Services;
 
 public interface ITestingService
 {
-    Task<Result<ICollection<string>>> GetQuestionsForTest(int testId);
+    Task<Result<List<TestingQuestion>>> GetQuestionsForTest(int moduleId);
+    Task<Result<SubmitAnswersResult>> SubmitAnswers(SubmitAnswersCommand dto);
 }
