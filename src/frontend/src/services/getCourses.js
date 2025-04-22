@@ -1,16 +1,15 @@
-import axios from "axios";
+import axiosInstance from "../axiosInstance";
 
 async function getAvailableCourses() {
     const authToken = localStorage.getItem('authToken');
 
     try {
-        const response = await axios.get('http://localhost:5000/api/Enrollments/availablecourses', {
+        const response = await axiosInstance.get('/courses/available', {
             headers: {
                 'Authorization': `Bearer ${authToken}`
             }
         });
 
-        console.log('Доступные курсы:', response.data);
         return response.data;
 
     } catch (error) {
@@ -30,8 +29,9 @@ async function getAvailableCourses() {
 getAvailableCourses()
     .then(courses => {
         courses.forEach(course => {
-            console.log(`Курс ID: ${course.id}, Название: ${course.title}`);
         });
     })
     .catch(() => {
     });
+
+export default getAvailableCourses;

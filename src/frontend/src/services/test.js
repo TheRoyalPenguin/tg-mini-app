@@ -1,8 +1,8 @@
-import axios from "axios";
+import axiosInstance from "../axiosInstance";
 
 export const fetchTest = async () => {
     try {
-        const response = await axios.get('http://localhost:5000/api/test');
+        const response = await axiosInstance.get('/test');
         console.log(response.data);
     } catch (e) {
         console.error(e);

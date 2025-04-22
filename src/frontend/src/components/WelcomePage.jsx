@@ -1,27 +1,26 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import CustomButton from './CustomButton'; // Предположим, что компонент кнопки импортирован
+import CustomButton from './CustomButton';
+import getAvailableCourses from '../services/getCourses.js';
 
 const WelcomePage = function() {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const buttonColors = [
+        'bg-[#89d018]',
+        'bg-[#0793fe]',
+        'bg-[#f87c14]'
+    ];
+
     useEffect(() => {
         const fetchCourses = async () => {
-            const authToken = localStorage.getItem('authToken');
-
             try {
-                const response = await axios.get('http://localhost:5000/api/Enrollments/availablecourses', {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
-
-                setCourses(response.data);
-                setLoading(false);
-            } catch (error) {
-                setError(error.response?.data || error.message);
+                const data = await getAvailableCourses();
+                setCourses(data);
+            } catch (err) {
+                setError(err.response?.data || err.message);
+            } finally {
                 setLoading(false);
             }
         };
@@ -37,7 +36,7 @@ const WelcomePage = function() {
         return (
             <div className="text-red-500">
                 Ошибка загрузки курсов: {error}
-                {error.includes('авторизации') && (
+                {String(error).includes('авторизации') && (
                     <button onClick={() => window.location.href = '/login'}>
                         Перейти к авторизации
                     </button>
@@ -54,19 +53,19 @@ const WelcomePage = function() {
                 alt="universal_element"
             />
             <p className="font-sans mt-[10px] mb-[7px] font-bold text-[33px]">
-                Привет, <br />Телеграм ID!
+                Привет, <br /> Пользователь!
             </p>
             <p className="font-sans text-[20px]">
                 Выберите курс, чтобы <br />скорее приступить <br />к обучению!
             </p>
 
             {courses.length > 0 ? (
-                courses.map(course => (
+                courses.map((course, index) => (
                     <CustomButton
                         key={course.id}
                         text={course.title}
-                        className="bg-[#89d018] rounded-[15px] text-[18px] mb-2"
-                        onClick={() => {/* Обработчик выбора курса */}}
+                        className={`${buttonColors[index % buttonColors.length]} rounded-[15px] text-[18px] mb-2`}
+                        onClick={() => {/* обработка */}}
                     />
                 ))
             ) : (
@@ -74,6 +73,6 @@ const WelcomePage = function() {
             )}
         </div>
     );
-}
+};
 
 export default WelcomePage;
