@@ -3,11 +3,15 @@ using API.Configurations;
 using API.Extensions;
 using Application.Services;
 using Core.Interfaces;
+using Core.Interfaces.Services;
+using Core.Models;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Persistence;
 using Persistence.Repositories;
 
@@ -54,7 +58,37 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+
+    // Добавляем JWT-авторизацию
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\""
+    });
+
+    // Требуем JWT для всех запросов (или можно настроить точечно)
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
@@ -68,9 +102,22 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<ITestRepository, TestRepository>();
+builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 
 builder.Services.AddScoped<ITelegramAuthService, TelegramAuthService>();
 builder.Services.AddScoped<ITelegramUserRepository, TelegramUserRepository>();
+
+builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
+builder.Services.AddScoped<IModuleService, ModuleService>();
+
+builder.Services.AddScoped<IModuleAccessRepository, ModuleAccessRepository>();
+builder.Services.AddScoped<IModuleAccessService, ModuleAccessService>();
+
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<ICourseService, CoursesService>();
 
 builder.Services.AddPostgresDb(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
@@ -83,12 +130,20 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Автоматическое применение миграций
+// Автоматическое применение миграций и добавление дефолтной роди
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
+    
+    var roleRepo = scope.ServiceProvider.GetRequiredService<IRoleRepository>();
+    await roleRepo!.AddAsync(new Role()
+    {
+        Name = "User",
+        RoleLevel = 0
+    });
 }
+
 
 app.UseCors();
 

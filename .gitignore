@@ -378,3 +378,6 @@ release-files
 *.ntvs*
 *.njsproj
 *.sw?
+
+# Ignore config files for development
+appsettings.Development.json
