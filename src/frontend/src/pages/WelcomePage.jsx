@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import CustomButton from './CustomButton';
+import { useNavigate } from 'react-router-dom';
+import CustomButton from '../components/CustomButton';
 import getAvailableCourses from '../services/getCourses.js';
 
 const WelcomePage = function() {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     const buttonColors = [
         'bg-[#89d018]',
@@ -65,7 +67,7 @@ const WelcomePage = function() {
                         key={course.id}
                         text={course.title}
                         className={`${buttonColors[index % buttonColors.length]} rounded-[15px] text-[18px] mb-2`}
-                        onClick={() => {/* обработка */}}
+                        onClick={() => navigate(`/courses/${course.id}`)}
                     />
                 ))
             ) : (

@@ -1,10 +1,10 @@
 import axiosInstance from "../axiosInstance";
 
-async function getAvailableCourses() {
+export async function getCourseModules(courseId) {
     const authToken = localStorage.getItem('authToken');
 
     try {
-        const response = await axiosInstance.get('api/courses/available', {
+        const response = await axiosInstance.get(`/module/courses/${courseId}`, {
             headers: {
                 'Authorization': `Bearer ${authToken}`
             }
@@ -25,5 +25,3 @@ async function getAvailableCourses() {
         throw error;
     }
 }
-
-export default getAvailableCourses;
