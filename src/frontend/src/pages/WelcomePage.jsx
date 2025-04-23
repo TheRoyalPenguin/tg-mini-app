@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CustomButton from '../components/CustomButton';
+import CustomButton from '../components/common/CustomButton';
 import getAvailableCourses from '../services/getCourses.js';
 
 const WelcomePage = function() {

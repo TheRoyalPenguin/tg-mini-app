@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import CustomInput from "../components/CustomInput";
-import CustomButton from "../components/CustomButton";
+import CustomInput from "../components/common/CustomInput";
+import CustomButton from "../components/common/CustomButton";
 
 const AuthPage = () => {
   const botLink = "https://t.me/LevelUpAppBot?start=confirmPhone";

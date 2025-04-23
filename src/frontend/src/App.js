@@ -3,6 +3,7 @@ import React from 'react';
 import CoursePage from './pages/CoursePage';
 import AuthPage from './pages/AuthPage';
 import WelcomePage from './pages/WelcomePage';
+import TestFormPage from "./pages/TestFormPage";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
               <Route path="/" element={<AuthPage />} />
               <Route path="/courses" element={<WelcomePage />} />
               <Route path="/courses/:courseId" element={<CoursePage />} />
+              <Route path="/test" element={<TestFormPage />} />
           </Routes>
       </Router>
   );

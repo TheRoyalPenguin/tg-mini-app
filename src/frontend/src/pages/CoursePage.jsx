@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getCourseModules } from '../services/getModules.js';
-import CustomButton from '../components/CustomButton';
+import CustomButton from '../components/common/CustomButton';
 
 const CoursePage = function () {
     const { courseId } = useParams();
