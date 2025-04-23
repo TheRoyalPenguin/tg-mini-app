@@ -4,7 +4,7 @@ async function getAvailableCourses() {
     const authToken = localStorage.getItem('authToken');
 
     try {
-        const response = await axiosInstance.get('api/courses/available', {
+        const response = await axiosInstance.get('courses/available', {
             headers: {
                 'Authorization': `Bearer ${authToken}`
             }
