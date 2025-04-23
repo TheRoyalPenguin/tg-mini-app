@@ -6,6 +6,7 @@ namespace Persistence.Entities;
 public class ModuleAccessEntity
 {
     public int Id { get; set; }
+    public int CompletedLongreadsCount { get; set; }
     public required bool IsModuleCompleted { get; set; }
     public DateOnly CompletionDate { get; set; }
     

@@ -16,6 +16,10 @@ public class ModuleAccessConfiguration : IEntityTypeConfiguration<ModuleAccessEn
         builder.Property(ma => ma.Id)
             .HasColumnName("module_access_id");
         
+        builder.Property(ma => ma.CompletedLongreadsCount)
+            .HasColumnName("completed_longreads_count")
+            .HasDefaultValue(0);
+        
         builder.Property(ma => ma.IsModuleCompleted)
             .HasColumnName("is_module_completed")
             .HasDefaultValue(false);

@@ -1,6 +1,9 @@
-namespace Core.Models;
+using API.DTO.ModuleAccess;
+using API.DTO.ModuleAccessRequests;
 
-public class User
+namespace API.DTO.User;
+
+public class UserInfoByCourseWithModuleAccesses
 {
     public int Id { get; set; }
     public required long TgId { get; set; }
@@ -11,5 +14,5 @@ public class User
     public bool IsBanned { get; set; } = false;
     public required int RoleId { get; set; }
     public required DateTime RegisteredAt { get; set; }
-    public List<ModuleAccess> ModuleAccesses { get; set; } = new();
+    public List<ModuleAccessWithProgress> ModuleAccesses { get; set; } = new();
 }

@@ -129,6 +129,26 @@ public class EnrollmentRepository : IEnrollmentRepository
         }
     }
     
+    public async Task<Result<ICollection<User>>> GetUsersByCourseId(int id)
+    {
+        try
+        {
+            var userEntities = await context.Enrollments
+                .Where(e => e.CourseId == id)
+                .Select(e => e.User)
+                .Include(u => u.ModuleAccesses.Where(ma => ma.Module.CourseId == id))
+                .AsNoTracking()
+                .ToListAsync();
+
+            var users = mapper.Map<ICollection<User>>(userEntities);
+            return Result<ICollection<User>>.Success(users);
+        }
+        catch (Exception ex)
+        {
+            return Result<ICollection<User>>.Failure($"Failed to get users by course id: {ex.Message}")!;
+        }
+    }
+    
     public async Task<Result> DeleteAsync(int id)
     {
         try
