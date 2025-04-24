@@ -5,23 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class ModuleController(
+[Route("api/courses/{courseId}/[controller]")]
+public class ModulesController(
     IModuleService moduleService,
     IMapper mapper) : ControllerBase
 {
-    
-    [HttpGet("{moduleId:int}")]
-    public async Task<IActionResult> GetModuleByIdAsync(int moduleId)
-    {
-        var serviceResult = await moduleService.GetModuleByIdAsync(moduleId);
-        
-        return serviceResult.IsSuccess 
-            ? Ok(serviceResult.Data) 
-            : Problem(serviceResult.ErrorMessage);
-    }
-    
-    [HttpGet("courses/{courseId:int}")]
+    [HttpGet]
     public async Task<IActionResult> GetModulesByCourseIdAsync(int courseId)
     {
         var serviceResult = await moduleService.GetModulesByCourseIdAsync(courseId);
