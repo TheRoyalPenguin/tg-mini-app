@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class ModuleController(
     IModuleService moduleService,
     IMapper mapper) : ControllerBase
 {
-    [HttpGet]
+    [HttpGet("all")]
     public async Task<IActionResult> GetAllAsync()
     {
         var serviceResult = await moduleService.GetAllModulesAsync();
