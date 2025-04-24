@@ -14,6 +14,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ModuleAccessEntity> ModuleAccesses { get; set; }
     public DbSet<RoleEntity> Roles { get; set; }
     public DbSet<ResourceEntity> Resources { get; set; }
+    public DbSet<LongreadCompletionEntity> LongreadCompletions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

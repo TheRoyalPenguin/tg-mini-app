@@ -9,7 +9,7 @@ public class AdminController(
     IEnrollmentService enrollmentService) : ControllerBase
 {
     [HttpGet("course/{courseId:int}")]
-    public async Task<IActionResult> GetAllAsync(int courseId)
+    public async Task<IActionResult> GetUsersByCourseIdAsync(int courseId)
     {
         var serviceResult = await enrollmentService.GetUsersByCourseId(courseId);
 
