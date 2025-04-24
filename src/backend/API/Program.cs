@@ -12,7 +12,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Minio;
 using Persistence;
+using Persistence.MinioRepositories;
 using Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -119,8 +121,25 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ICourseService, CoursesService>();
 
+builder.Services.AddScoped<ITestingRepository, TestingRepository>();
+builder.Services.AddScoped<ITestingService, TestingService>();
+
 builder.Services.AddPostgresDb(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddSingleton<IMinioClient>(sp =>
+{
+    var config = builder.Configuration.GetSection("Minio");
+    var endpoint = config["Endpoint"];
+    var accessKey = config["AccessKey"];
+    var secretKey = config["SecretKey"];
+    var useSsl = bool.Parse(config["UseSSL"] ?? "false");
+
+    return new MinioClient()
+        .WithEndpoint(endpoint)
+        .WithCredentials(accessKey, secretKey)
+        .WithSSL(useSsl)
+        .Build();
+});
 
 var app = builder.Build();
 

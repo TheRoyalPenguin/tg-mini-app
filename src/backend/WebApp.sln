@@ -8,8 +8,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence", "Persistence\Persistence.csproj", "{4FCAEE73-E07A-4FE7-8ED8-2A8F1E41CDC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence.Minio", "Persistence.Minio\Persistence.Minio.csproj", "{04002712-C4EB-43AD-AB97-49F9A81518D9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,9 +30,5 @@ Global
 		{4FCAEE73-E07A-4FE7-8ED8-2A8F1E41CDC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4FCAEE73-E07A-4FE7-8ED8-2A8F1E41CDC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4FCAEE73-E07A-4FE7-8ED8-2A8F1E41CDC7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{04002712-C4EB-43AD-AB97-49F9A81518D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{04002712-C4EB-43AD-AB97-49F9A81518D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{04002712-C4EB-43AD-AB97-49F9A81518D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{04002712-C4EB-43AD-AB97-49F9A81518D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

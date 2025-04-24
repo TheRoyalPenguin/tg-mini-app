@@ -145,4 +145,32 @@ public class ModuleRepository(AppDbContext appDbContext, IMapper mapper) : IModu
             return Result<ICollection<Module>>.Failure($"Failed to get modules with given id: {e.Message}")!;
         }
     }
+    
+    public async Task<Result<bool>> ExistsAsync(int moduleId)
+    {
+        try
+        {
+            bool exists = await appDbContext.Modules
+                .AnyAsync(m => m.Id == moduleId);
+            return Result<bool>.Success(exists);
+        }
+        catch (Exception ex)
+        {
+            return Result<bool>.Failure($"Ошибка при проверке существования модуля: {ex.Message}");
+        }
+    }
+
+    public async Task<Result<bool>> ExistsForCourseAsync(int courseId, int moduleId)
+    {
+        try
+        {
+            bool exists = await appDbContext.Modules
+                .AnyAsync(m => m.Id == moduleId && m.CourseId == courseId);
+            return Result<bool>.Success(exists);
+        }
+        catch (Exception ex)
+        {
+            return Result<bool>.Failure($"Ошибка при проверке принадлежности модуля к курсу: {ex.Message}");
+        }
+    }
 }

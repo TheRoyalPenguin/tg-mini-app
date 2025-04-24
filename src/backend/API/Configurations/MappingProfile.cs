@@ -31,5 +31,6 @@ public class MappingProfile : Profile
         CreateMap<SubmitAnswersDto, SubmitAnswersCommand>().ReverseMap();
         CreateMap<SubmitAnswersResultDto, SubmitAnswersResult>().ReverseMap();
         CreateMap<TestingQuestionDto, TestingQuestion>().ReverseMap();
+        CreateMap<AddOrUpdateTestQuestions, TestingQuestion>().ReverseMap();
     }
 }

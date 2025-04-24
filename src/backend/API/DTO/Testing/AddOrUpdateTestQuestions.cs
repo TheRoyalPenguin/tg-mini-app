@@ -1,6 +1,6 @@
-﻿namespace Core.Models;
+﻿namespace API.DTO.Testing;
 
-public class TestingQuestion
+public class AddOrUpdateTestQuestions
 {
     public required string Question { get; set; }
     public List<string> Options { get; set; } = [];
