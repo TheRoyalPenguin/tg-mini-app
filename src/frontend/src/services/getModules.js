@@ -4,12 +4,12 @@ export async function getCourseModules(courseId) {
     const authToken = localStorage.getItem('authToken');
 
     try {
-        const response = await axiosInstance.get(`/module/courses/${courseId}`, {
+        const response = await axiosInstance.get(`/courses/${courseId}/modules`, {
             headers: {
                 'Authorization': `Bearer ${authToken}`
             }
         });
-
+        console.log(response.data);
         return response.data;
 
     } catch (error) {
