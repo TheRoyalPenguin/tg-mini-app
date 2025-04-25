@@ -6,7 +6,7 @@ public class Resource
     public required ResourceType Type { get; set; }
     public required string JsonUri { get; set; }
     public required int ModuleId { get; set; }
-}
+}   
 
 public enum ResourceType
 {

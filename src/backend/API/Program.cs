@@ -100,8 +100,11 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<ITestRepository, TestRepository>();
+
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 

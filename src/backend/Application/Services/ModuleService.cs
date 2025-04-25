@@ -5,43 +5,56 @@ using Core.Utils;
 
 namespace Application.Services;
 
-public class ModuleService(IModuleRepository moduleRepository) : IModuleService
+public class ModuleService(IUnitOfWork uow) : IModuleService
 {
     public async Task<Result<Module>> AddModuleAsync(Module module)
     {
-        var repositoryResult = await moduleRepository.AddAsync(module);
-        return repositoryResult.IsSuccess 
-            ? Result<Module>.Success(repositoryResult.Data)
-            : Result<Module>.Failure(repositoryResult.ErrorMessage!)!;
+        var repositoryResult = await uow.Modules.AddAsync(module);
+        
+        if (!repositoryResult.IsSuccess)
+            return Result<Module>.Failure(repositoryResult.ErrorMessage!)!;
+
+        await uow.SaveChangesAsync();
+        
+        return Result<Module>.Success(repositoryResult.Data);
     }
 
     public async Task<Result<Module>> UpdateModuleAsync(Module module)
     {
-        var repositoryResult = await moduleRepository.UpdateAsync(module);
-        return repositoryResult.IsSuccess 
-            ? Result<Module>.Success(repositoryResult.Data)
-            : Result<Module>.Failure(repositoryResult.ErrorMessage!)!;
+        var repositoryResult = await uow.Modules.UpdateAsync(module);
+        if (!repositoryResult.IsSuccess)
+            return Result<Module>.Failure(repositoryResult.ErrorMessage!)!;
+
+        await uow.SaveChangesAsync();
+        
+        return Result<Module>.Success(repositoryResult.Data);
     }
 
     public async Task<Result> DeleteModuleAsync(Module module)
     {
-        var repositoryResult = await moduleRepository.DeleteAsync(module);
-        return repositoryResult.IsSuccess 
-            ? Result.Success()
-            : Result.Failure(repositoryResult.ErrorMessage!);
+        var repositoryResult = await uow.Modules.DeleteAsync(module);
+        if (!repositoryResult.IsSuccess)
+            return Result.Failure(repositoryResult.ErrorMessage!)!;
+
+        await uow.SaveChangesAsync();
+        
+        return Result.Success();
     }
     
     public async Task<Result> DeleteModuleAsync(int id)
     {
-        var repositoryResult = await moduleRepository.DeleteAsync(id);
-        return repositoryResult.IsSuccess 
-            ? Result.Success()
-            : Result.Failure(repositoryResult.ErrorMessage!);
+        var repositoryResult = await uow.Modules.DeleteAsync(id);
+        if (!repositoryResult.IsSuccess)
+            return Result.Failure(repositoryResult.ErrorMessage!)!;
+
+        await uow.SaveChangesAsync();
+        
+        return Result.Success();
     }
 
     public async Task<Result<Module?>> GetModuleByIdAsync(int id)
     {
-        var repositoryResult = await moduleRepository.GetByIdAsync(id);
+        var repositoryResult = await uow.Modules.GetByIdAsync(id);
         return repositoryResult.IsSuccess 
             ? Result<Module?>.Success(repositoryResult.Data)
             : Result<Module?>.Failure(repositoryResult.ErrorMessage!);
@@ -49,7 +62,7 @@ public class ModuleService(IModuleRepository moduleRepository) : IModuleService
 
     public async Task<Result<ICollection<Module>>> GetModulesByCourseIdAsync(int courseId)
     {
-        var repositoryResult = await moduleRepository.GetAllByCourseIdAsync(courseId);
+        var repositoryResult = await uow.Modules.GetAllByCourseIdAsync(courseId);
         return repositoryResult.IsSuccess 
             ? Result<ICollection<Module>>.Success(repositoryResult.Data)
             : Result<ICollection<Module>>.Failure(repositoryResult.ErrorMessage!)!;
@@ -57,7 +70,7 @@ public class ModuleService(IModuleRepository moduleRepository) : IModuleService
 
     public async Task<Result<ICollection<Module>>> GetAllModulesAsync()
     {
-        var repositoryResult = await moduleRepository.GetAllAsync();
+        var repositoryResult = await uow.Modules.GetAllAsync();
         return repositoryResult.IsSuccess 
             ? Result<ICollection<Module>>.Success(repositoryResult.Data)
             : Result<ICollection<Module>>.Failure(repositoryResult.ErrorMessage!)!;

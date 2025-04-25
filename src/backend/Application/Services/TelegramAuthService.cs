@@ -5,17 +5,11 @@ using Core.Utils;
 
 namespace Application.Services;
 
-public class TelegramAuthService : ITelegramAuthService
+public class TelegramAuthService(IUnitOfWork uow) : ITelegramAuthService
 {
-    private readonly ITelegramUserRepository _telegramUserRepository;
-    public TelegramAuthService(ITelegramUserRepository telegramUserRepository)
-    {
-        _telegramUserRepository = telegramUserRepository;
-    }
-
     public async Task<Result<User>> AuthenticateViaBotAsync(long tgId, string name, string surname, string phoneNumber)
     {
-        var user = await _telegramUserRepository.GetByTelegramIdAsync(tgId);
+        var user = await uow.TelegramUsers.GetByTelegramIdAsync(tgId);
 
         if (user == null)
         {
@@ -30,7 +24,7 @@ public class TelegramAuthService : ITelegramAuthService
                 RegisteredAt = DateTime.UtcNow
             };
 
-            await _telegramUserRepository.AddAsync(user);
+            await uow.TelegramUsers.AddAsync(user);
         }
         else
         {
@@ -40,13 +34,13 @@ public class TelegramAuthService : ITelegramAuthService
             user.RegisteredAt = DateTime.UtcNow;
         }
 
-        await _telegramUserRepository.SaveChangesAsync();
+        await uow.SaveChangesAsync();
         return Result<User>.Success(user);
     }
 
     public async Task<Result<User>> AuthenticateViaMiniAppAsync(long tgId, string name, string surname, string patronymic)
     {
-        var user = await _telegramUserRepository.GetByTelegramIdAsync(tgId);
+        var user = await uow.TelegramUsers.GetByTelegramIdAsync(tgId);
 
         if (user == null)
         {
@@ -62,7 +56,7 @@ public class TelegramAuthService : ITelegramAuthService
                 RegisteredAt = DateTime.UtcNow
             };
 
-            await _telegramUserRepository.AddAsync(user);
+            await uow.TelegramUsers.AddAsync(user);
         }
         else
         {
@@ -72,7 +66,7 @@ public class TelegramAuthService : ITelegramAuthService
             user.RegisteredAt = DateTime.UtcNow;
         }
 
-        await _telegramUserRepository.SaveChangesAsync();
+        await uow.SaveChangesAsync();
 
         return Result<User>.Success(user);
     }

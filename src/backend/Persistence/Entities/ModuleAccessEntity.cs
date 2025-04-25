@@ -8,7 +8,7 @@ public class ModuleAccessEntity
 {
     public int Id { get; set; }
     
-    public int TestTriesCount { get; set; }
+    public required int TestTriesCount { get; set; }
     public required bool IsModuleCompleted { get; set; }
     public required bool IsModuleAvailable { get; set; }
     public DateOnly? CompletionDate { get; set; }
