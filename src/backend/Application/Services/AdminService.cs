@@ -8,9 +8,13 @@ namespace Application.Services;
 
 public class AdminService(IUnitOfWork uow, IMapper mapper) : IAdminService
 {
-    public Result<ICollection<User>> GetUsersByCourse(int courseId)
+    public async Task<Result<ICollection<User>>> GetUsersByCourse(int courseId)
     {
-        throw new NotImplementedException();
+        var repositoryResult = await uow.Users.GetAllByCourseIdAsync(courseId);
+        
+        return repositoryResult.IsSuccess
+            ? Result<ICollection<User>>.Success(repositoryResult.Data)
+            : Result<ICollection<User>>.Failure(repositoryResult.ErrorMessage!)!;
     }
 
     public async Task<Result> RegisterUserOnCourse(int userId, int courseId)

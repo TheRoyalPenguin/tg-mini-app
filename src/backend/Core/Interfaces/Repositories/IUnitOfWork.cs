@@ -8,6 +8,7 @@ public interface IUnitOfWork : IDisposable
     IModuleRepository Modules { get; }
     IRoleRepository Roles { get; }
     ITelegramUserRepository TelegramUsers { get; }
+    IUserRepository Users { get; }
     
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     

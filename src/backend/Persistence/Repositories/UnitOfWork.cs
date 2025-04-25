@@ -96,6 +96,10 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     public ITelegramUserRepository TelegramUsers => 
         _telegramUsers ??= new TelegramUserRepository(_context, _mapper);
 
+    private IUserRepository _users;
+    public IUserRepository Users =>
+        _users ??= new UserRepository(_context, _mapper);
+
     public void Dispose()
     {
         DisposeTransaction();
