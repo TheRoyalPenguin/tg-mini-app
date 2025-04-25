@@ -5,10 +5,11 @@ using Core.Interfaces.Services;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers;
+namespace API.Areas.Admin.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Area("Admin")]
+[Route("api/admin/[controller]")]
 public class ModuleController(
     IModuleService moduleService,
     IMapper mapper) : ControllerBase

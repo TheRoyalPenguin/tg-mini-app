@@ -5,7 +5,7 @@ using Core.Utils;
 
 namespace Application.Services;
 
-public class ModuleService(IModuleRepository moduleRepository) : IModuleService
+public class ModuleService(IModuleRepository moduleRepository, IModuleAccessRepository accessRepo) : IModuleService
 {
     public async Task<Result<Module>> AddModuleAsync(Module module)
     {
@@ -53,6 +53,33 @@ public class ModuleService(IModuleRepository moduleRepository) : IModuleService
         return repositoryResult.IsSuccess 
             ? Result<ICollection<Module>>.Success(repositoryResult.Data)
             : Result<ICollection<Module>>.Failure(repositoryResult.ErrorMessage!)!;
+    }
+
+    public async Task<Result<ICollection<ModuleWithAccess>>> GetModulesByCourseIdWithAccessAsync(int courseId, int userId)
+    {
+        var modulesResult = await moduleRepository.GetAllByCourseIdAsync(courseId);
+
+        if (!modulesResult.IsSuccess)
+        {
+            return Result<ICollection<ModuleWithAccess>>
+                .Failure(modulesResult.ErrorMessage!)!;
+        }
+
+        var accessesIds = (await accessRepo.GetAllByUserIdAndCourseIdAsync(userId, courseId))
+            .Data
+            .Select(a => a.ModuleId)
+            .ToHashSet();
+
+        var result = modulesResult.Data
+            .Select(m => new ModuleWithAccess
+            {
+                Id = m.Id,
+                Title = m.Title,
+                IsAccessed = accessesIds.Contains(m.Id)
+            })
+            .ToList();
+
+        return Result<ICollection<ModuleWithAccess>>.Success(result);
     }
 
     public async Task<Result<ICollection<Module>>> GetAllModulesAsync()
