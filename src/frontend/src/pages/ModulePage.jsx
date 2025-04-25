@@ -1,10 +1,11 @@
 import React from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import CustomButton from "../components/common/CustomButton";
 
 const longreads = [
-    { title: 'Тайм-менеджмент тим-лида',},
-    { title: 'Матрица Эйзенхауэра' },
-    { title: 'Метод ABCDE' },
+    { title: 'Тайм-менеджмент тим-лида', link: '/longreads/time-management' },
+    { title: 'Матрица Эйзенхауэра', link: '/longreads/eisenhower-matrix' },
+    { title: 'Метод ABCDE', link: '/longreads/abcde-method' },
 ];
 
 const recommendedBooks = [
@@ -25,6 +26,14 @@ const recommendedBooks = [
     },
 ];
 
+
+const buttonColors = [
+    'bg-[#0f9fff]',
+    'bg-[#3ebfff]',
+    'bg-[#fec810]',
+    'bg-[#f87c14]',
+];
+
 const ModulePage = function () {
     const { moduleId } = useParams();
     const navigate = useNavigate();
@@ -34,20 +43,17 @@ const ModulePage = function () {
             <h1 className="text-2xl font-bold mb-6">Основы личной эффективности тим-лида</h1>
             <h2 className="text-left text-lg font-semibold mb-4">Введение в тему</h2>
 
-            <div className="space-y-4 mb-6">
+            <div className="space-y-3 mb-4 text-left">
                 {longreads.map((item, index) => (
-                    <div key={index} className="border p-4 rounded-lg text-left bg-gray-50">
-                        <div className="font-semibold mb-1">{item.title}</div>
-                        {item.details && (
-                            <ul className="list-disc list-inside text-sm text-gray-600">
-                                {item.details.map((detail, i) => (
-                                    <li key={i}>{detail}</li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
+                    <CustomButton
+                        key={index}
+                        text={`${item.title}`}
+                        className={`${buttonColors[index % buttonColors.length]}`}
+                        onClick={() => navigate(item.link)}
+                    >
+                        {item.title}
+                    </CustomButton>
                 ))}
-
             </div>
 
             <button
