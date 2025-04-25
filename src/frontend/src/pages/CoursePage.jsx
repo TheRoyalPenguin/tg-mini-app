@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getCourseModules } from '../services/getModules.js';
 import CustomButton from '../components/common/CustomButton';
@@ -9,6 +9,7 @@ const CoursePage = function () {
     const [modules, setModules] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const buttonColors = [
@@ -39,9 +40,6 @@ const CoursePage = function () {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen text-center bg-[#f7f8fc]">
             <img src="/images/universal_element_3.png" className="w-[250px]" alt="universal_element" />
-            <p className="font-sans mt-[10px] font-bold text-[28px]">
-                Готов прокачать <br />навыки Тим Лида?
-            </p>
 
             {modules.length === 0 ? (
                 <p className="text-gray-500 mt-4 text-[18px]">
@@ -49,6 +47,9 @@ const CoursePage = function () {
                 </p>
             ) : (
                 <div className="flex flex-col space-y-[13px] mt-4">
+                    <p className="font-sans mt-[10px] font-bold text-[28px]">
+                        Готов прокачать <br/>навыки Тим Лида?
+                    </p>
                     {modules.map((module, idx) => {
                         const isAccessible = module.isAccessed === true;
                         const baseColor = buttonColors[idx % buttonColors.length];
@@ -58,6 +59,7 @@ const CoursePage = function () {
                             if (!isAccessible) {
                                 setIsModalOpen(true);
                             } else {
+                                navigate(`/modules/${module.id}`)
                             }
                         };
 
