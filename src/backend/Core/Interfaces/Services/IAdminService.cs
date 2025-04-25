@@ -5,5 +5,6 @@ namespace Core.Interfaces.Services;
 
 public interface IAdminService
 {
-    public Result<ICollection<User>> GetUsersByCourse(int courseId);
+    Result<ICollection<User>> GetUsersByCourse(int courseId);
+    Task<Result> RegisterUserOnCourse(int userId, int courseId);
 }
