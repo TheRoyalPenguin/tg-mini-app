@@ -1,0 +1,16 @@
+using EfCore.Conventions.Attributes;
+using Microsoft.EntityFrameworkCore;
+
+namespace Persistence.Entities;
+
+public class LongreadCompletionEntity
+{
+    public int Id { get; set; }
+    
+    [OnDelete(DeleteBehavior.Cascade)]
+    public required int ModuleAccessId { get; set; }
+
+    [OnDelete(DeleteBehavior.Cascade)]
+    public required int ResourceId { get; set; }
+    public ResourceEntity Resource { get; set; }
+}

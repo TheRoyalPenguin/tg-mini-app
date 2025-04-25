@@ -14,12 +14,19 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
     {
         try
         {
-            var result = await appDbContext.ModuleAccesses
+            var newEntityEntry = await appDbContext.ModuleAccesses
                 .AddAsync(mapper.Map<ModuleAccessEntity>(model));
 
             await appDbContext.SaveChangesAsync();
 
-            return Result<ModuleAccess>.Success(mapper.Map<ModuleAccess>(result.Entity));
+            var newModel = mapper.Map<ModuleAccess>(newEntityEntry.Entity);
+            var moduleEntity =
+                await appDbContext.Modules.FirstOrDefaultAsync(m => m.Id == model.ModuleId);
+
+            newModel.CompletedLongreadsCount = 0;
+            newModel.ModuleLongreadCount = moduleEntity?.LongreadCount ?? 0;
+
+            return Result<ModuleAccess>.Success(newModel);
         }
         catch (Exception e)
         {
@@ -35,12 +42,15 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
                 .FirstOrDefaultAsync(ma => ma.Id == model.Id);
 
             if (moduleAccessEntity == null)
-                return Result<ModuleAccess>.Failure("Module entity not found")!;
+                return Result<ModuleAccess>.Failure("Access entity not found")!;
 
             mapper.Map(model, moduleAccessEntity);
             await appDbContext.SaveChangesAsync();
 
             var updatedModel = mapper.Map<ModuleAccess>(moduleAccessEntity);
+
+            updatedModel.CompletedLongreadsCount = model.CompletedLongreadsCount;
+            updatedModel.ModuleLongreadCount = model.ModuleLongreadCount;
 
             return Result<ModuleAccess>.Success(updatedModel);
         }
@@ -71,6 +81,9 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
         try
         {
             var moduleAccessEntity = await appDbContext.ModuleAccesses
+                .Include(ma => ma.LongreadCompletions)
+                .Include(ma => ma.Module)
+                .ThenInclude(m => m.Resources)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ma => ma.Id == id);
 
@@ -78,6 +91,8 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
                 return Result<ModuleAccess?>.Success(null);
 
             var model = mapper.Map<ModuleAccess>(moduleAccessEntity);
+            model.CompletedLongreadsCount = moduleAccessEntity.LongreadCompletions.Count;
+            model.ModuleLongreadCount = moduleAccessEntity.Module.LongreadCount;
 
             return Result<ModuleAccess?>.Success(model);
         }
@@ -162,11 +177,20 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
         var query = appDbContext.ModuleAccesses
             .AsNoTracking()
             .Include(ma => ma.Module)
-            .Include(ma => ma.Module.Resources)
+            .ThenInclude(m => m.Resources)
+            .Include(ma => ma.LongreadCompletions)
             .Where(predicate);
 
         var entities = await query.ToListAsync();
-        var models = entities.Select(mapper.Map<ModuleAccess>).ToList();
+        var models = entities.Select(entity =>
+        {
+            var model = mapper.Map<ModuleAccess>(entity);
+            model.CompletedLongreadsCount = entity.LongreadCompletions.Count;
+            model.CompletedLongreadsCount = entity.LongreadCompletions.Count;
+            model.ModuleLongreadCount = entity.Module.LongreadCount;
+
+            return model;
+        }).ToList();
 
         return models;
     }

@@ -25,6 +25,15 @@ public class EnrollmentService : IEnrollmentService
         return Result<ICollection<Course>>.Success(coursesResult.Data);
     }
     
+    public async Task<Result<ICollection<User>>> GetUsersByCourseId(int id)
+    {
+        var userResult = await repository.GetUsersByCourseId(id);
+
+        return !userResult.IsSuccess 
+            ? Result<ICollection<User>>.Failure(userResult.ErrorMessage!)! 
+            : Result<ICollection<User>>.Success(userResult.Data);
+    }
+    
     public async Task<Result<Enrollment>> AddAsync(Enrollment enrollment)
     {
         var result = await repository.AddAsync(enrollment);

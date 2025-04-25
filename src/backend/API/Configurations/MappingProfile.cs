@@ -24,7 +24,10 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.Type.ToString()));
         CreateMap<RoleEntity, Role>().ReverseMap();
         CreateMap<TestEntity, Test>().ReverseMap();
-        CreateMap<UserEntity, User>().ReverseMap();
+        CreateMap<UserEntity, User>()
+            .ForMember(dest => dest.ModuleAccesses, opt => opt.MapFrom(src => src.ModuleAccesses))
+            .ReverseMap()
+            .ForMember(dest => dest.ModuleAccesses, opt => opt.MapFrom(src => src.ModuleAccesses));
         CreateMap<CreateEnrollmentDto, Enrollment>();
         CreateMap<UpdateEnrollmentDto, Enrollment>();
     }
