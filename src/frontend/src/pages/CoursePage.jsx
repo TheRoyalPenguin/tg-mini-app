@@ -47,7 +47,7 @@ const CoursePage = function () {
                 </p>
             ) : (
                 <div className="flex flex-col space-y-[13px] mt-4">
-                    <p className="font-sans mt-[10px] font-bold text-[28px]">
+                    <p className="font-sans mt-[10px] font-bold text-[28px] mb-3">
                         Готов прокачать <br/>навыки Тим Лида?
                     </p>
                     {modules.map((module, idx) => {

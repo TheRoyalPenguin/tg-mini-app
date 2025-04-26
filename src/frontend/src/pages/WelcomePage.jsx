@@ -50,14 +50,14 @@ const WelcomePage = function() {
     return (
         <div className="flex flex-col items-center h-screen text-center bg-[#f7f8fc]">
             <img
-                src="/images/universal_element_2.png"
-                className="w-[200px] mt-[20px]"
+                src="/images/knowledge.png"
+                className="w-[230px] mt-[20px]"
                 alt="universal_element"
             />
             <p className="font-sans mt-[10px] mb-[7px] font-bold text-[33px]">
                 Привет, <br /> Пользователь!
             </p>
-            <p className="font-sans text-[20px]">
+            <p className="font-sans text-[18px] mb-3">
                 Выберите курс, чтобы <br />скорее приступить <br />к обучению!
             </p>
 
@@ -66,7 +66,7 @@ const WelcomePage = function() {
                     <CustomButton
                         key={course.id}
                         text={course.title}
-                        className={`${buttonColors[index % buttonColors.length]} rounded-[15px] text-[18px] mb-2`}
+                        className={`${buttonColors[index % buttonColors.length]} rounded-[15px] text-[18px] mb-0.5`}
                         onClick={() => navigate(`/courses/${course.id}`)}
                     />
                 ))
