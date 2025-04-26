@@ -75,22 +75,22 @@ public class ModuleService(IUnitOfWork uow) : IModuleService
             return Result<ICollection<ModuleWithAccess>>.Failure("Invalid input parameters")!;
         }
 
-        var modulesResult = await moduleRepository.GetAllByCourseIdAsync(courseId);
+        var modulesResult = await uow.Modules.GetAllByCourseIdAsync(courseId);
 
         if (!modulesResult.IsSuccess)
         {
             return Result<ICollection<ModuleWithAccess>>.Failure(modulesResult.ErrorMessage!)!;
         }
 
-        if (modulesResult.Data == null)
+        if (modulesResult.Data.Count == 0)
         {
             return Result<ICollection<ModuleWithAccess>>.Failure("Module data not found")!;
         }
 
-        var accessResult = await accessRepo.GetAllByUserIdAndCourseIdAsync(userId, courseId);
+        var accessResult = await uow.ModuleAccesses.GetAllByUserIdAndCourseIdAsync(userId, courseId);
 
         HashSet<int> accessesIds = new();
-        if (accessResult != null && accessResult.IsSuccess && accessResult.Data != null)
+        if (accessResult.IsSuccess && accessResult.Data.Count != 0)
         {
             accessesIds = accessResult.Data
                 .Where(a => a.IsModuleAvailable)

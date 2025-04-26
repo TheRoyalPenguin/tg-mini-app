@@ -20,7 +20,7 @@ public class TelegramAuthService(IUnitOfWork uow) : ITelegramAuthService
                 Name = name,
                 Surname = surname,
                 Patronymic = "",
-                RoleId = 0,
+                RoleId = 1,
                 RegisteredAt = DateTime.UtcNow
             };
 
@@ -52,7 +52,7 @@ public class TelegramAuthService(IUnitOfWork uow) : ITelegramAuthService
                 Name = name,
                 Surname = surname,
                 Patronymic = patronymic,
-                RoleId = 0,
+                RoleId = 1,
                 RegisteredAt = DateTime.UtcNow
             };
 

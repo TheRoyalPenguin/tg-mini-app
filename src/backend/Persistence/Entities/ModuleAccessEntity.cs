@@ -8,17 +8,17 @@ public class ModuleAccessEntity
 {
     public int Id { get; set; }
     
-    public required int TestTriesCount { get; set; }
-    public required bool IsModuleCompleted { get; set; }
-    public required bool IsModuleAvailable { get; set; }
+    public int TestTriesCount { get; set; }
+    public bool IsModuleCompleted { get; set; }
+    public bool IsModuleAvailable { get; set; }
     public DateOnly? CompletionDate { get; set; }
     
     [OnDelete(DeleteBehavior.Cascade)]
-    public required int UserId { get; set; }
+    public int UserId { get; set; }
     public UserEntity User { get; set; }
     
     [OnDelete(DeleteBehavior.Cascade)]
-    public required int ModuleId { get; set; }
+    public int ModuleId { get; set; }
     public ModuleEntity Module { get; set; }
 
     public List<LongreadCompletionEntity> LongreadCompletions { get; set; } = [];   
