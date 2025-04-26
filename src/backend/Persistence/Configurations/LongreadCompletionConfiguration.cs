@@ -21,5 +21,8 @@ public class LongreadCompletionConfiguration : IEntityTypeConfiguration<Longread
 
         builder.Property(lc => lc.ResourceId)
             .HasColumnName("resource_id");
+        
+        builder.HasIndex(ma => new { ma.ResourceId, ma.ModuleAccessId })
+            .IsUnique();
     }
 }
