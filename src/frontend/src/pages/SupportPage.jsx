@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import CustomButton from '../components/common/CustomButton';
 import {useNavigate} from "react-router-dom";
+import Header from "../components/header/Header";
 
 const SupportPage = () => {
     const [formData, setFormData] = useState({
@@ -47,6 +48,8 @@ const SupportPage = () => {
     }
 
     return (
+        <>
+            <Header/>
         <div className="flex flex-col items-center h-full min-h-screen text-center bg-[#f7f8fc] p-4">
             <img
                 src="/images/universal_element_2.png"
@@ -101,6 +104,7 @@ const SupportPage = () => {
                 </div>
             </form>
         </div>
+        </>
     );
 };
 

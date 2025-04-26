@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Header from "../components/header/Header";
 
 const faqData = [
     {
@@ -28,6 +29,8 @@ const FAQPage = () => {
     };
 
     return (
+        <>
+            <Header/>
         <div className="flex flex-col items-center min-h-screen bg-[#f7f8fc] p-4">
             <img
                 src="/images/box.png"
@@ -61,6 +64,7 @@ const FAQPage = () => {
                 ))}
             </div>
         </div>
+        </>
     );
 };
 

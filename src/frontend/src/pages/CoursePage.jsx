@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { getCourseModules } from '../services/getModules.js';
 import CustomButton from '../components/common/CustomButton';
 import Modal from '../components/common/Modal';
+import Header from "../components/header/Header";
 
 const CoursePage = function () {
     const { courseId } = useParams();
@@ -38,7 +39,9 @@ const CoursePage = function () {
     if (error) return <div className="text-red-500">Ошибка: {error}</div>;
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen text-center bg-[#f7f8fc]">
+        <>
+            <Header/>
+            <div className="flex flex-col items-center justify-center min-h-screen text-center bg-[#f7f8fc]">
             <img src="/images/universal_element_3.png" className="w-[250px]" alt="universal_element" />
 
             {modules.length === 0 ? (
@@ -80,6 +83,7 @@ const CoursePage = function () {
                 Данный модуль пока недоступен. Заверши предыдущие модули, чтобы открыть его.
             </Modal>
         </div>
+        </>
     );
 };
 
