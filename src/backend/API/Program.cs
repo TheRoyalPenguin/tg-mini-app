@@ -18,6 +18,7 @@ using Persistence.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddSingleton<ICacheService, RedisCacheService>();
 
 var jwtSection = builder.Configuration.GetSection("Jwt");
 
@@ -123,6 +124,7 @@ builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ICourseService, CoursesService>();
 
 builder.Services.AddPostgresDb(builder.Configuration);
+builder.Services.AddRedis(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();

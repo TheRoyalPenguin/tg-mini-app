@@ -68,6 +68,50 @@ public class ModuleService(IUnitOfWork uow) : IModuleService
             : Result<ICollection<Module>>.Failure(repositoryResult.ErrorMessage!)!;
     }
 
+    public async Task<Result<ICollection<ModuleWithAccess>>> GetModulesByCourseIdWithAccessAsync(int courseId, int userId)
+    {
+        if (courseId <= 0 || userId <= 0)
+        {
+            return Result<ICollection<ModuleWithAccess>>.Failure("Invalid input parameters")!;
+        }
+
+        var modulesResult = await moduleRepository.GetAllByCourseIdAsync(courseId);
+
+        if (!modulesResult.IsSuccess)
+        {
+            return Result<ICollection<ModuleWithAccess>>.Failure(modulesResult.ErrorMessage!)!;
+        }
+
+        if (modulesResult.Data == null)
+        {
+            return Result<ICollection<ModuleWithAccess>>.Failure("Module data not found")!;
+        }
+
+        var accessResult = await accessRepo.GetAllByUserIdAndCourseIdAsync(userId, courseId);
+
+        HashSet<int> accessesIds = new();
+        if (accessResult != null && accessResult.IsSuccess && accessResult.Data != null)
+        {
+            accessesIds = accessResult.Data
+                .Where(a => a.IsModuleAvailable)
+                .Select(a => a.ModuleId)
+                .ToHashSet();
+        }
+
+        var result = modulesResult.Data
+            .Where(m => m != null)
+            .Select(m => new ModuleWithAccess
+            {
+                Id = m.Id,
+                Title = m.Title,
+                IsAccessed = accessesIds.Contains(m.Id)
+            })
+            .ToList();
+
+        return Result<ICollection<ModuleWithAccess>>.Success(result);
+    }
+
+
     public async Task<Result<ICollection<Module>>> GetAllModulesAsync()
     {
         var repositoryResult = await uow.Modules.GetAllAsync();
