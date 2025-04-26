@@ -6,7 +6,7 @@ namespace Persistence.Entities;
 public class UserEntity
 {
     public int Id { get; set; }
-    public required long TgId { get; set; }
+    public long TgId { get; set; }
     
     public required string Name { get; set; }
     public required string Surname { get; set; }
@@ -16,7 +16,7 @@ public class UserEntity
     public required DateTime RegisteredAt { get; set; }
 
     [OnDelete(DeleteBehavior.Restrict)]
-    public required int RoleId { get; set; }
+    public int RoleId { get; set; }
     public RoleEntity Role { get; set; }
     
     public List<EnrollmentEntity> Enrollments { get; set; } = [];
