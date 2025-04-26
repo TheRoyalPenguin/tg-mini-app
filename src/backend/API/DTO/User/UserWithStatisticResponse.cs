@@ -55,11 +55,8 @@ public class UserWithStatisticResponse
             TestTriesCount = moduleAccess.TestTriesCount;
             ModuleCompletionPercentage = CompletedLongreadsIds.Count == 0
                 ? 0
-                : (float)(moduleAccess.ModuleLongreadCount + 1) / CompletedLongreadsIds.Count;
+                : (float)CompletedLongreadsIds.Count / (moduleAccess.ModuleLongreadCount + 1);
             CompletionDate = moduleAccess.CompletionDate;
         }
     }
-    
-
-    
 }

@@ -16,13 +16,13 @@ public class LongreadCompletionConfiguration : IEntityTypeConfiguration<Longread
         builder.Property(lc => lc.Id)
             .HasColumnName("longread_completion_id");
         
-        builder.Property(lc => lc.UserId)
-            .HasColumnName("user_id");
+        builder.Property(lc => lc.ModuleAccessId)
+            .HasColumnName("module_access_id");
 
         builder.Property(lc => lc.ResourceId)
             .HasColumnName("resource_id");
         
-        builder.HasIndex(ma => new { ma.ResourceId, ma.UserId })
+        builder.HasIndex(ma => new { ma.ResourceId, ma.ModuleAccessId})
             .IsUnique();
     }
 }
