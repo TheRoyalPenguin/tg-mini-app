@@ -35,7 +35,6 @@ const CoursePage = function () {
         loadModules();
     }, [courseId]);
 
-    if (loading) return <div>Загрузка модулей...</div>;
     if (error) return <div className="text-red-500">Ошибка: {error}</div>;
 
     return (

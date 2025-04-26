@@ -31,10 +31,6 @@ const WelcomePage = function() {
         fetchCourses();
     }, []);
 
-    if (loading) {
-        return <div>Загрузка доступных курсов...</div>;
-    }
-
     if (error) {
         return (
             <div className="text-red-500">
