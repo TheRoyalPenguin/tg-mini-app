@@ -11,7 +11,16 @@ public class MappingProfile : Profile
     {
         CreateMap<CourseEntity, Course>().ReverseMap();
         CreateMap<EnrollmentEntity, Enrollment>().ReverseMap();
+        CreateMap<LongreadCompletionEntity, LongreadCompletion>()
+            .ForMember(dest => dest.UserId, 
+                opt => opt.MapFrom(src => src.UserId))
+            .ReverseMap()
+            .ForMember(dest => dest.User, opt => opt.Ignore())
+            .ForMember(dest => dest.Resource, opt => opt.Ignore());
+        
         CreateMap<ModuleAccessEntity, ModuleAccess>()
+            .ForMember(dest => dest.LongreadCompletions, 
+                opt => opt.MapFrom(src => src.LongreadCompletions))
             .ReverseMap()
             .ForMember(dest => dest.User, opt => opt.Ignore())
             .ForMember(dest => dest.Module, opt => opt.Ignore());
