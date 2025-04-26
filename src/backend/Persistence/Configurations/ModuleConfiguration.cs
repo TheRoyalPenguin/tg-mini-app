@@ -18,7 +18,7 @@ public class ModuleConfiguration : IEntityTypeConfiguration<ModuleEntity>
 
         builder.Property(m => m.Title)
             .HasColumnName("module_title")
-            .HasMaxLength(100);
+            .HasMaxLength(300);
 
         builder.Property(m => m.Description)
             .HasColumnName("module_description");
