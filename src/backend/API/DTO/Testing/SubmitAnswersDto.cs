@@ -1,3 +1,3 @@
 ﻿namespace API.DTO.Testing;
 
-public record SubmitAnswersDto(int ModuleId, List<int> Answers);
+public record SubmitAnswersDto(List<int> Answers);

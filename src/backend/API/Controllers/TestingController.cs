@@ -23,7 +23,7 @@ public class TestingController : ControllerBase
         this.mapper = mapper;
     }
 
-    [HttpGet("{courseId}/modules/{moduleId}/questions")]
+    [HttpGet("courses/{courseId}/modules/{moduleId}/questions")]
     public async Task<IActionResult> GetQuestionsForTest(
         [FromRoute] int courseId, 
         [FromRoute] int moduleId)
@@ -48,21 +48,25 @@ public class TestingController : ControllerBase
         return Problem(result.ErrorMessage);
     }
     
-    [HttpPost("course/{courseId}/submit")]
-    public async Task<IActionResult> SubmitAnswers([FromRoute] int courseId, [FromBody] SubmitAnswersDto dto)
-
+    [HttpPost("courses/{courseId}/modules/{moduleId}/submit")]
+    public async Task<IActionResult> SubmitAnswers(
+        [FromRoute] int courseId,
+        [FromRoute] int moduleId,
+        [FromBody] SubmitAnswersDto dto)
     {
-        var answers = mapper.Map<SubmitAnswersCommand>(dto);
-        var result = await testingService.SubmitAnswers(answers);
+        var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
+            return Unauthorized("Не удалось определить ID пользователя");
 
-        if (result.IsSuccess)
-        {
-            // Маппим результат в DTO
-            var resultDto = mapper.Map<SubmitAnswersResultDto>(result.Data);
-            return Ok(resultDto);
-        }
+        var model = mapper.Map<SubmitAnswersCommand>(dto);
+        model.ModuleId = moduleId;
+        model.UserId = userId;
 
-        return Problem(result.ErrorMessage);
+        var result = await testingService.SubmitAnswers(model);
+
+        return result.IsSuccess 
+            ? Ok(mapper.Map<SubmitAnswersResultDto>(result.Data)) 
+            : Problem(result.ErrorMessage);
     }
     
     [HttpPost("course/{courseId}/modules/{moduleId}/questions")]

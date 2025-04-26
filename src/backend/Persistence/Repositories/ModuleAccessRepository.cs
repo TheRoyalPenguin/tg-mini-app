@@ -48,6 +48,12 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
 
             updatedModel.CompletedLongreadsCount = model.CompletedLongreadsCount;
             updatedModel.ModuleLongreadCount = model.ModuleLongreadCount;
+            updatedModel.TestTriesCount = model.TestTriesCount;
+            moduleAccessEntity.LongreadCompletions = mapper.Map<List<LongreadCompletionEntity>>(model.LongreadCompletions);
+            
+            appDbContext.ModuleAccesses.Update(moduleAccessEntity);
+            
+            await appDbContext.SaveChangesAsync();
 
             return Result<ModuleAccess>.Success(updatedModel);
         }

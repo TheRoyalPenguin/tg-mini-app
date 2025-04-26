@@ -23,13 +23,13 @@ public class TestingService : ITestingService
         int moduleId,
         int userId)
     {
-        var courseExistsResult = await courseRepository.ExistsAsync(courseId);
+        /*var courseExistsResult = await courseRepository.ExistsAsync(courseId);
         if (!courseExistsResult.IsSuccess || !courseExistsResult.Data)
             return Result<List<TestingQuestion>>.Failure($"Курс с ID {courseId} не найден.");
         
         var moduleExistsResult = await moduleRepository.ExistsForCourseAsync(courseId, moduleId);
         if (!moduleExistsResult.IsSuccess || !moduleExistsResult.Data)
-            return Result<List<TestingQuestion>>.Failure($"Модуль с ID {moduleId} не найден в курсе.");
+            return Result<List<TestingQuestion>>.Failure($"Модуль с ID {moduleId} не найден в курсе.");*/
         
         var moduleAccess = await moduleAccessRepository.GetByUserAndModuleAsync(userId, moduleId);
         if (moduleAccess == null || !moduleAccess.IsModuleAvailable)
@@ -50,10 +50,50 @@ public class TestingService : ITestingService
        return Result<List<TestingQuestion>>.Success(testResult.Data);
     }
 
-    public async Task<Result<SubmitAnswersResult>> SubmitAnswers(SubmitAnswersCommand answers)
+    public async Task<Result<SubmitAnswersResult>> SubmitAnswers(SubmitAnswersCommand command)
     {
-        throw new NotImplementedException();
+        // Заглушка: случайная генерация результатов
+        var rnd = new Random();
+        var correctPercentage = rnd.Next(0, 101);
+        var isSuccess = correctPercentage >= 75;
+    
+        // Получаем доступ к модулю для данного пользователя
+        var moduleAccess = await moduleAccessRepository.GetByUserAndModuleAsync(command.UserId, command.ModuleId);
+        if (moduleAccess == null)
+            return Result<SubmitAnswersResult>.Failure("Доступ к модулю не найден");
+
+        // Обработка успешной попытки
+        if (isSuccess)
+        {
+            moduleAccess.IsModuleCompleted = true;
+            moduleAccess.CompletionDate = DateOnly.FromDateTime(DateTime.UtcNow);
+        }
+        else // Обработка неудачной попытки
+        {
+            moduleAccess.TestTriesCount++;
+    
+            if (moduleAccess.TestTriesCount >= 3)
+            {
+                moduleAccess.TestTriesCount = 0;
+                moduleAccess.LongreadCompletions.Clear();
+            }
+        }
+
+        // Обновляем данные в базе данных
+        var updateResult = await moduleAccessRepository.UpdateAsync(moduleAccess);
+        if (!updateResult.IsSuccess)
+            return Result<SubmitAnswersResult>.Failure(updateResult.ErrorMessage);
+
+        var result = new SubmitAnswersResult(
+            isSuccess,
+            command.Answers.Count,
+            (int)(command.Answers.Count * correctPercentage / 100),
+            command.Answers.Select(a => rnd.NextDouble() < 0.75).ToList()
+        );
+
+        return Result<SubmitAnswersResult>.Success(result);
     }
+
     
     public async Task<Result> AddOrUpdateTestAsync(int courseId, int moduleId, List<TestingQuestion> testQuestions)
     {
