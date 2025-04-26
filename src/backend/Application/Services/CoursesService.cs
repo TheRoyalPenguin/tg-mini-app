@@ -5,15 +5,8 @@ using Core.Utils;
 
 namespace Application.Services;
 
-public class CoursesService : ICourseService
+public class CoursesService(ICourseRepository courseRepository, IUnitOfWork uow) : ICourseService
 {
-    private readonly ICourseRepository courseRepository;
-
-    public CoursesService(ICourseRepository courseRepository)
-    {
-        this.courseRepository = courseRepository;
-    }
-
     public async Task<Result<ICollection<Course>>> GetAllAsync()
     {
         return await courseRepository.GetAllAsync();

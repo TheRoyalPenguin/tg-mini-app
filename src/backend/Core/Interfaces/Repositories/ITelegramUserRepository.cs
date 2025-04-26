@@ -7,5 +7,4 @@ public interface ITelegramUserRepository
     Task<User?> GetByTelegramIdAsync(long telegramId);
     Task AddAsync(User user);
     Task UpdateAsync(User user);
-    Task SaveChangesAsync();
 }
