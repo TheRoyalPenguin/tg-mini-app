@@ -6,8 +6,6 @@ using Core.Interfaces;
 using Core.Interfaces.Services;
 using Core.Models;
 using Core.Interfaces.Repositories;
-using Core.Interfaces.Services;
-using Core.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -144,12 +142,13 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
     
-    var roleRepo = scope.ServiceProvider.GetRequiredService<IRoleRepository>();
-    await roleRepo.AddAsync(new Role()
+    var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+    await uow.Roles.AddAsync(new Role()
     {
         Name = "User",
         RoleLevel = 0
     });
+    await uow.SaveChangesAsync();
 }
 
 

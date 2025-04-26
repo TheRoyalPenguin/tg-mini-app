@@ -16,6 +16,8 @@ public class UserWithStatisticResponse
 
     public UserWithStatisticResponse(Core.Models.User user)
     {
+        Id = user.Id;
+        TgId = user.TgId;
         Name = user.Name;
         Surname = user.Surname;
         Patronymic = user.Patronymic;
