@@ -6,8 +6,6 @@ using Core.Interfaces;
 using Core.Interfaces.Services;
 using Core.Models;
 using Core.Interfaces.Repositories;
-using Core.Interfaces.Services;
-using Core.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +14,8 @@ using Persistence;
 using Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSeqLogging();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
 
