@@ -63,7 +63,6 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
         try
         {
             var entity = await appDbContext.ModuleAccesses
-                .Include(ma => ma.LongreadCompletions)
                 .FirstOrDefaultAsync(e => e.Id == model.Id);
             if (entity == null)
             {

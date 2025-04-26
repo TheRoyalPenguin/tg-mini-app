@@ -9,6 +9,7 @@ public class ModuleAccess
     public bool IsModuleCompleted { get; set; }
     public bool IsModuleAvailable { get; set; }
     public DateOnly? CompletionDate { get; set; }
+    public DateTime? LastActivity { get; set; }
     public required int UserId { get; set; }
     public required int ModuleId { get; set; }
     public Module? Module { get; set; } 

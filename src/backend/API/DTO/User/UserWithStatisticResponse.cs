@@ -44,6 +44,7 @@ public class UserWithStatisticResponse
         public float ModuleCompletionPercentage { get; set; }
         public bool IsModuleCompleted { get; set; }
         public DateOnly? CompletionDate { get; set; }
+        public DateTime? LastActivity { get; set; }
 
         public ModuleStatistic(ModuleAccess moduleAccess)
         {
@@ -57,6 +58,7 @@ public class UserWithStatisticResponse
                 ? 0
                 : (float)CompletedLongreadsIds.Count / (moduleAccess.ModuleLongreadCount + 1);
             CompletionDate = moduleAccess.CompletionDate;
+            LastActivity = moduleAccess.LastActivity;
         }
     }
 }
