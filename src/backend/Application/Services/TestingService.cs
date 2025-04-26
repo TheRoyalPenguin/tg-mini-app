@@ -10,13 +10,18 @@ public class TestingService : ITestingService
     private readonly ICourseRepository courseRepository;
     private readonly IModuleRepository moduleRepository;
     private readonly ITestingRepository testingRepository;
-    public TestingService(ICourseRepository courseRepository, IModuleRepository moduleRepository, ITestingRepository testingRepository)
+    private readonly IModuleAccessRepository moduleAccessRepository;
+    public TestingService(ICourseRepository courseRepository, IModuleRepository moduleRepository, ITestingRepository testingRepository, IModuleAccessRepository moduleAccessRepository)
     {
         this.courseRepository = courseRepository;
         this.moduleRepository = moduleRepository;
         this.testingRepository = testingRepository;
+        this.moduleAccessRepository = moduleAccessRepository;
     }
-    public async Task<Result<List<TestingQuestion>>> GetQuestionsForTest(int courseId, int moduleId)
+    public async Task<Result<List<TestingQuestion>>> GetQuestionsForTest(
+        int courseId, 
+        int moduleId,
+        int userId)
     {
         var courseExistsResult = await courseRepository.ExistsAsync(courseId);
         if (!courseExistsResult.IsSuccess || !courseExistsResult.Data)
@@ -24,13 +29,25 @@ public class TestingService : ITestingService
         
         var moduleExistsResult = await moduleRepository.ExistsForCourseAsync(courseId, moduleId);
         if (!moduleExistsResult.IsSuccess || !moduleExistsResult.Data)
-            return Result<List<TestingQuestion>>.Failure($"Модуль с ID {moduleId} не найден в курсе с ID {courseId}.");
+            return Result<List<TestingQuestion>>.Failure($"Модуль с ID {moduleId} не найден в курсе.");
+        
+        var moduleAccess = await moduleAccessRepository.GetByUserAndModuleAsync(userId, moduleId);
+        if (moduleAccess == null || !moduleAccess.IsModuleAvailable)
+            return Result<List<TestingQuestion>>.Failure("Модуль недоступен.");
+        
+        var module = await moduleRepository.GetByIdAsync(moduleId);
+        if (module == null)
+            return Result<List<TestingQuestion>>.Failure("Модуль не найден.");
+
+        int completedLongreads = moduleAccess.LongreadCompletions?.Count ?? 0;
+        if (completedLongreads < module.Data.LongreadCont)
+            return Result<List<TestingQuestion>>.Failure("Доступ к тесту закрыт. Прочитайте все лонгриды.");
         
         var testResult = await testingRepository.GetTestAsync(courseId, moduleId);
         if (!testResult.IsSuccess || testResult.Data == null)
             return Result<List<TestingQuestion>>.Failure("Тест не найден.");
 
-        return Result<List<TestingQuestion>>.Success(testResult.Data);
+       return Result<List<TestingQuestion>>.Success(testResult.Data);
     }
 
     public async Task<Result<SubmitAnswersResult>> SubmitAnswers(SubmitAnswersCommand answers)

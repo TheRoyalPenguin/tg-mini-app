@@ -241,4 +241,16 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
 
         return models;
     }
+    
+    public async Task<ModuleAccess?> GetByUserAndModuleAsync(int userId, int moduleId)
+    {
+        var entity = await appDbContext.ModuleAccesses
+            .Include(ma => ma.LongreadCompletions)
+            .FirstOrDefaultAsync(ma => 
+                ma.UserId == userId && 
+                ma.ModuleId == moduleId
+            );
+        var model = mapper.Map<ModuleAccess>(entity);
+        return model;
+    }
 }

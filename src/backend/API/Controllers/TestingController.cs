@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Security.Claims;
+using System.Text;
 using System.Text.Json;
 using API.DTO.Testing;
 using AutoMapper;
@@ -23,12 +24,20 @@ public class TestingController : ControllerBase
     }
 
     [HttpGet("{courseId}/modules/{moduleId}/questions")]
-    public async Task<IActionResult> GetQuestionsForTest([FromRoute] int courseId, [FromRoute] int moduleId)
+    public async Task<IActionResult> GetQuestionsForTest(
+        [FromRoute] int courseId, 
+        [FromRoute] int moduleId)
     {
-        if (courseId <= 0 || moduleId <= 0)
-            return BadRequest("courseId и moduleId должны быть положительными целыми числами.");
+        var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
+        {
+            return Unauthorized("Не удалось определить ID пользователя.");
+        }
 
-        var result = await testingService.GetQuestionsForTest(courseId, moduleId);
+        if (courseId <= 0 || moduleId <= 0)
+            return BadRequest("ID курса и модуля должны быть положительными.");
+        
+        var result = await testingService.GetQuestionsForTest(courseId, moduleId, userId);
 
         if (result.IsSuccess)
         {
