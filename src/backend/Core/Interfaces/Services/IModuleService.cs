@@ -11,4 +11,5 @@ public interface IModuleService
     Task<Result<Module?>> GetModuleByIdAsync(int id);
     Task<Result<ICollection<Module>>> GetModulesByCourseIdAsync(int courseId);
     Task<Result<ICollection<Module>>> GetAllModulesAsync();
+    Task<Result<ICollection<ModuleWithAccess>>> GetModulesByCourseIdWithAccessAsync(int courseId, int userId);
 }

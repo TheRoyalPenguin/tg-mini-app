@@ -92,6 +92,36 @@ namespace Persistence.Migrations
                     b.ToTable("enrollments", (string)null);
                 });
 
+            modelBuilder.Entity("Persistence.Entities.LongreadCompletionEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("longread_completion_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ModuleAccessEntityId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ModuleAccessId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("integer")
+                        .HasColumnName("resource_id");
+
+                    b.HasKey("Id")
+                        .HasName("longread_completions_pkey");
+
+                    b.HasIndex("ModuleAccessEntityId");
+
+                    b.HasIndex("ResourceId");
+
+                    b.ToTable("longread_completions", (string)null);
+                });
+
             modelBuilder.Entity("Persistence.Entities.ModuleAccessEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -101,9 +131,15 @@ namespace Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateOnly>("CompletionDate")
+                    b.Property<DateOnly?>("CompletionDate")
                         .HasColumnType("date")
                         .HasColumnName("module_completion_date");
+
+                    b.Property<bool>("IsModuleAvailable")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_module_available");
 
                     b.Property<bool>("IsModuleCompleted")
                         .ValueGeneratedOnAdd()
@@ -112,10 +148,18 @@ namespace Persistence.Migrations
                         .HasColumnName("is_module_completed");
 
                     b.Property<int>("ModuleId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("module_id");
+
+                    b.Property<int>("TestTriesCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("test_tries_count");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
                         .HasName("module_accesses_pkey");
@@ -147,6 +191,10 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("module_description");
+
+                    b.Property<int>("LongreadCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("module_longread_count");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -334,6 +382,21 @@ namespace Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Persistence.Entities.LongreadCompletionEntity", b =>
+                {
+                    b.HasOne("Persistence.Entities.ModuleAccessEntity", null)
+                        .WithMany("LongreadCompletions")
+                        .HasForeignKey("ModuleAccessEntityId");
+
+                    b.HasOne("Persistence.Entities.ResourceEntity", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+                });
+
             modelBuilder.Entity("Persistence.Entities.ModuleAccessEntity", b =>
                 {
                     b.HasOne("Persistence.Entities.ModuleEntity", "Module")
@@ -391,6 +454,11 @@ namespace Persistence.Migrations
                     b.Navigation("Enrollments");
 
                     b.Navigation("Modules");
+                });
+
+            modelBuilder.Entity("Persistence.Entities.ModuleAccessEntity", b =>
+                {
+                    b.Navigation("LongreadCompletions");
                 });
 
             modelBuilder.Entity("Persistence.Entities.ModuleEntity", b =>

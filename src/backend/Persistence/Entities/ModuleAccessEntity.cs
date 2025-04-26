@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using EfCore.Conventions.Attributes;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,14 +7,19 @@ namespace Persistence.Entities;
 public class ModuleAccessEntity
 {
     public int Id { get; set; }
-    public required bool IsModuleCompleted { get; set; }
-    public DateOnly CompletionDate { get; set; }
+    
+    public int TestTriesCount { get; set; }
+    public bool IsModuleCompleted { get; set; }
+    public bool IsModuleAvailable { get; set; }
+    public DateOnly? CompletionDate { get; set; }
     
     [OnDelete(DeleteBehavior.Cascade)]
-    public required int UserId { get; set; }
+    public int UserId { get; set; }
     public UserEntity User { get; set; }
     
     [OnDelete(DeleteBehavior.Cascade)]
-    public required int ModuleId { get; set; }
+    public int ModuleId { get; set; }
     public ModuleEntity Module { get; set; }
+
+    public List<LongreadCompletionEntity> LongreadCompletions { get; set; } = [];   
 }

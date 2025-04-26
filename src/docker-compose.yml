@@ -20,6 +20,7 @@ services:
     depends_on:
       - postgres
       - minio
+      - redis
   
   postgres:
     image: postgres:15
@@ -45,6 +46,14 @@ services:
     command: server /data --console-address ":9001"
     volumes:
       - minio_data:/data
+      
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
   
   bot:
     build:
@@ -58,3 +67,4 @@ services:
 volumes:
   db_data:
   minio_data:
+  redis_data:

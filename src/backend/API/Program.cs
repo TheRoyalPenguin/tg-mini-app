@@ -20,6 +20,7 @@ using Persistence.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddSingleton<ICacheService, RedisCacheService>();
 
 var jwtSection = builder.Configuration.GetSection("Jwt");
 
@@ -102,8 +103,14 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<ITestRepository, TestRepository>();
+
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 
@@ -125,6 +132,7 @@ builder.Services.AddScoped<ITestingRepository, TestingRepository>();
 builder.Services.AddScoped<ITestingService, TestingService>();
 
 builder.Services.AddPostgresDb(builder.Configuration);
+builder.Services.AddRedis(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddSingleton<IMinioClient>(sp =>
 {
@@ -156,7 +164,7 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.Migrate();
     
     var roleRepo = scope.ServiceProvider.GetRequiredService<IRoleRepository>();
-    await roleRepo!.AddAsync(new Role()
+    await roleRepo.AddAsync(new Role()
     {
         Name = "User",
         RoleLevel = 0

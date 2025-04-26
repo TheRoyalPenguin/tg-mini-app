@@ -16,8 +16,6 @@ public class RoleRepository(AppDbContext appDbContext, IMapper mapper) : IRoleRe
             var result = await appDbContext.Roles
                 .AddAsync(mapper.Map<RoleEntity>(model));
             
-            await appDbContext.SaveChangesAsync();
-
             return Result<Role>.Success(mapper.Map<Role>(result.Entity));
         }
         catch (Exception e)
@@ -37,7 +35,6 @@ public class RoleRepository(AppDbContext appDbContext, IMapper mapper) : IRoleRe
                 return Result<Role>.Failure("Role entity not found")!;
 
             mapper.Map(model, roleEntity);
-            await appDbContext.SaveChangesAsync();
 
             var updatedModel = mapper.Map<Role>(roleEntity);
             
@@ -53,9 +50,14 @@ public class RoleRepository(AppDbContext appDbContext, IMapper mapper) : IRoleRe
     {
         try
         {
-            await appDbContext.Roles
-                .Where(m => m.Id == model.Id)
-                .ExecuteDeleteAsync();
+            var entity = await appDbContext.Roles.FirstOrDefaultAsync(m => m.Id == model.Id);
+            if (entity == null)
+            {
+                return Result.Failure("Role entity not found")!;
+            }
+            
+            appDbContext.Roles
+                .Remove(entity);
             
             return Result.Success();
         }

@@ -23,6 +23,10 @@ public class ModuleConfiguration : IEntityTypeConfiguration<ModuleEntity>
         builder.Property(m => m.Description)
             .HasColumnName("module_description");
 
+        builder.Property(m => m.LongreadCount)
+            .HasColumnName("module_longread_count")
+            .HasDefaultValue(0);
+
         builder.Property(m => m.CourseId)
             .HasColumnName("course_id");
     }

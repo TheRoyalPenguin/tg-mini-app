@@ -33,9 +33,4 @@ public class TelegramUserRepository : ITelegramUserRepository
         var userEntity = _mapper.Map<UserEntity>(user);
         _context.Users.Update(userEntity);
     }
-
-    public async Task SaveChangesAsync()
-    {
-        await _context.SaveChangesAsync();
-    }
 }

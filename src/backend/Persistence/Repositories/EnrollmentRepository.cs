@@ -25,7 +25,6 @@ public class EnrollmentRepository : IEnrollmentRepository
         {
             var entity = mapper.Map<EnrollmentEntity>(enrollment);
             await context.Enrollments.AddAsync(entity);
-            await context.SaveChangesAsync();
 
             var savedModel = mapper.Map<Enrollment>(entity);
             return Result<Enrollment>.Success(savedModel);
@@ -43,7 +42,7 @@ public class EnrollmentRepository : IEnrollmentRepository
             var entity = await context.Enrollments.FindAsync(enrollment.Id);
             if (entity == null)
             {
-                return Result<Enrollment>.Failure($"Enrollment with Id {enrollment.Id} not found.");
+                return Result<Enrollment>.Failure($"Enrollment with Id {enrollment.Id} not found.")!;
             }
 
             // Обновляем поля
@@ -53,26 +52,25 @@ public class EnrollmentRepository : IEnrollmentRepository
             entity.UserId = enrollment.UserId;
             entity.CourseId = enrollment.CourseId;
 
-            await context.SaveChangesAsync();
-
             var updatedModel = mapper.Map<Enrollment>(entity);
             return Result<Enrollment>.Success(updatedModel);
         }
         catch (Exception e)
         {
-            return Result<Enrollment>.Failure($"Failed to update enrollment: {e.Message}");
+            return Result<Enrollment>.Failure($"Failed to update enrollment: {e.Message}")!;
         }
     }
-
-
 
     public async Task<Result> DeleteAsync(Enrollment entity)
     {
         try
         {
-            var enrollmentEntity = mapper.Map<EnrollmentEntity>(entity);
+            var enrollmentEntity = await context.Enrollments.FindAsync(entity.Id);
+            if (enrollmentEntity == null)
+                return Result.Failure("Enrollment not found");
+
             context.Enrollments.Remove(enrollmentEntity);
-            await context.SaveChangesAsync();
+            
             return Result.Success();
         }
         catch (Exception ex)
@@ -105,7 +103,7 @@ public class EnrollmentRepository : IEnrollmentRepository
         }
         catch (Exception ex)
         {
-            return Result<ICollection<Enrollment>>.Failure($"Failed to get all enrollments: {ex.Message}");
+            return Result<ICollection<Enrollment>>.Failure($"Failed to get all enrollments: {ex.Message}")!;
         }
     }
 
@@ -125,7 +123,27 @@ public class EnrollmentRepository : IEnrollmentRepository
         }
         catch (Exception ex)
         {
-            return Result<ICollection<Course>>.Failure($"Failed to get courses by user id: {ex.Message}");
+            return Result<ICollection<Course>>.Failure($"Failed to get courses by user id: {ex.Message}")!;
+        }
+    }
+    
+    public async Task<Result<ICollection<User>>> GetUsersByCourseId(int id)
+    {
+        try
+        {
+            var userEntities = await context.Enrollments
+                .Where(e => e.CourseId == id)
+                .Select(e => e.User)
+                .Include(u => u.ModuleAccesses.Where(ma => ma.Module.CourseId == id))
+                .AsNoTracking()
+                .ToListAsync();
+
+            var users = mapper.Map<ICollection<User>>(userEntities);
+            return Result<ICollection<User>>.Success(users);
+        }
+        catch (Exception ex)
+        {
+            return Result<ICollection<User>>.Failure($"Failed to get users by course id: {ex.Message}")!;
         }
     }
     
@@ -133,10 +151,12 @@ public class EnrollmentRepository : IEnrollmentRepository
     {
         try
         {
-            await context.Enrollments
-                .Where(m => m.Id == id)
-                .ExecuteDeleteAsync();
-            
+            var entity = await context.Enrollments.FindAsync(id);
+            if (entity == null)
+                return Result.Failure("Enrollment not found");
+
+            context.Enrollments.Remove(entity);
+        
             return Result.Success();
         }
         catch (Exception e)

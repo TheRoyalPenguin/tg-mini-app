@@ -1,18 +1,13 @@
 using Core.Interfaces;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
 using Core.Utils;
 
 namespace Application.Services;
 
-public class EnrollmentService : IEnrollmentService
+public class EnrollmentService(IEnrollmentRepository repository, IUnitOfWork uow) : IEnrollmentService
 {
-    private readonly IEnrollmentRepository repository;
-    public EnrollmentService(IEnrollmentRepository repository)
-    {
-        this.repository = repository;
-    }
-
     public async Task<Result<ICollection<Course>>> GetCoursesByUserId(int id)
     {
         var coursesResult = await repository.GetCoursessByUserId(id);
@@ -23,6 +18,15 @@ public class EnrollmentService : IEnrollmentService
         }
 
         return Result<ICollection<Course>>.Success(coursesResult.Data);
+    }
+    
+    public async Task<Result<ICollection<User>>> GetUsersByCourseId(int id)
+    {
+        var userResult = await repository.GetUsersByCourseId(id);
+
+        return !userResult.IsSuccess 
+            ? Result<ICollection<User>>.Failure(userResult.ErrorMessage!)! 
+            : Result<ICollection<User>>.Success(userResult.Data);
     }
     
     public async Task<Result<Enrollment>> AddAsync(Enrollment enrollment)
