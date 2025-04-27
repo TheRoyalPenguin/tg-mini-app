@@ -10,6 +10,7 @@ namespace Persistence.Storage;
 public class MinioStorageService : IStorageService
 {
     private readonly IMinioClient _client;
+    private readonly IMinioClient _publicClient;
     private readonly string _bucket;
     private readonly ILogger<MinioStorageService> _logger;
 
@@ -18,6 +19,7 @@ public class MinioStorageService : IStorageService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         var endpoint = cfg["Minio:Endpoint"];
+        var publicEndpoint = cfg["Minio:PublicEndpoint"];
         var accessKey = cfg["Minio:AccessKey"];
         var secretKey = cfg["Minio:SecretKey"];
         _bucket = cfg["Minio:Bucket"]!;
@@ -25,7 +27,8 @@ public class MinioStorageService : IStorageService
         if (string.IsNullOrEmpty(endpoint)
             || string.IsNullOrEmpty(accessKey)
             || string.IsNullOrEmpty(secretKey)
-            || string.IsNullOrEmpty(_bucket))
+            || string.IsNullOrEmpty(_bucket)
+            || string.IsNullOrEmpty(publicEndpoint))
         {
             _logger.LogError("Invalid Minio configuration");
             throw new ArgumentException("Missing Minio configuration in settings");
@@ -33,6 +36,11 @@ public class MinioStorageService : IStorageService
 
         _client = new MinioClient()
             .WithEndpoint(endpoint)
+            .WithCredentials(accessKey, secretKey)
+            .Build();
+
+        _publicClient = new MinioClient()
+            .WithEndpoint(publicEndpoint)
             .WithCredentials(accessKey, secretKey)
             .Build();
     }
@@ -94,18 +102,21 @@ public class MinioStorageService : IStorageService
         }
     }
 
-    public async Task<string> GetUrlAsync(string key)
+    public async Task<string> GetPresignedUrlAsync(string key)
     {
-        _logger.LogDebug("Generating URL for " + key);
-
-        var args = new StatObjectArgs()
-            .WithBucket(_bucket)
-            .WithObject(key);
+        _logger.LogDebug("Generating presigned URL for " + key);
 
         try
         {
-            await _client.StatObjectAsync(args);
-            return _client.Config.Endpoint + "/" + _bucket + "/" + key;
+            var args = new PresignedGetObjectArgs()
+                .WithBucket(_bucket)
+                .WithObject(key)
+                .WithExpiry(3600);
+
+            string url = await _publicClient.PresignedGetObjectAsync(args);
+
+            _logger.LogDebug("Successfully generated URL for " + key);
+            return url;
         }
         catch (MinioException ex)
         {
