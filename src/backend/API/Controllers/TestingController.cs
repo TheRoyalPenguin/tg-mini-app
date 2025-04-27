@@ -92,7 +92,7 @@ namespace API.Controllers
             return Problem(result.ErrorMessage);
         }
         
-        [HttpPost("course/{courseId}/modules/{moduleId}/questions")]
+        [HttpPost("courses/{courseId}/modules/{moduleId}/questions")]
         public async Task<IActionResult> AddOrUpdateTest([FromRoute] int courseId, [FromRoute] int moduleId, [FromBody] List<AddOrUpdateTestQuestions> dto)
         {
             _logger.LogInformation("AddOrUpdateTest called for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
@@ -109,5 +109,26 @@ namespace API.Controllers
             _logger.LogError("Failed to add or update test for courseId: {courseId}, moduleId: {moduleId}, Error: {ErrorMessage}", courseId, moduleId, result.ErrorMessage);
             return Problem(result.ErrorMessage);
         }
+        
+        [HttpDelete("courses/{courseId}/modules/{moduleId}/questions")]
+        public async Task<IActionResult> DeleteTest(
+            [FromRoute] int courseId,
+            [FromRoute] int moduleId)
+        {
+            _logger.LogInformation("DeleteTest called for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
+
+            var result = await testingService.DeleteTest(courseId, moduleId);
+
+            if (result.IsSuccess)
+            {
+                _logger.LogInformation("Successfully deleted test for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
+                return Ok("Тест был успешно удалён.");
+            }
+
+            _logger.LogError("Failed to delete test for courseId: {courseId}, moduleId: {moduleId}, Error: {ErrorMessage}", courseId, moduleId, result.ErrorMessage);
+            return Problem(result.ErrorMessage);
+        }
+        
+        
     }
 }

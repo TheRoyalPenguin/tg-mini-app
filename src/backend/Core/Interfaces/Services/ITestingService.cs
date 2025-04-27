@@ -9,4 +9,5 @@ public interface ITestingService
     Task<Result<SubmitAnswersResult>> SubmitAnswers(SubmitAnswersCommand dto);
 
     Task<Result> AddOrUpdateTestAsync(int courseId, int moduleId, List<TestingQuestion> testQuestions);
+    Task<Result> DeleteTest(int courseId, int moduleId);
 }

@@ -12,4 +12,6 @@ public interface ITestingRepository
 
     Task<Result<List<int>>> GetCorrectAnswersAsync(int courseId, int moduleId,
         CancellationToken cancellationToken = default);
+
+    Task<Result> DeleteTestAsync(int courseId, int moduleId, CancellationToken cancellationToken = default);
 }

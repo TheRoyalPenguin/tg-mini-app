@@ -187,4 +187,19 @@ public class TestingService : ITestingService
             return Result.Failure($"Произошла ошибка при добавлении или обновлении теста: {ex.Message}");
         }
     }
+    
+    public async Task<Result> DeleteTest(int courseId, int moduleId)
+    {
+        _logger.LogInformation("Удаление теста. Курс ID: {CourseId}, Модуль ID: {ModuleId}", courseId, moduleId);
+
+        var module = await moduleRepository.GetByIdAsync(moduleId);
+        if (module == null)
+        {
+            _logger.LogWarning("Модуль с ID {ModuleId} не найден.", moduleId);
+            return Result.Failure("Модуль не найден.");
+        }
+
+        return await testingRepository.DeleteTestAsync(courseId, moduleId);
+    }
+
 }
