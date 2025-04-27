@@ -6,13 +6,16 @@ namespace Persistence.Entities;
 public class TestResultEntity
 {
     public int Id { get; set; }
-    public long TgId { get; set; }
     public int AttemptNumber { get; set; }
-    public int TotalQuestions { get; set; }
-    public int CorrectAnswers { get; set; }
-    public int WrongAnswers { get; set; }
+    public int TotalQuestionsCount { get; set; }
+    public int CorrectAnswersCount { get; set; }
+    public int WrongAnswersCount { get; set; }
     public float Score { get; set; }
     public DateTime Timestamp { get; set; }
+    
+    [OnDelete(DeleteBehavior.Cascade)]
+    public int UserId { get; set; }
+    public UserEntity User { get; set; }
     
     [OnDelete(DeleteBehavior.SetNull)]
     public int TestId { get; set; }

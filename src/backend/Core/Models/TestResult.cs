@@ -5,9 +5,9 @@ public class TestResult
     public int Id { get; set; }
     public required long TgId { get; set; }
     public required int AttemptNumber { get; set; }
-    public required int TotalQuestions { get; set; }
-    public required int CorrectAnswers { get; set; }
-    public required int WrongAnswers { get; set; }
+    public required int TotalQuestionsCount { get; set; }
+    public required int CorrectAnswersCount { get; set; }
+    public required int WrongAnswersCount { get; set; }
     public required float Score { get; set; }
     public required DateTime Timestamp { get; set; }
     
