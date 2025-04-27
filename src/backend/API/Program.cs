@@ -6,8 +6,6 @@ using Core.Interfaces;
 using Core.Interfaces.Services;
 using Core.Models;
 using Core.Interfaces.Repositories;
-using Core.Interfaces.Services;
-using Core.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -155,6 +153,7 @@ builder.Services.AddScoped<ILongreadService, LongreadService>();
 builder.Services.AddScoped<ILongreadRepository, LongreadRepository>();
 
 builder.Services.AddPostgresDb(builder.Configuration);
+builder.Services.AddMinio(builder.Configuration);
 builder.Services.AddRedis(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 

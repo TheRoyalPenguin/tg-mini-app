@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Minio;
 using Persistence;
 
 namespace API.Extensions;
@@ -24,6 +25,20 @@ public static class ServicesExtensions
         {
             options.Configuration = redisConfiguration;
             options.InstanceName = "MdProcessor_"; 
+        });
+    }
+    
+    public static void AddMinio(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSingleton<IMinioClient>(sp =>
+        {
+            var minioSection = configuration.GetSection("Minio");
+    
+            return new MinioClient()
+                .WithEndpoint(minioSection["Endpoint"])
+                .WithCredentials(minioSection["AccessKey"], minioSection["SecretKey"])
+                .WithSSL(bool.Parse(minioSection["UseSSL"] ?? "false"))
+                .Build();
         });
     }
 }
