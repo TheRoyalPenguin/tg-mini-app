@@ -1,4 +1,4 @@
-﻿using API.DTO;
+﻿using API.DTO.Longreads;
 using FluentValidation;
 
 namespace API.Validators;
