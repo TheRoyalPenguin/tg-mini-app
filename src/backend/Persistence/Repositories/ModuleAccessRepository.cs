@@ -221,11 +221,18 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
                 ma.UserId == userId && 
                 ma.ModuleId == moduleId
             );
-        
-        if (entity?.LongreadCompletions == null)
+
+        // Если запись не найдена, возвращаем null
+        if (entity == null)
+            return null;
+
+        // Если LongreadCompletions равен null, создаём новый список
+        if (entity.LongreadCompletions == null)
             entity.LongreadCompletions = new List<LongreadCompletionEntity>();
 
+        // Маппим сущность в модель
         var model = mapper.Map<ModuleAccess>(entity);
         return model;
     }
+
 }
