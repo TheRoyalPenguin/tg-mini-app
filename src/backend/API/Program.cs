@@ -111,6 +111,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IStatisticService, StatisticService>();
 builder.Services.AddScoped<ITestResultRepository, TestResultRepository>();
 
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
