@@ -72,4 +72,34 @@ public class AdminController(
             ? Ok(serviceResult)
             : Problem(serviceResult.ErrorMessage);
     }
+    
+    [HttpGet("test-statistic/course/{courseId:int}")]
+    public async Task<IActionResult> GetTestResultsByCourseAsync(int courseId)
+    {
+        var serviceResult = await adminService.GetTestResultsByCourse(courseId);
+
+        return serviceResult.IsSuccess 
+            ? Ok(serviceResult.Data)
+            : Problem(serviceResult.ErrorMessage);
+    }
+
+    [HttpGet("test-statistic/user/{userId:int}")]
+    public async Task<IActionResult> GetTestResultsByUserAsync(int userId)
+    {
+        var serviceResult = await adminService.GetTestResultsByUser(userId);
+
+        return serviceResult.IsSuccess
+            ? Ok(serviceResult.Data)
+            : Problem(serviceResult.ErrorMessage);
+    }
+
+    [HttpGet("test-statistic/course/{courseId:int}/user/{userId:int}")]
+    public async Task<IActionResult> GetTestResultsForUserByCourseAsync(int userId, int courseId)
+    {
+        var serviceResult = await adminService.GetTestResultsForUserByCourse(userId, courseId);
+
+        return serviceResult.IsSuccess
+            ? Ok(serviceResult.Data)
+            : Problem(serviceResult.ErrorMessage);
+    }
 }

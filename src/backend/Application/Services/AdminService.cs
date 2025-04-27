@@ -65,4 +65,31 @@ public class AdminService(IUnitOfWork uow, IMapper mapper) : IAdminService
         
         return Result.Success();
     }
+
+    public async Task<Result<ICollection<TestResult>>> GetTestResultsByCourse(int courseId)
+    {
+        var repositoryResult = await uow.TestResults.GetAllByCourse(courseId);
+        
+        return repositoryResult.IsSuccess
+            ? Result<ICollection<TestResult>>.Success(repositoryResult.Data)
+            : Result<ICollection<TestResult>>.Failure(repositoryResult.ErrorMessage!)!;
+    }
+
+    public async Task<Result<ICollection<TestResult>>> GetTestResultsByUser(int userId)
+    {
+        var repositoryResult = await uow.TestResults.GetAllByUser(userId);
+        
+        return repositoryResult.IsSuccess
+            ? Result<ICollection<TestResult>>.Success(repositoryResult.Data)
+            : Result<ICollection<TestResult>>.Failure(repositoryResult.ErrorMessage!)!;
+    }
+
+    public async Task<Result<ICollection<TestResult>>> GetTestResultsForUserByCourse(int userId, int courseId)
+    {
+        var repositoryResult = await uow.TestResults.GetAllForUserByCourse(userId, courseId);
+        
+        return repositoryResult.IsSuccess
+            ? Result<ICollection<TestResult>>.Success(repositoryResult.Data)
+            : Result<ICollection<TestResult>>.Failure(repositoryResult.ErrorMessage!)!;
+    }
 }

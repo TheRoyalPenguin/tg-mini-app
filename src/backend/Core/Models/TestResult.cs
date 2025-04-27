@@ -3,7 +3,7 @@ namespace Core.Models;
 public class TestResult
 {
     public int Id { get; set; }
-    public required long TgId { get; set; }
+    public required int UserId { get; set; }
     public required int AttemptNumber { get; set; }
     public required int TotalQuestionsCount { get; set; }
     public required int CorrectAnswersCount { get; set; }

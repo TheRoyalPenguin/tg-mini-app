@@ -9,4 +9,7 @@ public interface IAdminService
     Task<Result<User>> GetConcreteUserInCourse(int userId, int courseId);
     Task<Result<User>> GetConcreteUser(int userId);
     Task<Result> RegisterUserOnCourse(int userId, int courseId);
+    Task<Result<ICollection<TestResult>>> GetTestResultsByCourse(int courseId);
+    Task<Result<ICollection<TestResult>>> GetTestResultsByUser(int userId);
+    Task<Result<ICollection<TestResult>>> GetTestResultsForUserByCourse(int userId, int courseId);
 }
