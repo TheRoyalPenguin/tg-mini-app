@@ -6,16 +6,20 @@ using Core.Interfaces;
 using Core.Interfaces.Services;
 using Core.Models;
 using Core.Interfaces.Repositories;
-using Core.Interfaces.Services;
-using Core.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Persistence;
 using Persistence.Repositories;
+using Persistence.Converter;
+using Persistence.Storage;
+using FluentValidation.AspNetCore;
+using API.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSeqLogging();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddSingleton<ICacheService, RedisCacheService>();
@@ -90,7 +94,9 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddFluentValidation(fv =>
+        fv.RegisterValidatorsFromAssemblyContaining<CreateLongreadDtoValidator>());
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -102,9 +108,6 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-builder.Services.AddScoped<ITestService, TestService>();
-builder.Services.AddScoped<ITestRepository, TestRepository>();
 
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -125,6 +128,22 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ICourseService, CoursesService>();
+
+builder.Services.AddScoped<ILongreadRepository, LongreadRepository>();
+builder.Services.AddScoped<ITestRepository, TestRepository>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+
+builder.Services.AddScoped<ILongreadService, LongreadService>();
+builder.Services.AddScoped<ITestService, TestService>();
+builder.Services.AddScoped<IBookService, BookService>();
+
+builder.Services.AddSingleton<DocxConverter>();
+builder.Services.AddScoped<IStorageService, MinioStorageService>();
+builder.Services.AddScoped<ILongreadConverter, LongreadConverter>();
+
+builder.Services.AddScoped<ILongreadService, LongreadService>();
+
+builder.Services.AddScoped<ILongreadRepository, LongreadRepository>();
 
 builder.Services.AddPostgresDb(builder.Configuration);
 builder.Services.AddRedis(builder.Configuration);
