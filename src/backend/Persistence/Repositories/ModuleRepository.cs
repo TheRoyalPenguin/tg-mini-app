@@ -16,8 +16,6 @@ public class ModuleRepository(AppDbContext appDbContext, IMapper mapper) : IModu
             var result = await appDbContext.Modules
                 .AddAsync(mapper.Map<ModuleEntity>(model));
             
-            await appDbContext.SaveChangesAsync();
-
             return Result<Module>.Success(mapper.Map<Module>(result.Entity));
         }
         catch (Exception e)
@@ -37,7 +35,6 @@ public class ModuleRepository(AppDbContext appDbContext, IMapper mapper) : IModu
                 return Result<Module>.Failure("Module entity not found")!;
 
             mapper.Map(model, moduleEntity);
-            await appDbContext.SaveChangesAsync();
 
             var updatedModel = mapper.Map<Module>(moduleEntity);
             
@@ -53,9 +50,11 @@ public class ModuleRepository(AppDbContext appDbContext, IMapper mapper) : IModu
     {
         try
         {
-            await appDbContext.Modules
-                .Where(m => m.Id == model.Id)
-                .ExecuteDeleteAsync();
+            var entity = await appDbContext.Modules.FindAsync(model.Id);
+            if (entity == null)
+                return Result.Failure("Module not found");
+
+            appDbContext.Modules.Remove(entity);
             
             return Result.Success();
         }
@@ -69,9 +68,11 @@ public class ModuleRepository(AppDbContext appDbContext, IMapper mapper) : IModu
     {
         try
         {
-            await appDbContext.Modules
-                .Where(m => m.Id == id)
-                .ExecuteDeleteAsync();
+            var entity = await appDbContext.Modules.FindAsync(id);
+            if (entity == null)
+                return Result.Failure("Module not found");
+
+            appDbContext.Modules.Remove(entity);
             
             return Result.Success();
         }

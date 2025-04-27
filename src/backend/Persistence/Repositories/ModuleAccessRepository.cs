@@ -17,8 +17,6 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
             var newEntityEntry = await appDbContext.ModuleAccesses
                 .AddAsync(mapper.Map<ModuleAccessEntity>(model));
 
-            await appDbContext.SaveChangesAsync();
-
             var newModel = mapper.Map<ModuleAccess>(newEntityEntry.Entity);
             var moduleEntity =
                 await appDbContext.Modules.FirstOrDefaultAsync(m => m.Id == model.ModuleId);
@@ -45,7 +43,6 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
                 return Result<ModuleAccess>.Failure("Access entity not found")!;
 
             mapper.Map(model, moduleAccessEntity);
-            await appDbContext.SaveChangesAsync();
 
             var updatedModel = mapper.Map<ModuleAccess>(moduleAccessEntity);
 
@@ -64,10 +61,14 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
     {
         try
         {
-            await appDbContext.ModuleAccesses
-                .Where(ma => ma.Id == model.Id)
-                .ExecuteDeleteAsync();
-
+            var entity = await appDbContext.ModuleAccesses.FirstOrDefaultAsync(e => e.Id == model.Id);
+            if (entity == null)
+            {
+                return Result.Failure("Module access entity not found");
+            }
+            
+            appDbContext.ModuleAccesses.Remove(entity);
+            
             return Result.Success();
         }
         catch (Exception e)
@@ -99,6 +100,52 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
         catch (Exception e)
         {
             return Result<ModuleAccess?>.Failure($"Failed to get module access with given id: {e.Message}");
+        }
+    }
+
+    public async Task<Result<ICollection<ModuleAccess>>> AddAccessesForEveryModuleForUserAsync(int userId, int courseId)
+    {
+        try
+        {
+            var modulesEntities = await appDbContext.Modules
+                .Where(m => m.CourseId == courseId)
+                .AsNoTracking()
+                .OrderBy(m => m.Id)
+                .ToListAsync();
+
+            var moduleAccessModels = new List<ModuleAccess>();
+            var moduleAccessEntities = new List<ModuleAccessEntity>();
+
+            foreach (var module in modulesEntities)
+            {
+                var moduleAccessEntity = new ModuleAccessEntity
+                {
+                    TestTriesCount = 0,
+                    IsModuleCompleted = false,
+                    IsModuleAvailable = false,
+                    UserId = userId,
+                    ModuleId = module.Id,
+                };
+
+                var moduleAccessModel = mapper.Map<ModuleAccess>(moduleAccessEntity);
+                moduleAccessModel.CompletedLongreadsCount = 0;
+                moduleAccessModel.ModuleLongreadCount = module.LongreadCount;
+
+                moduleAccessModels.Add(moduleAccessModel);
+                moduleAccessEntities.Add(moduleAccessEntity);
+            }
+
+            moduleAccessEntities.First().IsModuleAvailable = true;
+            moduleAccessModels.First().IsModuleAvailable = true;
+
+            await appDbContext.ModuleAccesses.AddRangeAsync(moduleAccessEntities);
+
+            return Result<ICollection<ModuleAccess>>.Success(moduleAccessModels);
+        }
+        catch (Exception e)
+        {
+            return Result<ICollection<ModuleAccess>>.Failure(
+                $"Failed to add accesses for user {userId} in course {courseId}: {e.Message}")!;
         }
     }
 

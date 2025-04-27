@@ -22,6 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSeqLogging();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddSingleton<ICacheService, RedisCacheService>();
 
 var jwtSection = builder.Configuration.GetSection("Jwt");
 
@@ -106,6 +107,11 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 
@@ -140,6 +146,7 @@ builder.Services.AddScoped<ILongreadService, LongreadService>();
 builder.Services.AddScoped<ILongreadRepository, LongreadRepository>();
 
 builder.Services.AddPostgresDb(builder.Configuration);
+builder.Services.AddRedis(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
@@ -157,7 +164,7 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.Migrate();
     
     var roleRepo = scope.ServiceProvider.GetRequiredService<IRoleRepository>();
-    await roleRepo!.AddAsync(new Role()
+    await roleRepo.AddAsync(new Role()
     {
         Name = "User",
         RoleLevel = 0
