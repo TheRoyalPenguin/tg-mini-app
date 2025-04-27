@@ -19,10 +19,10 @@ public class LongreadCompletionConfiguration : IEntityTypeConfiguration<Longread
         builder.Property(lc => lc.ModuleAccessId)
             .HasColumnName("module_access_id");
 
-        builder.Property(lc => lc.ResourceId)
-            .HasColumnName("resource_id");
+        builder.Property(lc => lc.LongreadId)
+            .HasColumnName("longread_id");
         
-        builder.HasIndex(ma => new { ma.ResourceId, ma.ModuleAccessId})
+        builder.HasIndex(ma => new { ma.LongreadId, ma.ModuleAccessId})
             .IsUnique();
     }
 }

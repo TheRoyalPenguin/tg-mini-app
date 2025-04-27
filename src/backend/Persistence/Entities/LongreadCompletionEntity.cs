@@ -13,6 +13,6 @@ public class LongreadCompletionEntity
     public ModuleAccessEntity ModuleAccess { get; set; }
 
     [OnDelete(DeleteBehavior.Cascade)]
-    public int ResourceId { get; set; }
-    //public ResourceEntity Resource { get; set; }
+    public int LongreadId { get; set; }
+    public LongreadEntity Longread { get; set; }
 }

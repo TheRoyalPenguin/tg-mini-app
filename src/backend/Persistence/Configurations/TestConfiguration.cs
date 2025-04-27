@@ -1,4 +1,7 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 public class TestConfiguration : IEntityTypeConfiguration<TestEntity>
 {
     public void Configure(EntityTypeBuilder<TestEntity> builder)

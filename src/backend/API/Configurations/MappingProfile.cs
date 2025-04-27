@@ -17,7 +17,7 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.ModuleAccessId))
             .ReverseMap()
             .ForMember(dest => dest.ModuleAccess, opt => opt.Ignore())
-            .ForMember(dest => dest.Resource, opt => opt.Ignore());
+            .ForMember(dest => dest.Longread, opt => opt.Ignore());
         
         CreateMap<ModuleAccessEntity, ModuleAccess>()
             .ForMember(dest => dest.LongreadCompletions, 

@@ -1,4 +1,4 @@
-﻿using Core.Models;
+using Core.Models;
 using Core.Utils;
 
 namespace Core.Interfaces.Repositories;

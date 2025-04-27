@@ -52,7 +52,7 @@ public class UserWithStatisticResponse
             ModuleAccessId = moduleAccess.Id;
             IsModuleAvailable = moduleAccess.IsModuleAvailable;
             IsModuleCompleted = moduleAccess.IsModuleCompleted;
-            CompletedLongreadsIds = moduleAccess.LongreadCompletions.Select(x => x.ResourceId).ToList();
+            CompletedLongreadsIds = moduleAccess.LongreadCompletions.Select(x => x.LongreadId).ToList();
             TestTriesCount = moduleAccess.TestTriesCount;
             ModuleCompletionPercentage = CompletedLongreadsIds.Count == 0
                 ? 0
