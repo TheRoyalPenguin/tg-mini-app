@@ -8,10 +8,14 @@ namespace Application.Services;
 public class LongreadService : ILongreadService
 {
     private readonly ILongreadRepository _repository;
+    private readonly ILongreadConverter _converter;
 
-    public LongreadService(ILongreadRepository repository)
+    public LongreadService(
+        ILongreadRepository repository,
+        ILongreadConverter converter)
     {
         _repository = repository;
+        _converter = converter;
     }
 
     public async Task<Result<Longread>> GetByIdAsync(int id, CancellationToken ct = default)
@@ -38,16 +42,40 @@ public class LongreadService : ILongreadService
         return Result<IReadOnlyList<Longread>>.Success(longreadsResult.Data)!;
     }
 
-    public async Task<Result> AddAsync(Longread longread, CancellationToken ct = default)
+    public async Task<Result<int>> AddAsync(CreateLongreadModel model, CancellationToken ct = default)
     {
-        var result = await _repository.AddAsync(longread, ct);
-
-        if (!result.IsSuccess)
+        try
         {
-            return Result.Failure(result.ErrorMessage);
-        }
+            var conv = await _converter.ConvertAsync(
+                model.DocxStream,
+                model.DocxFileName,
+                model.ModuleId,
+                ct
+            );
 
-        return Result.Success();
+            var longread = new Longread
+            {
+                ModuleId = model.ModuleId,
+                Title = model.Title,
+                Description = model.Description,
+                OriginalDocxKey = conv.OriginalDocxKey,
+                HtmlContentKey = conv.HtmlKey,
+                ImageKeys = conv.ImageKeys.ToList()
+            };
+
+            var result = await _repository.AddAsync(longread, ct);
+
+            if (!result.IsSuccess)
+            {
+                return Result<int>.Failure(result.ErrorMessage);
+            }
+
+            return Result<int>.Success(longread.Id);
+        }
+        catch (Exception ex)
+        {
+            return Result<int>.Failure($"Ошибка при создании лонгрида: {ex.Message}");
+        }
     }
 
     public async Task<Result> UpdateAsync(Longread longread, CancellationToken ct = default)
