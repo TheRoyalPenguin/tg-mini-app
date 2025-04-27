@@ -13,9 +13,9 @@ public class EnrollmentEntity
     
     [OnDelete(DeleteBehavior.Cascade)]
     public int UserId { get; set; }
-    public UserEntity User { get; set; }
+    public UserEntity User { get; set; } = null!;
 
     [OnDelete(DeleteBehavior.Cascade)]
     public int CourseId { get; set; }
-    public CourseEntity Course { get; set; }
+    public CourseEntity Course { get; set; } = null!;
 }
