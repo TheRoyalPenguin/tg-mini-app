@@ -5,115 +5,142 @@ using Core.Utils;
 using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
+using Microsoft.Extensions.Logging;
 
-namespace Persistence.MinioRepositories;
-
-public class TestingRepository : ITestingRepository
+namespace Persistence.MinioRepositories
 {
-    private readonly IMinioClient _minioClient;
-    private const string BucketName = "barsdb"; 
-
-    public TestingRepository(IMinioClient minioClient)
+    public class TestingRepository : ITestingRepository
     {
-        _minioClient = minioClient;
-    }
+        private readonly IMinioClient _minioClient;
+        private readonly ILogger<TestingRepository> _logger;
+        private const string BucketName = "barsdb";
 
-    public async Task<Result<List<TestingQuestion>>> GetTestAsync(int courseId, int moduleId, CancellationToken cancellationToken = default)
-    {
-        var objectName = $"courses/{courseId}/modules/{moduleId}/Test.json";
-
-        try
+        public TestingRepository(IMinioClient minioClient, ILogger<TestingRepository> logger)
         {
-            using var memoryStream = new MemoryStream();
-
-            await _minioClient.GetObjectAsync(new GetObjectArgs()
-                    .WithBucket(BucketName)
-                    .WithObject(objectName)
-                    .WithCallbackStream(stream => stream.CopyTo(memoryStream)),
-                cancellationToken);
-
-            memoryStream.Seek(0, SeekOrigin.Begin);
-
-            var test = await JsonSerializer.DeserializeAsync<List<TestingQuestion>>(memoryStream, cancellationToken: cancellationToken);
-
-            if (test is null)
-                return Result<List<TestingQuestion>>.Failure("Не удалось десериализовать тест.");
-
-            return Result<List<TestingQuestion>>.Success(test);
+            _minioClient = minioClient;
+            _logger = logger;
         }
-        catch (ObjectNotFoundException)
+
+        public async Task<Result<List<TestingQuestion>>> GetTestAsync(int courseId, int moduleId, CancellationToken cancellationToken = default)
         {
-            return Result<List<TestingQuestion>>.Failure("Файл теста не найден в MinIO.");
+            var objectName = $"courses/{courseId}/modules/{moduleId}/Test.json";
+            _logger.LogInformation("GetTestAsync called for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
+
+            try
+            {
+                using var memoryStream = new MemoryStream();
+
+                await _minioClient.GetObjectAsync(new GetObjectArgs()
+                        .WithBucket(BucketName)
+                        .WithObject(objectName)
+                        .WithCallbackStream(stream => stream.CopyTo(memoryStream)),
+                    cancellationToken);
+
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                var test = await JsonSerializer.DeserializeAsync<List<TestingQuestion>>(memoryStream, cancellationToken: cancellationToken);
+
+                if (test is null)
+                {
+                    _logger.LogWarning("Failed to deserialize test for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
+                    return Result<List<TestingQuestion>>.Failure("Не удалось десериализовать тест.");
+                }
+
+                _logger.LogInformation("Successfully retrieved and deserialized test for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
+                return Result<List<TestingQuestion>>.Success(test);
+            }
+            catch (ObjectNotFoundException)
+            {
+                _logger.LogWarning("Test file not found in MinIO for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
+                return Result<List<TestingQuestion>>.Failure("Файл теста не найден в MinIO.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while retrieving test for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
+                return Result<List<TestingQuestion>>.Failure($"Произошла ошибка при получении теста: {ex.Message}");
+            }
         }
-        catch (Exception ex)
+
+        public async Task<Result<List<int>>> GetCorrectAnswersAsync(int courseId, int moduleId, CancellationToken cancellationToken = default)
         {
-            return Result<List<TestingQuestion>>.Failure($"Произошла ошибка при получении теста: {ex.Message}");
+            var objectName = $"courses/{courseId}/modules/{moduleId}/Test.json";
+            _logger.LogInformation("GetCorrectAnswersAsync called for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
+
+            try
+            {
+                using var memoryStream = new MemoryStream();
+
+                await _minioClient.GetObjectAsync(new GetObjectArgs()
+                        .WithBucket(BucketName)
+                        .WithObject(objectName)
+                        .WithCallbackStream(stream => stream.CopyTo(memoryStream)),
+                    cancellationToken);
+
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                var test = await JsonSerializer.DeserializeAsync<List<TestingQuestion>>(memoryStream, cancellationToken: cancellationToken);
+
+                if (test is null)
+                {
+                    _logger.LogWarning("Failed to deserialize test for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
+                    return Result<List<int>>.Failure("Не удалось десериализовать тест.");
+                }
+
+                var correctAnswers = test.Select(q => q.CorrectAnswer).ToList();
+                _logger.LogInformation("Successfully retrieved correct answers for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
+
+                return Result<List<int>>.Success(correctAnswers);
+            }
+            catch (ObjectNotFoundException)
+            {
+                _logger.LogWarning("Test file not found in MinIO for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
+                return Result<List<int>>.Failure("Файл теста не найден в MinIO.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while retrieving correct answers for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
+                return Result<List<int>>.Failure($"Произошла ошибка при получении теста: {ex.Message}");
+            }
         }
-    }
-    
-    public async Task<Result<List<int>>> GetCorrectAnswersAsync(int courseId, int moduleId, CancellationToken cancellationToken = default)
-    {
-        var objectName = $"courses/{courseId}/modules/{moduleId}/Test.json";
 
-        try
+        public async Task<Result> AddOrUpdateTestAsync(int courseId, int moduleId, List<TestingQuestion> testQuestions, CancellationToken cancellationToken = default)
         {
-            using var memoryStream = new MemoryStream();
+            var objectName = $"courses/{courseId}/modules/{moduleId}/Test.json";
+            _logger.LogInformation("AddOrUpdateTestAsync called for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
 
-            await _minioClient.GetObjectAsync(new GetObjectArgs()
-                    .WithBucket(BucketName)
-                    .WithObject(objectName)
-                    .WithCallbackStream(stream => stream.CopyTo(memoryStream)),
-                cancellationToken);
+            try
+            {
+                var bucketExists = await _minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(BucketName), cancellationToken);
 
-            memoryStream.Seek(0, SeekOrigin.Begin);
+                if (!bucketExists)
+                {
+                    _logger.LogInformation("Bucket does not exist, creating bucket: {BucketName}", BucketName);
+                    await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(BucketName), cancellationToken);
+                }
 
-            var test = await JsonSerializer.DeserializeAsync<List<TestingQuestion>>(memoryStream, cancellationToken: cancellationToken);
+                var json = JsonSerializer.Serialize(testQuestions);
 
-            if (test is null)
-                return Result<List<int>>.Failure("Не удалось десериализовать тест.");
+                using var memoryStream = new MemoryStream();
+                var writer = new StreamWriter(memoryStream);
+                writer.Write(json);
+                writer.Flush();
+                memoryStream.Seek(0, SeekOrigin.Begin);
 
-            var correctAnswers = test.Select(q => q.CorrectAnswer).ToList();
+                await _minioClient.PutObjectAsync(new PutObjectArgs()
+                        .WithBucket(BucketName)
+                        .WithObject(objectName)
+                        .WithStreamData(memoryStream)
+                        .WithObjectSize(memoryStream.Length),
+                    cancellationToken);
 
-            return Result<List<int>>.Success(correctAnswers);
-        }
-        catch (ObjectNotFoundException)
-        {
-            return Result<List<int>>.Failure("Файл теста не найден в MinIO.");
-        }
-        catch (Exception ex)
-        {
-            return Result<List<int>>.Failure($"Произошла ошибка при получении теста: {ex.Message}");
-        }
-    }
-
-    
-    public async Task<Result> AddOrUpdateTestAsync(int courseId, int moduleId, List<TestingQuestion> testQuestions, CancellationToken cancellationToken = default)
-    {
-        var objectName = $"courses/{courseId}/modules/{moduleId}/Test.json";
-        try
-        {
-            // Сериализуем вопросы в формат JSON
-            var json = JsonSerializer.Serialize(testQuestions);
-
-            using var memoryStream = new MemoryStream();
-            var writer = new StreamWriter(memoryStream);
-            writer.Write(json);
-            writer.Flush();
-            memoryStream.Seek(0, SeekOrigin.Begin);
-
-            // Загружаем или обновляем файл в MinIO
-            await _minioClient.PutObjectAsync(new PutObjectArgs()
-                    .WithBucket(BucketName)
-                    .WithObject(objectName)
-                    .WithStreamData(memoryStream)
-                    .WithObjectSize(memoryStream.Length),
-                cancellationToken);
-
-            return Result.Success();
-        }
-        catch (Exception ex)
-        {
-            return Result.Failure($"Произошла ошибка при добавлении или обновлении теста: {ex.Message}");
+                _logger.LogInformation("Successfully added or updated test for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while adding or updating test for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
+                return Result.Failure($"Произошла ошибка при добавлении или обновлении теста: {ex.Message}");
+            }
         }
     }
 }
