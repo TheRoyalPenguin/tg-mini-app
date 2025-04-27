@@ -39,6 +39,9 @@ public class LongreadsController : ControllerBase
 
         var lr = result.Data;
 
+        if (lr == null)
+            return NotFound("Longread с id=" + id + " не найден.");
+
         var dto = new ResponseLongreadDto
         {
             Id = lr.Id,
@@ -46,6 +49,9 @@ public class LongreadsController : ControllerBase
             Description = lr.Description,
             ModuleId = lr.ModuleId,
             HtmlUrl = await _storage.GetPresignedUrlAsync(lr.HtmlContentKey),
+            AudioUrl = string.IsNullOrEmpty(lr.AudioContentKey)
+                ? null
+                : await _storage.GetPresignedUrlAsync(lr.AudioContentKey),
             OriginalDocxUrl = await _storage.GetPresignedUrlAsync(lr.OriginalDocxKey),
             ImageUrls = await lr.ImageKeys
                                   .ToAsyncEnumerable()

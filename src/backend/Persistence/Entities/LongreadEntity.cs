@@ -7,6 +7,7 @@ public class LongreadEntity
     public string Description { get; set; } = null!;
     public string HtmlContentKey { get; set; } = null!;
     public string OriginalDocxKey { get; set; } = null!;
+    public string? AudioContentKey { get; set; }
 
     public int ModuleId { get; set; }
     public ModuleEntity Module { get; set; } = null!;

@@ -45,6 +45,7 @@ public class MappingProfile : Profile
 
         CreateMap<LongreadEntity, Longread>()
             .ForMember(dest => dest.ImageKeys, opt => opt.MapFrom(src => src.Images.Select(i => i.Key)))
+            .ForMember(dest => dest.AudioContentKey, opt => opt.MapFrom(src => src.AudioContentKey))
             .ReverseMap()
             .ForMember(e => e.Images, opt => opt.Ignore())
             .ForMember(e => e.Id, opt => opt.Ignore())
