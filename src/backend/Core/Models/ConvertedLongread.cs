@@ -10,5 +10,6 @@ public class ConvertedLongread
 {
     public string OriginalDocxKey { get; init; } = null!;
     public string HtmlKey { get; init; } = null!;
+    public string? AudioKey { get; init; }
     public IReadOnlyList<string> ImageKeys { get; init; } = Array.Empty<string>();
 }

@@ -7,6 +7,8 @@ public interface ILongreadConverter
     Task<ConvertedLongread> ConvertAsync(
         Stream docxStream,
         string docxFileName,
+        Stream? audioStream,
+        string? audioFileName,
         int moduleId,
         CancellationToken ct = default);
 }

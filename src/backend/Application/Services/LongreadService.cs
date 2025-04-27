@@ -49,6 +49,8 @@ public class LongreadService : ILongreadService
             var conv = await _converter.ConvertAsync(
                 model.DocxStream,
                 model.DocxFileName,
+                model.AudioStream,
+                model.AudioFileName,
                 model.ModuleId,
                 ct
             );
@@ -60,6 +62,7 @@ public class LongreadService : ILongreadService
                 Description = model.Description,
                 OriginalDocxKey = conv.OriginalDocxKey,
                 HtmlContentKey = conv.HtmlKey,
+                AudioContentKey = conv.AudioKey,
                 ImageKeys = conv.ImageKeys.ToList()
             };
 
