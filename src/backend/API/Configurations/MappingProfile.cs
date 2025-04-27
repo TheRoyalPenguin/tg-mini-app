@@ -1,4 +1,6 @@
 using API.DTO.Enrollment;
+using API.DTO.ModuleRequests;
+using API.DTO.Testing;
 using AutoMapper;
 using Core.Models;
 using Persistence.Entities;

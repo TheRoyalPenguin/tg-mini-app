@@ -7,7 +7,7 @@ using Persistence.Entities;
 
 namespace Persistence.Repositories;
 
-public class ResourceRepository : IResourceRepository
+/*public class ResourceRepository : IResourceRepository
 {
     private readonly AppDbContext context;
     private readonly IMapper mapper;
@@ -112,4 +112,4 @@ public class ResourceRepository : IResourceRepository
             return Result.Failure($"Failed to delete resource: {e.Message}");
         }
     }
-}
+}*/

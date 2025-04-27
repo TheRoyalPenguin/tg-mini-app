@@ -18,6 +18,7 @@ using Persistence.Converter;
 using Persistence.Storage;
 using FluentValidation.AspNetCore;
 using API.Validators;
+using Persistence.MinioRepositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
