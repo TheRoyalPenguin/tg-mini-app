@@ -14,7 +14,7 @@ public class UserWithFullStatisticResponse
 
     public Dictionary<int, List<UserFullModuleStatistic>> CoursesStatistic { get; set; } = [];
 
-    public UserWithFullStatisticResponse(Core.Models.User user)
+    public UserWithFullStatisticResponse(Core.Models.User user, ICollection<TestResult> testResults)
     {
         Id = user.Id;
         TgId = user.TgId;
@@ -23,11 +23,12 @@ public class UserWithFullStatisticResponse
         Patronymic = user.Patronymic;
         PhoneNumber = user.PhoneNumber;
         IsBanned = user.IsBanned;
+        var testResultsDict = testResults.GroupBy(tr => tr.Test.ModuleId).ToDictionary(group => group.Key, group => group.ToList());
         
         foreach (var moduleAccess in user.ModuleAccesses)
             if (!CoursesStatistic.ContainsKey(moduleAccess.Module!.CourseId))
-                CoursesStatistic[moduleAccess.Module!.CourseId] = [new UserFullModuleStatistic(moduleAccess)];
+                CoursesStatistic[moduleAccess.Module!.CourseId] = [new UserFullModuleStatistic(moduleAccess, testResultsDict[moduleAccess.Module!.CourseId])];
             else
-                CoursesStatistic[moduleAccess.Module!.CourseId].Add(new UserFullModuleStatistic(moduleAccess));
+                CoursesStatistic[moduleAccess.Module!.CourseId].Add(new UserFullModuleStatistic(moduleAccess, testResultsDict[moduleAccess.Module!.CourseId]));
     }
 }

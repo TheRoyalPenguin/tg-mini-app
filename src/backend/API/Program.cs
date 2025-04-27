@@ -111,6 +111,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITestResultRepository, TestResultRepository>();
 
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
@@ -140,10 +141,6 @@ builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddSingleton<DocxConverter>();
 builder.Services.AddScoped<IStorageService, MinioStorageService>();
 builder.Services.AddScoped<ILongreadConverter, LongreadConverter>();
-
-builder.Services.AddScoped<ILongreadService, LongreadService>();
-
-builder.Services.AddScoped<ILongreadRepository, LongreadRepository>();
 
 builder.Services.AddPostgresDb(builder.Configuration);
 builder.Services.AddRedis(builder.Configuration);

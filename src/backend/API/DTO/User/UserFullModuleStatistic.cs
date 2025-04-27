@@ -17,9 +17,9 @@ public class UserFullModuleStatistic
     public DateOnly? CompletionDate { get; set; }
     public DateTime? LastActivity { get; set; }
 
-    public List<TestResult> TestResults { get; set; } = [];
+    public List<TestResultDto> TestResults { get; set; } = [];
 
-    public UserFullModuleStatistic(ModuleAccess moduleAccess)
+    public UserFullModuleStatistic(ModuleAccess moduleAccess, List<TestResult> testResults)
     {
         ModuleId = moduleAccess.ModuleId;
         ModuleAccessId = moduleAccess.Id;
@@ -32,5 +32,6 @@ public class UserFullModuleStatistic
             : (float)CompletedLongreadsIds.Count / (moduleAccess.ModuleLongreadCount + 1);
         CompletionDate = moduleAccess.CompletionDate;
         LastActivity = moduleAccess.LastActivity;
+        TestResults = testResults.Select(x => new TestResultDto(x)).ToList();
     }
 }

@@ -77,10 +77,20 @@ public class AdminController(
     public async Task<IActionResult> GetTestResultsByCourseAsync(int courseId)
     {
         var serviceResult = await adminService.GetTestResultsByCourse(courseId);
+        
+        if (!serviceResult.IsSuccess)
+            return Problem(serviceResult.ErrorMessage);
 
-        return serviceResult.IsSuccess 
-            ? Ok(serviceResult.Data)
-            : Problem(serviceResult.ErrorMessage);
+        var resultModels = serviceResult.Data;
+        try
+        {
+            return Ok(resultModels.Select(
+                rm => new UserWithFullStatisticResponse(rm.user, rm.testResults)));
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
     }
 
     [HttpGet("test-statistic/user/{userId:int}")]
@@ -88,9 +98,18 @@ public class AdminController(
     {
         var serviceResult = await adminService.GetTestResultsByUser(userId);
 
-        return serviceResult.IsSuccess
-            ? Ok(serviceResult.Data)
-            : Problem(serviceResult.ErrorMessage);
+        if (!serviceResult.IsSuccess)
+            return Problem(serviceResult.ErrorMessage);
+
+        var resultModel = serviceResult.Data;
+        try
+        {
+            return Ok(new UserWithFullStatisticResponse(resultModel.user, resultModel.testResults));
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
     }
 
     [HttpGet("test-statistic/course/{courseId:int}/user/{userId:int}")]
@@ -98,8 +117,17 @@ public class AdminController(
     {
         var serviceResult = await adminService.GetTestResultsForUserByCourse(userId, courseId);
 
-        return serviceResult.IsSuccess
-            ? Ok(serviceResult.Data)
-            : Problem(serviceResult.ErrorMessage);
+        if (!serviceResult.IsSuccess)
+            return Problem(serviceResult.ErrorMessage);
+
+        var resultModel = serviceResult.Data;
+        try
+        {
+            return Ok(new UserWithFullStatisticResponse(resultModel.user, resultModel.testResults));
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
     }
 }
