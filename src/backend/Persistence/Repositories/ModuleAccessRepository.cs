@@ -256,6 +256,10 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
                 ma.UserId == userId && 
                 ma.ModuleId == moduleId
             );
+        
+        if (entity?.LongreadCompletions == null)
+            entity.LongreadCompletions = new List<LongreadCompletionEntity>();
+
         var model = mapper.Map<ModuleAccess>(entity);
         return model;
     }

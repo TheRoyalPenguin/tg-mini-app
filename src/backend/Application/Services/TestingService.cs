@@ -40,7 +40,7 @@ public class TestingService : ITestingService
             return Result<List<TestingQuestion>>.Failure("Модуль не найден.");
 
         int completedLongreads = moduleAccess.LongreadCompletions?.Count ?? 0;
-        if (completedLongreads < module.Data.LongreadCont)
+        if (completedLongreads < module.Data.LongreadCount)
             return Result<List<TestingQuestion>>.Failure("Доступ к тесту закрыт. Прочитайте все лонгриды.");
         
         var testResult = await testingRepository.GetTestAsync(courseId, moduleId);
