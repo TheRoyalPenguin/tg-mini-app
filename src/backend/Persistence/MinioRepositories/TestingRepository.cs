@@ -20,7 +20,7 @@ public class TestingRepository : ITestingRepository
 
     public async Task<Result<List<TestingQuestion>>> GetTestAsync(int courseId, int moduleId, CancellationToken cancellationToken = default)
     {
-        var objectName = $"courses/{courseId}/modules/{moduleId}/Test";
+        var objectName = $"courses/{courseId}/modules/{moduleId}/Test.json";
 
         try
         {
@@ -53,7 +53,7 @@ public class TestingRepository : ITestingRepository
     
     public async Task<Result> AddOrUpdateTestAsync(int courseId, int moduleId, List<TestingQuestion> testQuestions, CancellationToken cancellationToken = default)
     {
-        var objectName = $"courses/{courseId}/modules/{moduleId}/Test";
+        var objectName = $"courses/{courseId}/modules/{moduleId}/Test.json";
         try
         {
             // Сериализуем вопросы в формат JSON
