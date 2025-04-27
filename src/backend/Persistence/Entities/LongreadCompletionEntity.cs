@@ -1,3 +1,4 @@
+using Core.Models;
 using EfCore.Conventions.Attributes;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,8 +10,9 @@ public class LongreadCompletionEntity
     
     [OnDelete(DeleteBehavior.Cascade)]
     public int ModuleAccessId { get; set; }
+    public ModuleAccessEntity ModuleAccess { get; set; }
 
     [OnDelete(DeleteBehavior.Cascade)]
-    public int ResourceId { get; set; }
-    //public ResourceEntity Resource { get; set; }
+    public int LongreadId { get; set; }
+    public LongreadEntity Longread { get; set; }
 }

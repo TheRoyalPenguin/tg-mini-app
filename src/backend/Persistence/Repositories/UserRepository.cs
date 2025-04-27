@@ -40,7 +40,6 @@ public class UserRepository(AppDbContext appDbContext, IMapper mapper) : IUserRe
                 .Include(u => u.Enrollments)
                 .Include(u => u.ModuleAccesses)
                     .ThenInclude(ma => ma.Module)
-                        .ThenInclude(m => m.Resources)
                 .Include(u => u.ModuleAccesses)
                     .ThenInclude(ma => ma.LongreadCompletions)
                 .FirstOrDefaultAsync(e => e.Id == id);
@@ -67,7 +66,6 @@ public class UserRepository(AppDbContext appDbContext, IMapper mapper) : IUserRe
                 .Include(u => u.Enrollments)
                 .Include(u => u.ModuleAccesses)
                     .ThenInclude(ma => ma.Module)
-                        .ThenInclude(m => m.Resources)
                 .Include(u => u.ModuleAccesses)
                     .ThenInclude(ma => ma.LongreadCompletions)
                 .ToListAsync();
@@ -81,7 +79,7 @@ public class UserRepository(AppDbContext appDbContext, IMapper mapper) : IUserRe
             return Result<ICollection<User>>.Failure($"Failed to get users: {ex.Message}")!;
         }
     }
-
+    
     public async Task<Result<ICollection<User>>> GetAllByCourseIdAsync(int courseId)
     {
         try
@@ -90,7 +88,6 @@ public class UserRepository(AppDbContext appDbContext, IMapper mapper) : IUserRe
                 .Include(u => u.Enrollments)
                 .Include(u => u.ModuleAccesses)
                     .ThenInclude(ma => ma.Module)
-                        .ThenInclude(m => m.Resources)
                 .Include(u => u.ModuleAccesses)
                     .ThenInclude(ma => ma.LongreadCompletions)
                 .Where(u => u.Enrollments.Any(e => e.CourseId == courseId))
@@ -113,16 +110,65 @@ public class UserRepository(AppDbContext appDbContext, IMapper mapper) : IUserRe
         }
     }
 
+    public async Task<Result<User>> GetOneInCourseAsync(int userId, int courseId)
+    {
+        try
+        {
+            var userEntity = await appDbContext.Users
+                .Include(u => u.Enrollments)
+                .Where(u => u.Enrollments.Any(e => e.CourseId == courseId))
+                .Include(u => u.ModuleAccesses)
+                .ThenInclude(ma => ma.Module)
+                .Include(u => u.ModuleAccesses)
+                .ThenInclude(ma => ma.LongreadCompletions)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (userEntity == null)
+                return Result<User>.Failure($"User with id {userId} in course with id {courseId} not found")!;
+
+            var userModel = MapUser(userEntity);
+            return Result<User>.Success(userModel);
+        }
+        catch (Exception ex)
+        {
+            return Result<User>.Failure($"Failed to get user: {ex.Message}")!;
+        }
+    }
+
+    public async Task<Result<User>> GetOneWithAllCourses(int userId)
+    {
+        try
+        {
+            var userEntity = await appDbContext.Users
+                .Include(u => u.Enrollments)
+                .Include(u => u.ModuleAccesses)
+                    .ThenInclude(ma => ma.Module)
+                .Include(u => u.ModuleAccesses)
+                    .ThenInclude(ma => ma.LongreadCompletions)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (userEntity == null)
+                return Result<User>.Failure($"User with id {userId} not found")!;
+
+            var userModel = MapUser(userEntity);
+            return Result<User>.Success(userModel);
+        }
+        catch (Exception ex)
+        {
+            return Result<User>.Failure($"Failed to get user: {ex.Message}")!;
+        }
+    }
+
     private User MapUser(UserEntity entity)
     {
         var userModel = mapper.Map<User>(entity);
         var moduleAccessesEntities = entity.ModuleAccesses;
-        var moduleAccessesModels = moduleAccessesEntities.Select(entity =>
+        var moduleAccessesModels = moduleAccessesEntities.Select(e =>
         {
-            var model = mapper.Map<ModuleAccess>(entity);
-            model.CompletedLongreadsCount = entity.LongreadCompletions.Count;
-            model.CompletedLongreadsCount = entity.LongreadCompletions.Count;
-            model.ModuleLongreadCount = entity.Module.LongreadCount;
+            var model = mapper.Map<ModuleAccess>(e);
+            model.CompletedLongreadsCount = e.LongreadCompletions.Count;
+            model.CompletedLongreadsCount = e.LongreadCompletions.Count;
+            model.ModuleLongreadCount = e.Module.LongreadCount;
 
             return model;
         }).ToList();

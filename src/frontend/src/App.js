@@ -7,6 +7,7 @@ import TestFormPage from "./pages/TestFormPage";
 import ModulePage from "./pages/ModulePage";
 import FAQPage from "./pages/FAQPage";
 import SupportPage from "./pages/SupportPage";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
               <Route path="/modules/:moduleId" element={<ModulePage />} />
               <Route path="/faq" element={<FAQPage/>} />
               <Route path="/support" element={<SupportPage/>} />
+              <Route path="/profile" element={<ProfilePage />} />
           </Routes>
       </Router>
   );

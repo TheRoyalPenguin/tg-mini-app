@@ -31,6 +31,9 @@ public class ModuleAccessConfiguration : IEntityTypeConfiguration<ModuleAccessEn
         builder.Property(ma => ma.CompletionDate)
             .HasColumnName("module_completion_date");
         
+        builder.Property(ma => ma.LastActivity)
+            .HasColumnName("last_activity");
+        
         builder.Property(e => e.UserId)
             .HasColumnName("user_id");
 

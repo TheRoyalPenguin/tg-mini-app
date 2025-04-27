@@ -1,4 +1,5 @@
-﻿namespace Persistence.Entities;
+﻿
+using Persistence.Entities;
 
 public class TestEntity
 {

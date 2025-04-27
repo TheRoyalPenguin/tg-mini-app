@@ -12,6 +12,7 @@ public class ModuleAccessEntity
     public bool IsModuleCompleted { get; set; }
     public bool IsModuleAvailable { get; set; }
     public DateOnly? CompletionDate { get; set; }
+    public DateTime? LastActivity { get; set; }
     
     [OnDelete(DeleteBehavior.Cascade)]
     public int UserId { get; set; }
