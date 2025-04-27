@@ -14,4 +14,6 @@ public class Longread
     public string HtmlContentKey { get; set; } = null!;
     public List<string> ImageKeys { get; set; } = new();
     public string OriginalDocxKey { get; set; } = null!;
+
+    public int ModuleId { get; set; }
 }
