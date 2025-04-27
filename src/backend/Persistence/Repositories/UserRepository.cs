@@ -57,6 +57,20 @@ public class UserRepository(AppDbContext appDbContext, IMapper mapper) : IUserRe
         }
     }
 
+    public async Task<Result<bool>> ChangeBanStateAsync(int userId, bool banState)
+    {
+        var entity = await appDbContext.Users
+            .FirstOrDefaultAsync(e => e.Id == userId);
+        if (entity == null)
+        {
+            return Result<bool>.Failure("User not found");
+        }
+
+        entity.IsBanned = banState;
+
+        return Result<bool>.Success(banState);
+    }
+
     public async Task<Result<ICollection<User>>> GetAllAsync()
     {
         try

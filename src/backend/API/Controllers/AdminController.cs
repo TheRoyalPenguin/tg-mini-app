@@ -76,4 +76,26 @@ public class AdminController(
             return Problem(e.Message);
         }
     }
+    
+    [HttpPost("ban/user/{userId:int}")]
+    public async Task<IActionResult> BanUserAsync([FromRoute] int userId)
+    {
+        var serviceResult = await adminService.BanUserAsync(userId);
+
+        if (!serviceResult.IsSuccess)
+            return Problem(serviceResult.ErrorMessage);
+
+        return Ok();
+    }
+    
+    [HttpPost("unban/user/{userId:int}")]
+    public async Task<IActionResult> UnbanUserAsync([FromRoute] int userId)
+    {
+        var serviceResult = await adminService.UnbanUserAsync(userId);
+
+        if (!serviceResult.IsSuccess)
+            return Problem(serviceResult.ErrorMessage);
+
+        return Ok();
+    }
 }
