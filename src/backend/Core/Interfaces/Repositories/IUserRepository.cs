@@ -9,4 +9,5 @@ public interface IUserRepository
     Task<Result<ICollection<User>>> GetAllByCourseIdAsync(int courseId);
     Task<Result<User>> GetOneInCourseAsync(int userId, int courseId);
     Task<Result<User>> GetOneWithAllCourses(int userId);
+    Task<Result<User>> GetByIdAsync(int userId);
 }

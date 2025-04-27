@@ -1,20 +1,23 @@
-﻿using Core.Interfaces.Services;
+﻿using API.DTO.Longreads;
+using Core.Interfaces.Services;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/modules/{moduleId}/longreads")]
+[Route("api")]
 public class LongreadsController : ControllerBase
 {
     private readonly ILongreadService _service;
-    public LongreadsController(ILongreadService service)
+    private readonly IStorageService _storage;
+    public LongreadsController(ILongreadService service, IStorageService storage)
     {
         _service = service;
+        _storage = storage;
     }
 
-    [HttpGet]
+    [HttpGet("modules/{moduleId}/longreads")]
     public async Task<ActionResult<IReadOnlyList<Longread>>> ListByModule(
         [FromRoute] int moduleId,
         CancellationToken ct)
@@ -25,14 +28,31 @@ public class LongreadsController : ControllerBase
             : Problem(itemsResult.ErrorMessage);
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Longread>> GetById(
+    [HttpGet("longreads/{id}")]
+    public async Task<ActionResult<ResponseLongreadDto>> GetById(
         [FromRoute] int id,
         CancellationToken ct)
     {
-        var itemResult = await _service.GetByIdAsync(id, ct);
-        return itemResult.IsSuccess
-            ? Ok(itemResult.Data)
-            : Problem(itemResult.ErrorMessage);
+        var result = await _service.GetByIdAsync(id, ct);
+        if (!result.IsSuccess)
+            return Problem(result.ErrorMessage);
+
+        var lr = result.Data;
+
+        var dto = new ResponseLongreadDto
+        {
+            Id = lr.Id,
+            Title = lr.Title,
+            Description = lr.Description,
+            ModuleId = lr.ModuleId,
+            HtmlUrl = await _storage.GetPresignedUrlAsync(lr.HtmlContentKey),
+            OriginalDocxUrl = await _storage.GetPresignedUrlAsync(lr.OriginalDocxKey),
+            ImageUrls = await lr.ImageKeys
+                                  .ToAsyncEnumerable()
+                                  .SelectAwait(async key => await _storage.GetPresignedUrlAsync(key))
+                                  .ToListAsync()
+        };
+
+        return Ok(dto);
     }
 }

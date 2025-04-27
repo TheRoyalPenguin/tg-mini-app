@@ -8,11 +8,8 @@ public class UserWithStatisticResponse
     public long TgId { get; set; }
     public string Name { get; set; }
     public string Surname { get; set; }
-    public string Patronymic { get; set; }
-    public string PhoneNumber { get; set; }
-    public bool IsBanned { get; set; }
 
-    public Dictionary<int, List<ModuleStatistic>> CoursesStatistic { get; set; } = [];
+    public Dictionary<int, List<UserModuleStatistic>> CoursesStatistic { get; set; } = [];
 
     public UserWithStatisticResponse(Core.Models.User user)
     {
@@ -20,45 +17,11 @@ public class UserWithStatisticResponse
         TgId = user.TgId;
         Name = user.Name;
         Surname = user.Surname;
-        Patronymic = user.Patronymic;
-        PhoneNumber = user.PhoneNumber;
-        IsBanned = user.IsBanned;
         
         foreach (var moduleAccess in user.ModuleAccesses)
             if (!CoursesStatistic.ContainsKey(moduleAccess.Module!.CourseId))
-                CoursesStatistic[moduleAccess.Module!.CourseId] = [new ModuleStatistic(moduleAccess)];
+                CoursesStatistic[moduleAccess.Module!.CourseId] = [new UserModuleStatistic(moduleAccess)];
             else
-                CoursesStatistic[moduleAccess.Module!.CourseId].Add(new ModuleStatistic(moduleAccess));
-    }
-    
-    public class ModuleStatistic
-    {
-        public int ModuleId { get; set; }
-        public int ModuleAccessId { get; set; }
-
-        public bool IsModuleAvailable { get; set; }
-
-        public List<int> CompletedLongreadsIds { get; set; } = [];
-        public int TestTriesCount { get; set; }
-
-        public float ModuleCompletionPercentage { get; set; }
-        public bool IsModuleCompleted { get; set; }
-        public DateOnly? CompletionDate { get; set; }
-        public DateTime? LastActivity { get; set; }
-
-        public ModuleStatistic(ModuleAccess moduleAccess)
-        {
-            ModuleId = moduleAccess.ModuleId;
-            ModuleAccessId = moduleAccess.Id;
-            IsModuleAvailable = moduleAccess.IsModuleAvailable;
-            IsModuleCompleted = moduleAccess.IsModuleCompleted;
-            CompletedLongreadsIds = moduleAccess.LongreadCompletions.Select(x => x.LongreadId).ToList();
-            TestTriesCount = moduleAccess.TestTriesCount;
-            ModuleCompletionPercentage = CompletedLongreadsIds.Count == 0
-                ? 0
-                : (float)CompletedLongreadsIds.Count / (moduleAccess.ModuleLongreadCount + 1);
-            CompletionDate = moduleAccess.CompletionDate;
-            LastActivity = moduleAccess.LastActivity;
-        }
+                CoursesStatistic[moduleAccess.Module!.CourseId].Add(new UserModuleStatistic(moduleAccess));
     }
 }

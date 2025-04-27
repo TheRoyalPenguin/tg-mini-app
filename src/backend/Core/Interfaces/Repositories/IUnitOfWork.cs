@@ -9,6 +9,10 @@ public interface IUnitOfWork : IDisposable
     IRoleRepository Roles { get; }
     ITelegramUserRepository TelegramUsers { get; }
     IUserRepository Users { get; }
+    IBookRepository Books { get; }
+    ITestRepository Tests { get; }
+    ITestResultRepository TestResults { get; }
+    ILongreadRepository Longreads { get; }
     
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     
