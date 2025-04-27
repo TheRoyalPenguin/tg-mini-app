@@ -9,61 +9,7 @@ namespace API.Controllers;
 public class AdminController(
     IAdminService adminService) : ControllerBase
 {
-    [HttpGet("course/{courseId:int}")]
-    public async Task<IActionResult> GetUsersByCourseIdAsync(int courseId)
-    {
-        var serviceResult = await adminService.GetUsersInCourse(courseId);
-
-        var userModels = serviceResult.Data;
-
-        try
-        {
-            return Ok(userModels.Select(um => new UserWithStatisticResponse(um)).ToList());
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
-    }
-
-    [HttpGet("course/{courseId:int}/user/{userId:int}")]
-    public async Task<IActionResult> GetUserInCourseAsync(int userId, int courseId)
-    {
-        var serviceResult = await adminService.GetConcreteUserInCourse(userId, courseId);
-
-        var userModel = serviceResult.Data;
-
-        try
-        {
-            return Ok(new UserWithStatisticResponse(userModel));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
-    }
-
-    [HttpGet("user/{userId:int}")]
-    public async Task<IActionResult> GetUserByIdAsync(int userId)
-    {
-        var serviceResult = await adminService.GetConcreteUser(userId);
-
-        if (!serviceResult.IsSuccess)
-            return Problem(serviceResult.ErrorMessage);
-
-        var userModel = serviceResult.Data;
-
-        try
-        {
-            return Ok(new UserWithStatisticResponse(userModel));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
-    }
-
-    [HttpPost("course/{courseId:int}/register/{userId:int}")]
+    [HttpPost("registration/course/{courseId:int}/register/{userId:int}")]
     public async Task<IActionResult> AddUserToCourse(int courseId, int userId)
     {
         var serviceResult = await adminService.RegisterUserOnCourse(userId, courseId);
