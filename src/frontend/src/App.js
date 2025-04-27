@@ -8,6 +8,7 @@ import ModulePage from "./pages/ModulePage";
 import FAQPage from "./pages/FAQPage";
 import SupportPage from "./pages/SupportPage";
 import ProfilePage from "./pages/ProfilePage";
+import LongreadPage from "./pages/LongreadPage";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
               <Route path="/faq" element={<FAQPage/>} />
               <Route path="/support" element={<SupportPage/>} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/longreads/:longreadId" element={<LongreadPage />} />
           </Routes>
       </Router>
   );

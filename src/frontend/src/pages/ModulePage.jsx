@@ -93,7 +93,7 @@ const ModulePage = function () {
                             key={index}
                             text={item.title}
                             className={`${longreadColors[index % longreadColors.length]} w-full max-w-[300px]`}
-                            onClick={() => console.log(`Clicked on ${item.title}`)}
+                            onClick={() => navigate(`/longreads/${item.id}`)}
                         />
                     ))}
                 </div>
