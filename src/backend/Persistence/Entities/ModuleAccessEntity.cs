@@ -16,11 +16,11 @@ public class ModuleAccessEntity
     
     [OnDelete(DeleteBehavior.Cascade)]
     public int UserId { get; set; }
-    public UserEntity User { get; set; }
-    
+    public UserEntity User { get; set; } = null!;
+
     [OnDelete(DeleteBehavior.Cascade)]
     public int ModuleId { get; set; }
-    public ModuleEntity Module { get; set; }
+    public ModuleEntity Module { get; set; } = null!;
 
     public List<LongreadCompletionEntity> LongreadCompletions { get; set; } = [];   
 }

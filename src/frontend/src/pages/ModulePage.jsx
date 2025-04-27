@@ -1,5 +1,6 @@
 import React from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
+import Header from "../components/header/Header";
 
 const longreads = [
     { title: 'Тайм-менеджмент тим-лида',},
@@ -30,6 +31,8 @@ const ModulePage = function () {
     const navigate = useNavigate();
 
     return (
+        <>
+        <Header />
         <div className="max-w-2xl mx-auto p-6 text-center">
             <h1 className="text-2xl font-bold mb-6">Основы личной эффективности тим-лида</h1>
             <h2 className="text-left text-lg font-semibold mb-4">Введение в тему</h2>
@@ -73,6 +76,7 @@ const ModulePage = function () {
                 ))}
             </div>
         </div>
+        </>
     );
 };
 
