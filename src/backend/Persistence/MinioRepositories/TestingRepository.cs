@@ -51,6 +51,42 @@ public class TestingRepository : ITestingRepository
         }
     }
     
+    public async Task<Result<List<int>>> GetCorrectAnswersAsync(int courseId, int moduleId, CancellationToken cancellationToken = default)
+    {
+        var objectName = $"courses/{courseId}/modules/{moduleId}/Test.json";
+
+        try
+        {
+            using var memoryStream = new MemoryStream();
+
+            await _minioClient.GetObjectAsync(new GetObjectArgs()
+                    .WithBucket(BucketName)
+                    .WithObject(objectName)
+                    .WithCallbackStream(stream => stream.CopyTo(memoryStream)),
+                cancellationToken);
+
+            memoryStream.Seek(0, SeekOrigin.Begin);
+
+            var test = await JsonSerializer.DeserializeAsync<List<TestingQuestion>>(memoryStream, cancellationToken: cancellationToken);
+
+            if (test is null)
+                return Result<List<int>>.Failure("Не удалось десериализовать тест.");
+
+            var correctAnswers = test.Select(q => q.CorrectAnswer).ToList();
+
+            return Result<List<int>>.Success(correctAnswers);
+        }
+        catch (ObjectNotFoundException)
+        {
+            return Result<List<int>>.Failure("Файл теста не найден в MinIO.");
+        }
+        catch (Exception ex)
+        {
+            return Result<List<int>>.Failure($"Произошла ошибка при получении теста: {ex.Message}");
+        }
+    }
+
+    
     public async Task<Result> AddOrUpdateTestAsync(int courseId, int moduleId, List<TestingQuestion> testQuestions, CancellationToken cancellationToken = default)
     {
         var objectName = $"courses/{courseId}/modules/{moduleId}/Test.json";

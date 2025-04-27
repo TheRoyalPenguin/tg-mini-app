@@ -174,4 +174,26 @@ public class ModuleRepository(AppDbContext appDbContext, IMapper mapper) : IModu
             return Result<bool>.Failure($"Ошибка при проверке принадлежности модуля к курсу: {ex.Message}");
         }
     }
+    
+    public async Task<Result<Module>> GetNextModuleInCourseAsync(int courseId, int currentModuleId)
+    {
+        try
+        {
+            var entity = await appDbContext.Modules
+                .Where(m => m.CourseId == courseId && m.Id > currentModuleId)
+                .OrderBy(m => m.Id)  // Сортируем по Id для получения следующего модуля
+                .FirstOrDefaultAsync();
+
+            if (entity == null)
+                return Result<Module>.Failure("Следующий модуль не найден.");
+
+            var model = mapper.Map<Module>(entity);
+            return Result<Module>.Success(model);
+        }
+        catch (Exception ex)
+        {
+            return Result<Module>.Failure($"Ошибка при получении следующего модуля: {ex.Message}");
+        }
+    }
+
 }

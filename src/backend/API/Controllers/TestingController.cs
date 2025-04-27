@@ -61,6 +61,7 @@ public class TestingController : ControllerBase
         var model = mapper.Map<SubmitAnswersCommand>(dto);
         model.ModuleId = moduleId;
         model.UserId = userId;
+        model.CourseId = courseId;
 
         var result = await testingService.SubmitAnswers(model);
 
