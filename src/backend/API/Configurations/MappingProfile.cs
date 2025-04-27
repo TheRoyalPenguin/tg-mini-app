@@ -67,5 +67,10 @@ public class MappingProfile : Profile
         CreateMap<TestingQuestionDto, TestingQuestion>().ReverseMap();
         CreateMap<AddOrUpdateTestQuestions, TestingQuestion>().ReverseMap();
         CreateMap<LongreadCompletionEntity, LongreadCompletion>().ReverseMap();
+        
+        CreateMap<TestResultEntity, TestResult>()
+            .ReverseMap()
+            .ForMember(dest => dest.Test, opt => opt.Ignore())
+            .ForMember(dest => dest.User, opt => opt.Ignore());
     }
 }

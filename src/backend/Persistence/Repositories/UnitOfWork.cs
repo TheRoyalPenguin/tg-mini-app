@@ -100,6 +100,22 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     public IUserRepository Users =>
       _users ??= new UserRepository(_context, _mapper);
 
+    private IBookRepository _books;
+    public IBookRepository Books =>
+        _books ??= new BookRepository(_context, _mapper);
+
+    private ITestRepository _tests;
+    public ITestRepository Tests =>
+        _tests ??= new TestRepository(_context, _mapper);
+
+    private ITestResultRepository _testResults;
+    public ITestResultRepository TestResults =>
+        _testResults ??= new TestResultRepository(_context, _mapper);
+
+    private ILongreadRepository _longreads;
+    public ILongreadRepository Longreads =>
+        _longreads ??= new LongreadRepository(_context, _mapper);
+
     public void Dispose()
     {
         DisposeTransaction();

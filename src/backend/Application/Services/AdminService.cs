@@ -8,33 +8,6 @@ namespace Application.Services;
 
 public class AdminService(IUnitOfWork uow, IMapper mapper) : IAdminService
 {
-    public async Task<Result<ICollection<User>>> GetUsersInCourse(int courseId)
-    {
-        var repositoryResult = await uow.Users.GetAllByCourseIdAsync(courseId);
-        
-        return repositoryResult.IsSuccess
-            ? Result<ICollection<User>>.Success(repositoryResult.Data)
-            : Result<ICollection<User>>.Failure(repositoryResult.ErrorMessage!)!;
-    }
-    
-    public async Task<Result<User>> GetConcreteUserInCourse(int userId, int courseId)
-    {
-        var repositoryResult = await uow.Users.GetOneInCourseAsync(userId, courseId);
-        
-        return repositoryResult.IsSuccess
-            ? Result<User>.Success(repositoryResult.Data)
-            : Result<User>.Failure(repositoryResult.ErrorMessage!)!;
-    }
-
-    public async Task<Result<User>> GetConcreteUser(int userId)
-    {
-        var repositoryResult = await uow.Users.GetOneWithAllCourses(userId);
-        
-        return repositoryResult.IsSuccess
-            ? Result<User>.Success(repositoryResult.Data)
-            : Result<User>.Failure(repositoryResult.ErrorMessage!)!;
-    }
-
     public async Task<Result> RegisterUserOnCourse(int userId, int courseId)
     {
         await uow.StartTransactionAsync();
@@ -64,5 +37,89 @@ public class AdminService(IUnitOfWork uow, IMapper mapper) : IAdminService
         await uow.CommitTransactionAsync();
         
         return Result.Success();
+    }
+
+    public async Task<Result<ICollection<(User user, ICollection<TestResult> testResults)>>> GetTestResultsByCourse(int courseId)
+    {
+        var testResultsResult = await uow.TestResults.GetAllByCourse(courseId);
+        if (!testResultsResult.IsSuccess)
+            return Result<ICollection<(User user, ICollection<TestResult> testResults)>>
+                .Failure(testResultsResult.ErrorMessage!)!;
+        
+        var usersResult = await uow.Users.GetAllByCourseIdAsync(courseId);
+        if (!usersResult.IsSuccess)
+            return Result<ICollection<(User user, ICollection<TestResult> testResults)>>
+                .Failure(usersResult.ErrorMessage!)!;
+
+        try
+        {
+            var users = usersResult.Data;
+            var testResults = testResultsResult.Data;
+
+            var usersAndTests = users.Select(user => 
+                (user, (ICollection<TestResult>)testResults.Where(tr => tr.UserId == user.Id).ToList())
+            ).ToList();
+            
+            return Result<ICollection<(User user, ICollection<TestResult> testResults)>>.Success(usersAndTests);
+        }
+        catch (Exception e)
+        {
+            return Result<ICollection<(User user, ICollection<TestResult> testResults)>>
+                .Failure(e.Message)!;
+        }
+    }
+
+    public async Task<Result<(User user, ICollection<TestResult> testResults)>> GetTestResultsByUser(int userId)
+    {
+        var testResultsResult = await uow.TestResults.GetAllByUser(userId);
+        if (!testResultsResult.IsSuccess)
+            return Result<(User user, ICollection<TestResult> testResults)>
+                .Failure(testResultsResult.ErrorMessage!)!;
+
+        var userResult = await uow.Users.GetByIdAsync(userId);
+        if (!userResult.IsSuccess)
+            return Result<(User user, ICollection<TestResult> testResults)>
+                .Failure(userResult.ErrorMessage!)!;
+
+        try
+        {
+            var user = userResult.Data;
+            var testResults = testResultsResult.Data;
+            
+            return Result<(User user, ICollection<TestResult> testResults)>
+                .Success((user, testResults));
+        }
+        catch (Exception e)
+        {
+            return Result<(User user, ICollection<TestResult> testResults)>
+                .Failure(e.Message)!;
+        }
+    }
+
+    public async Task<Result<(User user, ICollection<TestResult> testResults)>> GetTestResultsForUserByCourse(int userId, int courseId)
+    {
+        var testResultsResult = await uow.TestResults.GetAllForUserByCourse(userId, courseId);
+        if (!testResultsResult.IsSuccess)
+            return Result<(User user, ICollection<TestResult> testResults)>
+                .Failure(testResultsResult.ErrorMessage!)!;
+
+        var userResult = await uow.Users.GetByIdAsync(userId);
+        if (!userResult.IsSuccess)
+            return Result<(User user, ICollection<TestResult> testResults)>
+                .Failure(userResult.ErrorMessage!)!;
+
+        try
+        {
+            var user = userResult.Data;
+            var testResults = testResultsResult.Data;
+            
+            return Result<(User user, ICollection<TestResult> testResults)>
+                .Success((user, testResults));
+        }
+        catch (Exception e)
+        {
+            return Result<(User user, ICollection<TestResult> testResults)>
+                .Failure(e.Message)!;
+        }
     }
 }

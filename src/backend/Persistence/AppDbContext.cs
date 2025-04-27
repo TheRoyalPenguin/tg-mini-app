@@ -5,20 +5,18 @@ namespace Persistence;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    
     public DbSet<UserEntity> Users { get; set; }
     public DbSet<CourseEntity> Courses { get; set; }
     public DbSet<ModuleEntity> Modules { get; set; }
     public DbSet<EnrollmentEntity> Enrollments { get; set; }
     public DbSet<ModuleAccessEntity> ModuleAccesses { get; set; }
     public DbSet<RoleEntity> Roles { get; set; }
-    //public DbSet<ResourceEntity> Resources { get; set; }
     public DbSet<LongreadEntity> Longreads { get; set; }
     public DbSet<LongreadImageEntity> LongreadImages { get; set; }
     public DbSet<BookEntity> Books { get; set; }
     public DbSet<ModuleBookEntity> ModuleBooks { get; set; }
     public DbSet<TestEntity> Tests { get; set; }
-
+    public DbSet<TestResultEntity> TestResults { get; set; }
     public DbSet<LongreadCompletionEntity> LongreadCompletions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
