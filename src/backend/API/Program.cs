@@ -163,12 +163,20 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
     
-    var roleRepo = scope.ServiceProvider.GetRequiredService<IRoleRepository>();
-    await roleRepo.AddAsync(new Role()
+    var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+    try
     {
-        Name = "User",
-        RoleLevel = 0
-    });
+        await uow.Roles.AddAsync(new Role()
+        {
+            Name = "User",
+            RoleLevel = 0
+        });
+        await uow.SaveChangesAsync();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
 }
 
 

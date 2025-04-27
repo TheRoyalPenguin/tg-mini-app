@@ -1,8 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Persistence.Entities;
-
-namespace Persistence.Configurations;
 
 public class TestConfiguration : IEntityTypeConfiguration<TestEntity>
 {

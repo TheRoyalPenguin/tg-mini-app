@@ -37,6 +37,7 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
         try
         {
             var moduleAccessEntity = await appDbContext.ModuleAccesses
+                .Include(ma => ma.LongreadCompletions)
                 .FirstOrDefaultAsync(ma => ma.Id == model.Id);
 
             if (moduleAccessEntity == null)
@@ -46,7 +47,7 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
 
             var updatedModel = mapper.Map<ModuleAccess>(moduleAccessEntity);
 
-            updatedModel.CompletedLongreadsCount = model.CompletedLongreadsCount;
+            updatedModel.CompletedLongreadsCount = moduleAccessEntity.LongreadCompletions.Count;
             updatedModel.ModuleLongreadCount = model.ModuleLongreadCount;
 
             return Result<ModuleAccess>.Success(updatedModel);
@@ -61,7 +62,8 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
     {
         try
         {
-            var entity = await appDbContext.ModuleAccesses.FirstOrDefaultAsync(e => e.Id == model.Id);
+            var entity = await appDbContext.ModuleAccesses
+                .FirstOrDefaultAsync(e => e.Id == model.Id);
             if (entity == null)
             {
                 return Result.Failure("Module access entity not found");
@@ -84,7 +86,6 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
             var moduleAccessEntity = await appDbContext.ModuleAccesses
                 .Include(ma => ma.LongreadCompletions)
                 .Include(ma => ma.Module)
-                //.ThenInclude(m => m.Resources)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ma => ma.Id == id);
 
@@ -149,96 +150,60 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
         }
     }
 
-    public async Task<Result<ICollection<ModuleAccess>>> GetAllAsync()
-    {
-        try
-        {
-            return Result<ICollection<ModuleAccess>>.Success(
-                await RetrieveModuleAccessesAsync(ma => true));
-        }
-        catch (Exception e)
-        {
-            return Result<ICollection<ModuleAccess>>.Failure($"Failed to get modules accesses: {e.Message}")!;
-        }
-    }
+    public async Task<Result<ICollection<ModuleAccess>>> GetAllAsync() 
+        => await GetModuleAccessesAsync(_ => true, "Failed to get modules accesses");
 
     public async Task<Result<ICollection<ModuleAccess>>> GetAllByUserIdAndCourseIdAsync(int courseId, int userId)
-    {
-        try
-        {
-            return Result<ICollection<ModuleAccess>>.Success(
-                await RetrieveModuleAccessesAsync(ma => ma.Module.CourseId == courseId && ma.UserId == userId));
-        }
-        catch (Exception e)
-        {
-            return Result<ICollection<ModuleAccess>>.Failure(
-                $"Failed to get modules accesses with given UserId and CourseId: {e.Message}")!;
-        }
-    }
+        => await GetModuleAccessesAsync(
+            ma => ma.Module.CourseId == courseId && ma.UserId == userId,
+            $"Failed to get modules accesses with UserId {userId} and CourseId {courseId}");
 
     public async Task<Result<ICollection<ModuleAccess>>> GetAllByCourseIdAsync(int courseId)
-    {
-        try
-        {
-            return Result<ICollection<ModuleAccess>>.Success(
-                await RetrieveModuleAccessesAsync(ma => ma.Module.CourseId == courseId));
-        }
-        catch (Exception e)
-        {
-            return Result<ICollection<ModuleAccess>>.Failure(
-                $"Failed to get modules accesses with given CourseId: {e.Message}")!;
-        }
-    }
+        => await GetModuleAccessesAsync(
+            ma => ma.Module.CourseId == courseId,
+            $"Failed to get modules accesses with CourseId {courseId}");
 
     public async Task<Result<ICollection<ModuleAccess>>> GetAllByModuleIdAsync(int moduleId)
-    {
-        try
-        {
-            return Result<ICollection<ModuleAccess>>.Success(
-                await RetrieveModuleAccessesAsync(ma => ma.ModuleId == moduleId));
-        }
-        catch (Exception e)
-        {
-            return Result<ICollection<ModuleAccess>>.Failure(
-                $"Failed to get modules accesses with given ModuleId: {e.Message}")!;
-        }
-    }
+        => await GetModuleAccessesAsync(
+            ma => ma.ModuleId == moduleId,
+            $"Failed to get modules accesses with ModuleId {moduleId}");
 
     public async Task<Result<ICollection<ModuleAccess>>> GetAllByUserIdAsync(int userId)
+        => await GetModuleAccessesAsync(
+            ma => ma.UserId == userId,
+            $"Failed to get modules accesses with UserId {userId}");
+
+    private async Task<Result<ICollection<ModuleAccess>>> GetModuleAccessesAsync(
+        Expression<Func<ModuleAccessEntity, bool>> predicate,
+        string errorMessagePrefix)
     {
         try
         {
-            return Result<ICollection<ModuleAccess>>.Success(
-                await RetrieveModuleAccessesAsync(ma => ma.UserId == userId));
+            var moduleAccesses = await RetrieveModuleAccessesAsync(predicate);
+            return Result<ICollection<ModuleAccess>>.Success(moduleAccesses);
         }
         catch (Exception e)
         {
-            return Result<ICollection<ModuleAccess>>.Failure(
-                $"Failed to get modules accesses with given UserId: {e.Message}")!;
+            return Result<ICollection<ModuleAccess>>.Failure($"{errorMessagePrefix}: {e.Message}")!;
         }
     }
 
     private async Task<ICollection<ModuleAccess>> RetrieveModuleAccessesAsync(
         Expression<Func<ModuleAccessEntity, bool>> predicate)
     {
-        var query = appDbContext.ModuleAccesses
+        var entities = await appDbContext.ModuleAccesses
             .AsNoTracking()
             .Include(ma => ma.Module)
-            //.ThenInclude(m => m.Resources)
             .Include(ma => ma.LongreadCompletions)
-            .Where(predicate);
+            .Where(predicate)
+            .ToListAsync();
 
-        var entities = await query.ToListAsync();
-        var models = entities.Select(entity =>
+        return entities.Select(entity => 
         {
             var model = mapper.Map<ModuleAccess>(entity);
             model.CompletedLongreadsCount = entity.LongreadCompletions.Count;
-            model.CompletedLongreadsCount = entity.LongreadCompletions.Count;
             model.ModuleLongreadCount = entity.Module.LongreadCount;
-
             return model;
         }).ToList();
-
-        return models;
     }
 }
