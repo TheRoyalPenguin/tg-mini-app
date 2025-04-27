@@ -143,12 +143,19 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.Migrate();
     
     var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-    await uow.Roles.AddAsync(new Role()
+    try
     {
-        Name = "User",
-        RoleLevel = 0
-    });
-    await uow.SaveChangesAsync();
+        await uow.Roles.AddAsync(new Role()
+        {
+            Name = "User",
+            RoleLevel = 0
+        });
+        await uow.SaveChangesAsync();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
 }
 
 

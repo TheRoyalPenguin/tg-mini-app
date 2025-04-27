@@ -1,0 +1,16 @@
+namespace Core.Models;
+
+public class TestResult
+{
+    public int Id { get; set; }
+    public required long TgId { get; set; }
+    public required int AttemptNumber { get; set; }
+    public required int TotalQuestions { get; set; }
+    public required int CorrectAnswers { get; set; }
+    public required int WrongAnswers { get; set; }
+    public required float Score { get; set; }
+    public required DateTime Timestamp { get; set; }
+    
+    public int TestId { get; set; }
+    public Test Test { get; set; } 
+}
