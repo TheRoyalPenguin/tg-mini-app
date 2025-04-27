@@ -7,5 +7,5 @@ public class Module
     public required string Description { get; set; }
     public required int LongreadCount { get; set; }
     public required int CourseId { get; set; }
-    public List<Resource> Resources { get; set; }
+    //public List<Resource> Resources { get; set; }
 }

@@ -12,12 +12,16 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Minio;
 using Persistence;
-using Persistence.MinioRepositories;
 using Persistence.Repositories;
+using Persistence.Converter;
+using Persistence.Storage;
+using FluentValidation.AspNetCore;
+using API.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSeqLogging();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddSingleton<ICacheService, RedisCacheService>();
@@ -92,7 +96,9 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddFluentValidation(fv =>
+        fv.RegisterValidatorsFromAssemblyContaining<CreateLongreadDtoValidator>());
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -131,23 +137,25 @@ builder.Services.AddScoped<ICourseService, CoursesService>();
 builder.Services.AddScoped<ITestingRepository, TestingRepository>();
 builder.Services.AddScoped<ITestingService, TestingService>();
 
+builder.Services.AddScoped<ILongreadRepository, LongreadRepository>();
+builder.Services.AddScoped<ITestRepository, TestRepository>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+
+builder.Services.AddScoped<ILongreadService, LongreadService>();
+builder.Services.AddScoped<ITestService, TestService>();
+builder.Services.AddScoped<IBookService, BookService>();
+
+builder.Services.AddSingleton<DocxConverter>();
+builder.Services.AddScoped<IStorageService, MinioStorageService>();
+builder.Services.AddScoped<ILongreadConverter, LongreadConverter>();
+
+builder.Services.AddScoped<ILongreadService, LongreadService>();
+
+builder.Services.AddScoped<ILongreadRepository, LongreadRepository>();
+
 builder.Services.AddPostgresDb(builder.Configuration);
 builder.Services.AddRedis(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-builder.Services.AddSingleton<IMinioClient>(sp =>
-{
-    var config = builder.Configuration.GetSection("Minio");
-    var endpoint = config["Endpoint"];
-    var accessKey = config["AccessKey"];
-    var secretKey = config["SecretKey"];
-    var useSsl = bool.Parse(config["UseSSL"] ?? "false");
-
-    return new MinioClient()
-        .WithEndpoint(endpoint)
-        .WithCredentials(accessKey, secretKey)
-        .WithSSL(useSsl)
-        .Build();
-});
 
 var app = builder.Build();
 

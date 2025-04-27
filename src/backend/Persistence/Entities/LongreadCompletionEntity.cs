@@ -12,5 +12,5 @@ public class LongreadCompletionEntity
 
     [OnDelete(DeleteBehavior.Cascade)]
     public int ResourceId { get; set; }
-    public ResourceEntity Resource { get; set; }
+    //public ResourceEntity Resource { get; set; }
 }

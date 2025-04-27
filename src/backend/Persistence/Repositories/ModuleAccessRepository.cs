@@ -90,7 +90,7 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
             var moduleAccessEntity = await appDbContext.ModuleAccesses
                 .Include(ma => ma.LongreadCompletions)
                 .Include(ma => ma.Module)
-                .ThenInclude(m => m.Resources)
+                //.ThenInclude(m => m.Resources)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ma => ma.Id == id);
 
@@ -230,7 +230,7 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
         var query = appDbContext.ModuleAccesses
             .AsNoTracking()
             .Include(ma => ma.Module)
-            .ThenInclude(m => m.Resources)
+            //.ThenInclude(m => m.Resources)
             .Include(ma => ma.LongreadCompletions)
             .Where(predicate);
 
