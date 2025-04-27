@@ -9,4 +9,3 @@ public class BookEntity
     public string? CoverKey { get; set; }
     public ICollection<ModuleBookEntity> ModuleBooks { get; set; } = new List<ModuleBookEntity>();
 }
-

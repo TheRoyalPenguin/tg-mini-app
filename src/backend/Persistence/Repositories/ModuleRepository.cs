@@ -87,7 +87,7 @@ public class ModuleRepository(AppDbContext appDbContext, IMapper mapper) : IModu
         {
             var moduleEntity = await appDbContext.Modules
                 .AsNoTracking()
-                .Include(m => m.Resources)
+                //.Include(m => m.Resources)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (moduleEntity == null)
@@ -109,7 +109,7 @@ public class ModuleRepository(AppDbContext appDbContext, IMapper mapper) : IModu
         {
             var moduleEntities = await appDbContext.Modules
                 .AsNoTracking()
-                .Include(m => m.Resources)
+                //.Include(m => m.Resources)
                 .ToListAsync();
             
             var models = moduleEntities
@@ -131,7 +131,7 @@ public class ModuleRepository(AppDbContext appDbContext, IMapper mapper) : IModu
             var moduleEntities = await appDbContext.Modules
                 .Where(m => m.CourseId == courseId)
                 .AsNoTracking()
-                .Include(m => m.Resources)
+                //.Include(m => m.Resources)
                 .ToListAsync();
 
             var models = moduleEntities
