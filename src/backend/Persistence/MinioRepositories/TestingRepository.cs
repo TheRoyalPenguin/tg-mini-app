@@ -11,7 +11,7 @@ namespace Persistence.MinioRepositories;
 public class TestingRepository : ITestingRepository
 {
     private readonly IMinioClient _minioClient;
-    private const string BucketName = "bars"; 
+    private const string BucketName = "barsdb"; 
 
     public TestingRepository(IMinioClient minioClient)
     {

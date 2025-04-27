@@ -12,7 +12,7 @@ using Minio.DataModel.Args;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/")]
 public class TestingController : ControllerBase
 {
     private readonly ITestingService testingService;

@@ -31,7 +31,7 @@ public class TestingService : ITestingService
         if (!moduleExistsResult.IsSuccess || !moduleExistsResult.Data)
             return Result<List<TestingQuestion>>.Failure($"Модуль с ID {moduleId} не найден в курсе.");*/
         
-        var moduleAccess = await moduleAccessRepository.GetByUserAndModuleAsync(userId, moduleId);
+        /*var moduleAccess = await moduleAccessRepository.GetByUserAndModuleAsync(userId, moduleId);
         if (moduleAccess == null || !moduleAccess.IsModuleAvailable)
             return Result<List<TestingQuestion>>.Failure("Модуль недоступен.");
         
@@ -41,7 +41,7 @@ public class TestingService : ITestingService
 
         int completedLongreads = moduleAccess.LongreadCompletions?.Count ?? 0;
         if (completedLongreads < module.Data.LongreadCount)
-            return Result<List<TestingQuestion>>.Failure("Доступ к тесту закрыт. Прочитайте все лонгриды.");
+            return Result<List<TestingQuestion>>.Failure("Доступ к тесту закрыт. Прочитайте все лонгриды.");*/
         
         var testResult = await testingRepository.GetTestAsync(courseId, moduleId);
         if (!testResult.IsSuccess || testResult.Data == null)
