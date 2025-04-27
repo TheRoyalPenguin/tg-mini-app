@@ -5,7 +5,6 @@ namespace Persistence;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    
     public DbSet<UserEntity> Users { get; set; }
     public DbSet<CourseEntity> Courses { get; set; }
     public DbSet<ModuleEntity> Modules { get; set; }

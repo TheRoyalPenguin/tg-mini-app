@@ -1,4 +1,4 @@
-﻿using API.DTO;
+﻿using API.DTO.Longreads;
 using AutoMapper;
 using Core.Interfaces.Services;
 using Core.Models;
