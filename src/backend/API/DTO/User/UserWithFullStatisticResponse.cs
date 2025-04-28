@@ -25,17 +25,34 @@ public class UserWithFullStatisticResponse
         IsBanned = user.IsBanned;
         
         var testResultsDict = testResults
-            .Where(tr => tr != null && tr.Test != null)
             .GroupBy(tr => tr.Test.ModuleId)
             .ToDictionary(
                 group => group.Key, 
                 group => group.ToList()
             );
+
+        Console.WriteLine();
+        Console.WriteLine("Test Results:");
+        foreach (var idResultsPair in testResultsDict)
+        {
+            Console.WriteLine(idResultsPair.Key);
+            foreach (var testResult in idResultsPair.Value)
+                Console.WriteLine(testResult.Test.ModuleId);
+        }
         
         foreach (var moduleAccess in user.ModuleAccesses)
+        {
             if (!CoursesStatistic.ContainsKey(moduleAccess.Module!.CourseId))
-                CoursesStatistic[moduleAccess.Module!.CourseId] = [new UserFullModuleStatistic(moduleAccess, testResultsDict[moduleAccess.Module!.CourseId])];
-            else
-                CoursesStatistic[moduleAccess.Module!.CourseId].Add(new UserFullModuleStatistic(moduleAccess, testResultsDict[moduleAccess.Module!.CourseId]));
+            {
+                CoursesStatistic[moduleAccess.Module!.CourseId] = [];
+            }
+            
+            var courseId = moduleAccess.Module!.CourseId;
+            var testResultsForCourse = testResultsDict.ContainsKey(courseId) 
+                ? testResultsDict[courseId] 
+                : new List<TestResult>();
+                
+            CoursesStatistic[courseId].Add(new UserFullModuleStatistic(moduleAccess, testResultsForCourse));
+        }
     }
 }
