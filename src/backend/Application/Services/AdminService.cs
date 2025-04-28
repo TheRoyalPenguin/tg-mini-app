@@ -1,4 +1,3 @@
-using AutoMapper;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
@@ -6,7 +5,7 @@ using Core.Utils;
 
 namespace Application.Services;
 
-public class AdminService(IUnitOfWork uow, IMapper mapper) : IAdminService
+public class AdminService(IUnitOfWork uow) : IAdminService
 {
     public async Task<Result> RegisterUserOnCourse(int userId, int courseId)
     {

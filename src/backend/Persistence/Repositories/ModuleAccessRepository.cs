@@ -110,6 +110,51 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
         }
     }
 
+    public async Task<Result<ICollection<ModuleAccess>>> AddAccessForModuleForEveryUsersAsync(int moduleId)
+    {
+        try
+        {
+            var moduleEntity = await appDbContext.Modules
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == moduleId);
+
+            var usersIds = await appDbContext.Users.AsNoTracking()
+                .Select(u => u.Id)
+                .ToListAsync();
+
+            var moduleAccessModels = new List<ModuleAccess>();
+            var moduleAccessEntities = new List<ModuleAccessEntity>();
+
+            foreach (var userId in usersIds)
+            {
+                var moduleAccessEntity = new ModuleAccessEntity
+                {
+                    TestTriesCount = 0,
+                    IsModuleCompleted = false,
+                    IsModuleAvailable = false,
+                    UserId = userId,
+                    ModuleId = moduleId,
+                };
+
+                var moduleAccessModel = mapper.Map<ModuleAccess>(moduleAccessEntity);
+                moduleAccessModel.CompletedLongreadsCount = 0;
+                moduleAccessModel.ModuleLongreadCount = moduleEntity!.LongreadCount;
+
+                moduleAccessModels.Add(moduleAccessModel);
+                moduleAccessEntities.Add(moduleAccessEntity);
+            }
+
+            await appDbContext.ModuleAccesses.AddRangeAsync(moduleAccessEntities);
+
+            return Result<ICollection<ModuleAccess>>.Success(moduleAccessModels);
+        }
+        catch (Exception e)
+        {
+            return Result<ICollection<ModuleAccess>>.Failure(
+                $"Failed to add accesses for user for module {moduleId}: {e.Message}")!;
+        }
+    }
+    
     public async Task<Result<ICollection<ModuleAccess>>> AddAccessesForEveryModuleForUserAsync(int userId, int courseId)
     {
         try

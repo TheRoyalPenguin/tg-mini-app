@@ -5,6 +5,7 @@ namespace Core.Interfaces.Repositories;
 
 public interface IModuleAccessRepository : IRepository<int, ModuleAccess>
 {
+    Task<Result<ICollection<ModuleAccess>>> AddAccessForModuleForEveryUsersAsync(int moduleId);
     Task<Result<ICollection<ModuleAccess>>> AddAccessesForEveryModuleForUserAsync(int userId, int courseId);
     
     Task<Result<ICollection<ModuleAccess>>> GetAllByUserIdAndCourseIdAsync(int userId, int courseId);

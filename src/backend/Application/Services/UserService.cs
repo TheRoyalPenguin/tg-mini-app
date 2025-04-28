@@ -1,5 +1,6 @@
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Models;
 using Core.Utils;
 
 namespace Application.Services;
@@ -22,5 +23,13 @@ public class UserService(IUnitOfWork uow) : IUserService
         await uow.SaveChangesAsync();
 
         return Result.Success();
+    }
+
+    public async Task<Result<ICollection<User>>> GetUsersAsync()
+    {
+        var getUsersResult = await uow.Users.GetAllAsync();
+        return getUsersResult.IsSuccess
+            ? Result<ICollection<User>>.Success(getUsersResult.Data)
+            : Result<ICollection<User>>.Failure(getUsersResult.ErrorMessage!)!;
     }
 }

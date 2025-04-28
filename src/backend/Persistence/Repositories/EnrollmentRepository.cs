@@ -8,17 +8,8 @@ using Persistence.Entities;
 
 namespace Persistence.Repositories;
 
-public class EnrollmentRepository : IEnrollmentRepository
+public class EnrollmentRepository(AppDbContext context, IMapper mapper) : IEnrollmentRepository
 {
-    private readonly AppDbContext context;
-    private readonly IMapper mapper;
-
-    public EnrollmentRepository(AppDbContext context, IMapper mapper)
-    {
-        this.context = context;
-        this.mapper = mapper;
-    }
-
     public async Task<Result<Enrollment>> AddAsync(Enrollment enrollment)
     {
         try
@@ -31,7 +22,7 @@ public class EnrollmentRepository : IEnrollmentRepository
         }
         catch (Exception e)
         {
-            return Result<Enrollment>.Failure($"Failed to add module: {e.Message}");
+            return Result<Enrollment>.Failure($"Failed to add module: {e.Message}")!;
         }
     }
 

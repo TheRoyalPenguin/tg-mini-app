@@ -7,8 +7,29 @@ namespace API.Controllers;
 [ApiController]
 [Route("[controller]")]
 public class AdminController(
-    IAdminService adminService) : ControllerBase
+    IAdminService adminService,
+    IUserService userService) : ControllerBase
 {
+    [HttpGet("users")]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        var serviceResult = await userService.GetUsersAsync();
+        if (!serviceResult.IsSuccess)
+            return Problem(serviceResult.ErrorMessage);
+        
+        var users = serviceResult.Data;
+        try
+        {
+            var usersDto = users.Select(user => new UserDto(user)).ToList();
+            return Ok(usersDto);
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
+        
+    }
+    
     [HttpPost("registration/course/{courseId:int}/register/{userId:int}")]
     public async Task<IActionResult> AddUserToCourse(int courseId, int userId)
     {
