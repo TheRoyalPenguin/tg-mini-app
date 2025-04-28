@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useParams } from "react-router-dom";
 import QuestionCard from "../components/testForm/QuestionCard";
 import TestResults from "../components/testForm/TestResults";
 import Header from "../components/header/Header";
 import { getTest } from "../services/getTest";
-import axiosInstance from "../axiosInstance";
-import {useParams} from "react-router-dom";
 import {setAnswersOfTest} from "../services/setAnswersOfTest";
 
 const TestFormPage = () => {
@@ -13,9 +12,11 @@ const TestFormPage = () => {
     const [submitted, setSubmitted] = useState(false);
     const [submitAttempted, setSubmitAttempted] = useState(false);
     const [correctness, setCorrectness] = useState([]);
+    const [isSuccess, setIsSuccess] = useState(false);
     const [correctCount, setCorrectCount] = useState(0);
     const resultsRef = useRef(null);
     const { courseId, moduleId } = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function fetchTest() {
@@ -50,10 +51,11 @@ const TestFormPage = () => {
 
         try {
             const answersArray = testData.map((_, index) => selectedAnswers[index]);
-            const { correctCount, answerCount, correctness } = await setAnswersOfTest(courseId, moduleId, answersArray);
+            const { correctCount, answerCount, correctness, isSuccess } = await setAnswersOfTest(courseId, moduleId, answersArray);
 
             setCorrectCount(correctCount);
             setCorrectness(correctness);
+            setIsSuccess(isSuccess);
             setSubmitted(true);
 
         } catch (error) {
@@ -75,6 +77,10 @@ const TestFormPage = () => {
 
     const handleRetry = () => {
         window.location.reload();
+    };
+
+    const handleExit = () => {
+        navigate(`/courses/${courseId}`);
     };
 
     return (
@@ -101,7 +107,7 @@ const TestFormPage = () => {
                             disabled={!allQuestionsAnswered}
                             className={`w-full text-white py-3 px-6 rounded-xl text-lg font-bold ${
                                 allQuestionsAnswered
-                                    ? 'bg-[#89d018] hover:bg-[#7abb15]'
+                                    ? 'bg-green-500'
                                     : 'bg-gray-400 cursor-not-allowed'
                             }`}
                         >
@@ -116,6 +122,8 @@ const TestFormPage = () => {
                         score={correctCount}
                         totalQuestions={testData.length}
                         onRetry={handleRetry}
+                        isSuccess={isSuccess}
+                        onExit={handleExit}
                     />
                 )}
             </div>

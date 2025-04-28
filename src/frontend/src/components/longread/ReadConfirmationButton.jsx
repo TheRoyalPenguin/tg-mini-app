@@ -1,13 +1,27 @@
+import { useState } from "react";
 import { setLongreadCompletion } from "../../services/setLongreadCompletion";
+import Modal from "../common/Modal";
 
 function ReadConfirmationButton({ longreadId, moduleId }) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalTitle, setModalTitle] = useState("");
+    const [modalMessage, setModalMessage] = useState("");
+
     const handleClick = async () => {
         try {
             await setLongreadCompletion(longreadId, moduleId);
-            alert("Отлично! Прочтение зафиксировано ✅");
+            setModalTitle("Отлично!");
+            setModalMessage("Прочтение зафиксировано. Продолжайте в том же духе!");
         } catch (error) {
-            alert(error.message);
+            setModalTitle("Ошибка");
+            setModalMessage(error.message || "Что-то пошло не так. Попробуйте позже.");
+        } finally {
+            setIsModalOpen(true);
         }
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
     };
 
     return (
@@ -18,6 +32,13 @@ function ReadConfirmationButton({ longreadId, moduleId }) {
             >
                 Я прочитал(а)
             </button>
+
+            <Modal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                title={modalTitle}
+                message={modalMessage}
+            />
         </div>
     );
 }

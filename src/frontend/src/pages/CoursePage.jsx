@@ -80,9 +80,12 @@ const CoursePage = function () {
                 </div>
             )}
 
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                Данный модуль пока недоступен. Заверши предыдущие модули, чтобы открыть его.
-            </Modal>
+                <Modal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    title="Модуль недоступен!"
+                    message="Данный модуль пока недоступен. Заверши предыдущие модули, чтобы открыть его."
+                />
         </div>
         </>
     );
