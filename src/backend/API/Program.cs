@@ -97,6 +97,15 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services
+    .AddHttpClient<IBotGateway, BotGateway>(client =>
+    {
+        var apiUrl = builder.Configuration["BOT_API_URL"];
+        client.BaseAddress = new Uri(apiUrl!);
+    });
+builder.Services.AddScoped<ITelegramNotificationService, TelegramNotificationService>();
+
+
 builder.Services.AddControllers();
 
 builder.Services.AddFluentValidationAutoValidation();
