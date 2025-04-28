@@ -103,4 +103,41 @@ public class LongreadRepository : ILongreadRepository
             return Result.Failure($"Failed to delete longread by id: {ex.Message}");
         }
     }
+
+    public async Task<Result> MarkAsReadAsync(int longreadId, int userId, int moduleId, CancellationToken ct = default)
+    {
+        try
+        {
+            var moduleAccess = await _db.ModuleAccesses
+                .FirstOrDefaultAsync(ma => ma.UserId == userId && ma.ModuleId == moduleId, ct);
+
+            if (moduleAccess == null)
+            {
+                return Result.Failure("Доступ к модулю не найден");
+            }
+
+            var existingCompletion = await _db.LongreadCompletions
+                .FirstOrDefaultAsync(lc => lc.LongreadId == longreadId && lc.ModuleAccessId == moduleAccess.Id, ct);
+
+            if (existingCompletion != null)
+            {
+                return Result.Success();
+            }
+
+            var completion = new LongreadCompletionEntity
+            {
+                LongreadId = longreadId,
+                ModuleAccessId = moduleAccess.Id
+            };
+
+            _db.LongreadCompletions.Add(completion);
+            await _db.SaveChangesAsync(ct);
+
+            return Result.Success();
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure($"Ошибка при отметке лонгрида как прочитанного: {ex.Message}");
+        }
+    }
 }

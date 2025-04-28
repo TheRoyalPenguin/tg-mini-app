@@ -98,7 +98,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
 
     private IUserRepository _users;
     public IUserRepository Users =>
-        _users ??= new UserRepository(_context, _mapper);
+      _users ??= new UserRepository(_context, _mapper);
 
     private IBookRepository _books;
     public IBookRepository Books =>

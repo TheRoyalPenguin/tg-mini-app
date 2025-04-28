@@ -1,4 +1,5 @@
-﻿using API.DTO.Longreads;
+﻿using System.Security.Claims;
+using API.DTO.Longreads;
 using Core.Interfaces.Services;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -60,5 +61,23 @@ public class LongreadsController : ControllerBase
         };
 
         return Ok(dto);
+    }
+
+    [HttpPost("longreads/{id}/completion")]
+    public async Task<ActionResult> MarkAsRead(
+        [FromRoute] int id,
+        [FromBody] MarkLongreadAsReadDto dto,
+        CancellationToken ct)
+    {
+        var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
+        {
+            return Unauthorized("Не удалось определить ID пользователя из токена.");
+        }
+        var result = await _service.MarkAsReadAsync(id, userId, dto.ModuleId, ct);
+        return result.IsSuccess
+            ? Ok()
+            : Problem(result.ErrorMessage);
     }
 }
