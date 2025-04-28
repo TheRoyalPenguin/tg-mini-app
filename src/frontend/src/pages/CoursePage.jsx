@@ -62,8 +62,9 @@ const CoursePage = function () {
                             if (!isAccessible) {
                                 setIsModalOpen(true);
                             } else {
-                                navigate(`/courses/${courseId}/modules/${module.id}`);
-                            }
+                                navigate(`/courses/${courseId}/modules/${module.id}`, {
+                                    state: { moduleTitle: module.title }
+                                });                            }
                         };
 
                         return (
