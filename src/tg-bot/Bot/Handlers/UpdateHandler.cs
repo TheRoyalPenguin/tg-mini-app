@@ -2,7 +2,7 @@
 using Telegram.Bot.Types;
 using Telegram.Bot;
 
-namespace LevelUpTgBot.Handlers;
+namespace Bot.Handlers;
 
 public class UpdateHandler
 {

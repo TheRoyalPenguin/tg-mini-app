@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35825.156 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LevelUpTgBot", "LevelUpTgBot\LevelUpTgBot.csproj", "{44B1A0F0-E86D-4605-8CCC-A31223A359A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot", "Bot\Bot.csproj", "{35917BEC-237C-44DE-A1A3-CA22A39783D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{44B1A0F0-E86D-4605-8CCC-A31223A359A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{44B1A0F0-E86D-4605-8CCC-A31223A359A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{44B1A0F0-E86D-4605-8CCC-A31223A359A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{44B1A0F0-E86D-4605-8CCC-A31223A359A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35917BEC-237C-44DE-A1A3-CA22A39783D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35917BEC-237C-44DE-A1A3-CA22A39783D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35917BEC-237C-44DE-A1A3-CA22A39783D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35917BEC-237C-44DE-A1A3-CA22A39783D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {AAFBAA1C-ED26-4228-9B95-D9D936AF6CB2}
+		SolutionGuid = {BDDA7CF2-E3B9-420E-B450-674911033EA6}
 	EndGlobalSection
 EndGlobal
