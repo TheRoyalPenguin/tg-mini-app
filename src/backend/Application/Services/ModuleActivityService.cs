@@ -38,17 +38,23 @@ public class ModuleActivityService(
                     continue;
                 }
                     
-                if (userResult.Data.IsBanned)
-                    continue;
-
                 var user = userResult.Data;
-                var userNotificationDaysLimit = user.NotificationDaysLimit switch
-                {
-                    0 => 7,
-                    null => 7,
-                    _ => (int)user.NotificationDaysLimit
-                };
+                if (user.IsBanned)
+                    continue;
                 
+                int userNotificationDaysLimit;
+                switch (user.NotificationDaysLimit)
+                {
+                    case 0 or null:
+                        userNotificationDaysLimit = 7;
+                        break;
+                    case < 0:
+                        continue;
+                    default:
+                        userNotificationDaysLimit = (int)user.NotificationDaysLimit;
+                        break;
+                }
+
                 var userNotificationTimestamp = DateTime.UtcNow.AddDays(-1 * userNotificationDaysLimit);
                 foreach (var moduleAccess in userGroup)
                 {
