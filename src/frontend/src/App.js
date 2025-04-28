@@ -21,7 +21,7 @@ function App() {
               <Route path="/modules/:moduleId" element={<ModulePage />} />
               <Route path="/faq" element={<FAQPage/>} />
               <Route path="/support" element={<SupportPage/>} />
-              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/profile/:userId" element={<ProfilePage />} />
               <Route path="/longreads/:longreadId" element={<LongreadPage />} />
           </Routes>
       </Router>

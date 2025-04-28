@@ -24,6 +24,7 @@ const CoursePage = function () {
         const loadModules = async () => {
             try {
                 const data = await getCourseModules(courseId);
+                console.log(data);
                 setModules(data);
             } catch (err) {
                 setError(err.message);

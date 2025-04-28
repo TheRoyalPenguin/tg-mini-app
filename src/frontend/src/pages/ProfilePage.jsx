@@ -1,107 +1,29 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
 import Header from "../components/header/Header";
 import CustomButton from "../components/common/CustomButton";
 import Modal from '../components/common/Modal';
-import { useNavigate } from "react-router-dom";
+import getUserProgress from '../services/getUserProgress';
 
 const ProfilePage = () => {
+    const { userId } = useParams();
+    const [userData, setUserData] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeCourseId, setActiveCourseId] = useState('1');
     const navigate = useNavigate();
 
-    const userData = {
-        "id": 2,
-        "tgId": 987,
-        "name": "ivan",
-        "surname": "ivanov",
-        "patronymic": "ivanovich",
-        "phoneNumber": "9876",
-        "isBanned": false,
-        "coursesStatistic": {
-            "1": [
-                {
-                    "moduleId": 1,
-                    "moduleAccessId": 1,
-                    "isModuleAvailable": true,
-                    "completedLongreadsIds": [],
-                    "testTriesCount": 0,
-                    "moduleCompletionPercentage": 0,
-                    "isModuleCompleted": false,
-                    "completionDate": null,
-                    "lastActivity": null
-                },
-                {
-                    "moduleId": 2,
-                    "moduleAccessId": 2,
-                    "isModuleAvailable": false,
-                    "completedLongreadsIds": [],
-                    "testTriesCount": 0,
-                    "moduleCompletionPercentage": 0,
-                    "isModuleCompleted": false,
-                    "completionDate": null,
-                    "lastActivity": null
-                },
-                {
-                    "moduleId": 3,
-                    "moduleAccessId": 3,
-                    "isModuleAvailable": false,
-                    "completedLongreadsIds": [],
-                    "testTriesCount": 0,
-                    "moduleCompletionPercentage": 0,
-                    "isModuleCompleted": false,
-                    "completionDate": null,
-                    "lastActivity": null
-                },
-                {
-                    "moduleId": 4,
-                    "moduleAccessId": 4,
-                    "isModuleAvailable": false,
-                    "completedLongreadsIds": [],
-                    "testTriesCount": 0,
-                    "moduleCompletionPercentage": 0,
-                    "isModuleCompleted": false,
-                    "completionDate": null,
-                    "lastActivity": null
-                }
-            ],
-            "2": [
-                {
-                    "moduleId": 1,
-                    "moduleAccessId": 5,
-                    "isModuleAvailable": true,
-                    "completedLongreadsIds": [],
-                    "testTriesCount": 0,
-                    "moduleCompletionPercentage": 0,
-                    "isModuleCompleted": false,
-                    "completionDate": null,
-                    "lastActivity": null
-                },
-                {
-                    "moduleId": 6,
-                    "moduleAccessId": 6,
-                    "isModuleAvailable": false,
-                    "completedLongreadsIds": [],
-                    "testTriesCount": 0,
-                    "moduleCompletionPercentage": 0,
-                    "isModuleCompleted": false,
-                    "completionDate": null,
-                    "lastActivity": null
-                },
-                {
-                    "moduleId": 7,
-                    "moduleAccessId": 7,
-                    "isModuleAvailable": false,
-                    "completedLongreadsIds": [],
-                    "testTriesCount": 0,
-                    "moduleCompletionPercentage": 0,
-                    "isModuleCompleted": false,
-                    "completionDate": null,
-                    "lastActivity": null
-                }
-            ]
-        }
-    };
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const data = await getUserProgress(userId);
+                setUserData(data);
+            } catch (error) {
+                console.error('Ошибка при загрузке данных пользователя:', error);
+            }
+        };
 
+        fetchUserData();
+    }, []);
 
     const buttonColors = [
         'bg-[#0f9fff]',
@@ -109,6 +31,17 @@ const ProfilePage = () => {
         'bg-[#fec810]',
         'bg-[#f87c14]',
     ];
+
+    if (!userData) {
+        return (
+            <>
+                <Header />
+                <div className="flex items-center justify-center min-h-screen bg-[#f7f8fc]">
+                    <p className="text-gray-500 text-lg">Загрузка...</p>
+                </div>
+            </>
+        );
+    }
 
     const modules = userData.coursesStatistic[activeCourseId] || [];
 
@@ -166,7 +99,7 @@ const ProfilePage = () => {
                                 if (!isAvailable) {
                                     setIsModalOpen(true);
                                 } else {
-                                    navigate(`/modules/${module.moduleId}`)
+                                    navigate(`/modules/${module.moduleId}`);
                                 }
                             };
 

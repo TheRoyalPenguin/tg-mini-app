@@ -8,17 +8,17 @@ const recommendedBooks = [
     {
         author: 'Автор автор',
         description: 'Описание книги 1',
-        coverUri: 'https://minio.example.com/covers/book1.jpg',
+        coverUri: '',
     },
     {
         author: 'Автор',
         description: 'Описание книги 2',
-        coverUri: 'https://minio.example.com/covers/book2.jpg',
+        coverUri: '',
     },
     {
         author: 'Автор',
         description: 'Описание книги 3',
-        coverUri: 'https://minio.example.com/covers/book3.jpg',
+        coverUri: '',
     },
 ];
 
@@ -45,6 +45,7 @@ const ModulePage = function () {
         async function fetchLongreads() {
             try {
                 const data = await getLongreadsByModuleId(moduleId);
+                console.log(data);
                 setLongreads(data);
             } catch (err) {
                 setError('Не удалось загрузить лонгриды');
