@@ -6,6 +6,7 @@ import LongreadAudio from "../components/longread/LongreadAudio";
 import LongreadDownload from "../components/longread/LongreadDownload";
 import LongreadContent from "../components/longread/LongreadContent";
 import ReadConfirmationButton from "../components/longread/ReadConfirmationButton";
+import Header from "../components/header/Header";
 
 function LongreadPage() {
     const { longreadId } = useParams();
@@ -48,13 +49,17 @@ function LongreadPage() {
     if (!longread) return <div className="text-center mt-10">Нет данных</div>;
 
     return (
-        <div className="max-w-5xl mx-auto px-4 py-8">
-            <LongreadHeader title={longread.title} description={longread.description} />
-            {longread.audioUrl && <LongreadAudio audioUrl={longread.audioUrl} />}
-            {longread.originalDocxUrl && <LongreadDownload docxUrl={longread.originalDocxUrl} />}
-            <LongreadContent styleContent={styleContent} htmlContent={htmlContent} />
-            <ReadConfirmationButton />
-        </div>
+        <>
+            <Header/>
+            <div className="max-w-5xl mx-auto px-4 py-8 bg-[#f7f8fc] pt-12">
+                <LongreadHeader title={longread.title} description={longread.description}/>
+                {longread.audioUrl && <LongreadAudio audioUrl={longread.audioUrl}/>}
+                {longread.originalDocxUrl && <LongreadDownload docxUrl={longread.originalDocxUrl}/>}
+                <LongreadContent styleContent={styleContent} htmlContent={htmlContent}/>
+                <ReadConfirmationButton/>
+            </div>
+        </>
+
     );
 }
 

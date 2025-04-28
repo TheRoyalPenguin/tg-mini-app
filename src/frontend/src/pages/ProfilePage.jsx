@@ -121,7 +121,7 @@ const ProfilePage = () => {
     return (
         <>
             <Header />
-            <div className="flex flex-col items-center justify-start min-h-screen bg-[#f7f8fc] px-4 pt-6">
+            <div className="flex flex-col items-center justify-start min-h-screen bg-[#f7f8fc] px-4 pt-12">
                 <img src="/images/statistics.png" className="w-[180px] mb-6" alt="profile_element" />
 
                 <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-[500px] flex flex-col items-center">
