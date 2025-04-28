@@ -126,6 +126,9 @@ builder.Services.AddScoped<IModuleService, ModuleService>();
 builder.Services.AddScoped<IModuleAccessRepository, ModuleAccessRepository>();
 builder.Services.AddScoped<IModuleAccessService, ModuleAccessService>();
 
+builder.Services.AddScoped<IModuleActivityService, ModuleActivityService>();
+builder.Services.AddHostedService<ModuleActivityBackgroundService>();
+
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
