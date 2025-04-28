@@ -5,5 +5,5 @@ namespace Core.Interfaces.Services;
 
 public interface ITelegramNotificationService
 {
-    Task<Result<User>> NotifyUserAboutModuleAsync(long tgId, int moduleId);
+    Task<Result> NotifyUserAboutModuleAsync(long tgId, int moduleId);
 }
