@@ -70,7 +70,8 @@ public class TestingService : ITestingService
     public async Task<Result<SubmitAnswersResult>> SubmitAnswers(SubmitAnswersCommand command)
     {
         _logger.LogInformation("Получение правильных ответов для курса ID: {CourseId}, модуля ID: {ModuleId}", command.CourseId, command.ModuleId);
-        
+
+        // Получаем правильные ответы из MinIO
         var correctAnswersResult = await testingRepository.GetCorrectAnswersAsync(command.CourseId, command.ModuleId);
         if (!correctAnswersResult.IsSuccess)
         {
@@ -107,48 +108,63 @@ public class TestingService : ITestingService
             _logger.LogWarning("Доступ к модулю для пользователя ID {UserId}, модуля ID {ModuleId} не найден.", command.UserId, command.ModuleId);
             return Result<SubmitAnswersResult>.Failure("Доступ к модулю не найден.");
         }
-        
-        moduleAccess.IsModuleCompleted = true;
-        moduleAccess.CompletionDate = DateOnly.FromDateTime(DateTime.UtcNow);
-        
-        var nextModuleResult = await moduleRepository.GetNextModuleInCourseAsync(command.CourseId, command.ModuleId);
-        if (nextModuleResult == null || !nextModuleResult.IsSuccess)
-        {
-            var updateResult = await moduleAccessRepository.UpdateAsync(moduleAccess);
-            if (!updateResult.IsSuccess)
-            {
-                _logger.LogWarning("Не удалось обновить данные модуля для пользователя ID {UserId}, модуля ID {ModuleId}. Ошибка: {ErrorMessage}", command.UserId, command.ModuleId, updateResult.ErrorMessage);
-                return Result<SubmitAnswersResult>.Failure(updateResult.ErrorMessage);
-            }
-            
-            var result = new SubmitAnswersResult(isSuccess, command.Answers.Count, correctCount, correctness);
-            return Result<SubmitAnswersResult>.Success(result);
-        }
 
-        var nextModule = nextModuleResult.Data;
-        var nextModuleAccess = await moduleAccessRepository.GetByUserAndModuleAsync(command.UserId, nextModule.Id);
-
-        if (nextModuleAccess != null)
+        if (isSuccess)
         {
-            nextModuleAccess.IsModuleAvailable = true;
-            var nextModuleUpdateResult = await moduleAccessRepository.UpdateAsync(nextModuleAccess);
-            if (!nextModuleUpdateResult.IsSuccess)
+            // Тест успешно сдан
+            moduleAccess.IsModuleCompleted = true;
+            moduleAccess.CompletionDate = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            var nextModuleResult = await moduleRepository.GetNextModuleInCourseAsync(command.CourseId, command.ModuleId);
+            if (nextModuleResult != null && nextModuleResult.IsSuccess)
             {
-                _logger.LogWarning("Не удалось обновить доступ к следующему модулю для пользователя ID {UserId}, модуля ID {ModuleId}. Ошибка: {ErrorMessage}", command.UserId, nextModule.Id, nextModuleUpdateResult.ErrorMessage);
-                return Result<SubmitAnswersResult>.Failure("Не удалось обновить доступ к следующему модулю.");
+                var nextModule = nextModuleResult.Data;
+                var nextModuleAccess = await moduleAccessRepository.GetByUserAndModuleAsync(command.UserId, nextModule.Id);
+
+                if (nextModuleAccess != null)
+                {
+                    nextModuleAccess.IsModuleAvailable = true;
+                    var nextModuleUpdateResult = await moduleAccessRepository.UpdateAsync(nextModuleAccess);
+
+                    if (!nextModuleUpdateResult.IsSuccess)
+                    {
+                        _logger.LogWarning("Не удалось обновить доступ к следующему модулю для пользователя ID {UserId}, модуля ID {ModuleId}. Ошибка: {ErrorMessage}", command.UserId, nextModule.Id, nextModuleUpdateResult.ErrorMessage);
+                        return Result<SubmitAnswersResult>.Failure("Не удалось обновить доступ к следующему модулю.");
+                    }
+                }
             }
         }
-        
-        var updateResultSuccess = await moduleAccessRepository.UpdateAsync(moduleAccess);
-        if (!updateResultSuccess.IsSuccess)
+        else
         {
-            _logger.LogWarning("Не удалось обновить данные модуля для пользователя ID {UserId}, модуля ID {ModuleId}. Ошибка: {ErrorMessage}", command.UserId, command.ModuleId, updateResultSuccess.ErrorMessage);
-            return Result<SubmitAnswersResult>.Failure(updateResultSuccess.ErrorMessage);
+            // Тест не сдан
+            moduleAccess.TestTriesCount++;
+
+            _logger.LogInformation("Попытка {TestTriesCount} для пользователя ID {UserId}, модуля ID {ModuleId}", moduleAccess.TestTriesCount, command.UserId, command.ModuleId);
+
+            if (moduleAccess.TestTriesCount >= 3)
+            {
+                _logger.LogWarning("Пользователь ID {UserId} исчерпал 3 попытки на модуль ID {ModuleId}. Удаление прочитанных лонгридов.", command.UserId, command.ModuleId);
+
+                moduleAccess.TestTriesCount = 0;
+                moduleAccess.LongreadCompletions.Clear(); // Очищаем прочитанные лонгриды
+            }
         }
-        
-        var resultSuccess = new SubmitAnswersResult(isSuccess, command.Answers.Count, correctCount, correctness);
-        _logger.LogInformation("Тест успешно сдан для пользователя ID {UserId}, модуля ID {ModuleId}. Процент правильных ответов: {CorrectPercentage}%", command.UserId, command.ModuleId, correctPercentage);
-        return Result<SubmitAnswersResult>.Success(resultSuccess);
+        var updateResult = await moduleAccessRepository.UpdateAsync(moduleAccess);
+        if (!updateResult.IsSuccess)
+        {
+            _logger.LogWarning("Не удалось обновить данные модуля для пользователя ID {UserId}, модуля ID {ModuleId}. Ошибка: {ErrorMessage}", command.UserId, command.ModuleId, updateResult.ErrorMessage);
+            return Result<SubmitAnswersResult>.Failure(updateResult.ErrorMessage);
+        }
+
+        var result = new SubmitAnswersResult(
+            isSuccess,
+            command.Answers.Count,
+            correctCount,
+            correctness
+        );
+
+        _logger.LogInformation("Результат сдачи теста: {IsSuccess}. Пользователь ID {UserId}, модуль ID {ModuleId}.", isSuccess, command.UserId, command.ModuleId);
+        return Result<SubmitAnswersResult>.Success(result);
     }
     
     public async Task<Result> AddOrUpdateTestAsync(int courseId, int moduleId, List<TestingQuestion> testQuestions)
