@@ -61,8 +61,11 @@ public class ModuleActivityService(
                     if (!isInactive)
                         continue;
 
+                    var message =
+                        $"Привет, {user.Name}! \ud83c\udf1f Вы давно не заходили на платформу. {moduleAccess.Module!.Title} «[Название модуля]» скучает по вам — там остались важные темы и задания! Загляните, чтобы не пропустить ничего интересного. \ud83d\ude0a";
+                    
                     var notificationResult =
-                        await notificationService.NotifyUserAboutModuleAsync(user.TgId, moduleAccess.ModuleId);
+                        await notificationService.NotifyUserAboutModuleAsync(user.TgId, message);
                     
                     if (notificationResult.IsSuccess)
                     {
