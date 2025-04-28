@@ -27,12 +27,6 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.User, opt => opt.Ignore())
             .ForMember(dest => dest.Module, opt => opt.Ignore());
         CreateMap<ModuleEntity, Module>().ReverseMap();
-        //CreateMap<ResourceEntity, Resource>()
-        //    .ForMember(dest => dest.Type,
-        //        opt => opt.MapFrom(src => Enum.Parse<ResourceType>(src.Type)))
-        //    .ReverseMap()
-        //    .ForMember(dest => dest.Type,
-        //        opt => opt.MapFrom(src => src.Type.ToString()));
         CreateMap<RoleEntity, Role>().ReverseMap();
         CreateMap<TestEntity, Test>().ReverseMap();
         CreateMap<UserEntity, User>()
