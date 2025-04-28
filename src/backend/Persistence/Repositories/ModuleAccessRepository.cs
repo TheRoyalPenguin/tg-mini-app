@@ -204,7 +204,7 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
     public async Task<Result<ICollection<ModuleAccess>>> GetAllAsync() 
         => await GetModuleAccessesAsync(_ => true, "Failed to get modules accesses");
 
-    public async Task<Result<ICollection<ModuleAccess>>> GetAllByUserIdAndCourseIdAsync(int courseId, int userId)
+    public async Task<Result<ICollection<ModuleAccess>>> GetAllByUserIdAndCourseIdAsync(int userId, int courseId)
         => await GetModuleAccessesAsync(
             ma => ma.Module.CourseId == courseId && ma.UserId == userId,
             $"Failed to get modules accesses with UserId {userId} and CourseId {courseId}");
