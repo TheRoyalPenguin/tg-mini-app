@@ -17,6 +17,7 @@ using FluentValidation.AspNetCore;
 using API.Validators;
 using Persistence.MinioRepositories;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSeqLogging();
@@ -101,7 +102,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://frontend:3000", "https://levelupapp.hopto.org/", "https://levelupapp.hopto.org");
+        policy.WithOrigins("http://localhost:3000","http://localhost:3001" ,"http://frontend:3000","http://frontend:3001", "https://levelupapp.hopto.org/", "https://levelupapp.hopto.org");
         policy.AllowAnyHeader();
         policy.AllowAnyMethod();
     });
@@ -169,7 +170,7 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
-    
+
     var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
     try
     {

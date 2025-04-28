@@ -7,6 +7,15 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+      
+  admin-frontend:
+    build:
+      context: ./admin-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000" 
+    depends_on:
+      - backend 
 
   backend:
     build:

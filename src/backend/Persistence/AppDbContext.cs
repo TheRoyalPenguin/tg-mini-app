@@ -14,7 +14,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<LongreadEntity> Longreads { get; set; }
     public DbSet<LongreadImageEntity> LongreadImages { get; set; }
     public DbSet<BookEntity> Books { get; set; }
-    public DbSet<ModuleBookEntity> ModuleBooks { get; set; }
     public DbSet<TestEntity> Tests { get; set; }
     public DbSet<TestResultEntity> TestResults { get; set; }
     public DbSet<LongreadCompletionEntity> LongreadCompletions { get; set; }

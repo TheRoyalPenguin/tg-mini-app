@@ -24,7 +24,7 @@ public class BookConfiguration : IEntityTypeConfiguration<BookEntity>
             .HasColumnName("book_author")
             .HasMaxLength(200);
 
-        builder.Property(b => b.FileKey)
+        builder.Property(b => b.ContentKey)
             .HasColumnName("file_key");
 
         builder.Property(b => b.CoverKey)
