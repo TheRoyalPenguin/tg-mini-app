@@ -10,4 +10,5 @@ public interface IUserRepository
     Task<Result<User>> GetOneInCourseAsync(int userId, int courseId);
     Task<Result<User>> GetOneWithAllCourses(int userId);
     Task<Result<User>> GetByIdAsync(int userId);
+    Task<Result<bool>> ChangeBanStateAsync(int userId, bool banState);
 }

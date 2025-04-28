@@ -122,4 +122,28 @@ public class AdminService(IUnitOfWork uow, IMapper mapper) : IAdminService
                 .Failure(e.Message)!;
         }
     }
+
+    public async Task<Result<bool>> BanUserAsync(int userId)
+    {
+        var banResult = await uow.Users.ChangeBanStateAsync(userId, true);
+        if (!banResult.IsSuccess)
+            return Result<bool>
+                .Failure(banResult.ErrorMessage!);
+        
+        await uow.SaveChangesAsync();
+        
+        return Result<bool>.Success(true);
+    }
+
+    public async Task<Result<bool>> UnbanUserAsync(int userId)
+    {
+        var unbanResult = await uow.Users.ChangeBanStateAsync(userId, false);
+        if (!unbanResult.IsSuccess)
+            return Result<bool>
+                .Failure(unbanResult.ErrorMessage!);
+        
+        await uow.SaveChangesAsync();
+        
+        return Result<bool>.Success(true);
+    }
 }

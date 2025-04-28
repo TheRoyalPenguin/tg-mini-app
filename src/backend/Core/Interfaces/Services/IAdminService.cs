@@ -10,4 +10,6 @@ public interface IAdminService
     Task<Result<ICollection<(User user, ICollection<TestResult> testResults)>>> GetTestResultsByCourse(int courseId);
     Task<Result<(User user, ICollection<TestResult> testResults)>> GetTestResultsByUser(int userId);
     Task<Result<(User user, ICollection<TestResult> testResults)>> GetTestResultsForUserByCourse(int userId, int courseId);
+    Task<Result<bool>> BanUserAsync(int userId);
+    Task<Result<bool>> UnbanUserAsync(int userId);
 }
