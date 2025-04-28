@@ -115,6 +115,7 @@ builder.Services.AddScoped<ITestRepository, TestRepository>();
 
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStatisticService, StatisticService>();
 builder.Services.AddScoped<ITestResultRepository, TestResultRepository>();
 
