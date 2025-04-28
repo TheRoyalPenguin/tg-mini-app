@@ -6,6 +6,7 @@ public class UserDto
     public long TgId { get; set; }
     public string Name { get; set; }
     public string Surname { get; set; }
+    public bool IsBanned { get; set; }
     
     public UserDto(Core.Models.User user)
     {
@@ -13,5 +14,6 @@ public class UserDto
         TgId = user.TgId;
         Name = user.Name;
         Surname = user.Surname;
+        IsBanned = user.IsBanned;
     }
 }
