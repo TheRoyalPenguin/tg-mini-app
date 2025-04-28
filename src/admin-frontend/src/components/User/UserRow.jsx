@@ -1,4 +1,5 @@
-import { banUser, unbanUser } from "../../../api/adminApi"; // если ты уже поправил путь
+// UserRow.js
+import { banUser, unbanUser } from "../../api/adminApi";
 import { useState } from "react";
 
 export default function UserRow({ user }) {
@@ -9,7 +10,7 @@ export default function UserRow({ user }) {
       await banUser(user.id);
       setIsBanned(true);
     } catch (error) {
-      console.error(error);
+      console.error("Ошибка при бане пользователя", error);
     }
   };
 
@@ -18,7 +19,7 @@ export default function UserRow({ user }) {
       await unbanUser(user.id);
       setIsBanned(false);
     } catch (error) {
-      console.error(error);
+      console.error("Ошибка при разбане пользователя", error);
     }
   };
 

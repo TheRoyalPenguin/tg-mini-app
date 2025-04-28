@@ -1,16 +1,22 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout/Layout";
-import UsersPage from "./pages/UsersPage";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Sidebar from "./components/Layout/Sidebar";
+import UserStatistics from "./components/User/UserStatistics";
+import UsersPage from "./pages/UsersPage"; 
 
-export default function App() {
+function App() {
   return (
     <Router>
-      <Layout>
-        <Routes>
-          <Route path="/users" element={<UsersPage />} />
-          {/* В будущем другие страницы */}
-        </Routes>
-      </Layout>
+      <div className="flex">
+        <Sidebar />
+        <div className="flex-1 p-6 overflow-auto">
+          <Routes>
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/statistics/:userId" element={<UserStatistics />} />
+          </Routes>
+        </div>
+      </div>
     </Router>
   );
 }
+
+export default App;
