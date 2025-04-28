@@ -65,9 +65,12 @@ services:
       - redis_data:/data
   
   bot:
+    container_name: bot
     build:
       context: ./tg-bot
-      dockerfile: Dockerfile
+      dockerfile: Bot/Dockerfile
+    ports:
+      - "8081:8081"
     depends_on:
       - backend
     environment:

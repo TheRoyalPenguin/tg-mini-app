@@ -1,9 +1,9 @@
-﻿using LevelUpTgBot.Interfaces;
+﻿using Bot.Interfaces;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types;
 
-namespace LevelUpTgBot.Handlers;
+namespace Bot.Handlers;
 
 public class MessageHandler
 {
@@ -41,7 +41,6 @@ public class MessageHandler
             await _commandHandler.ResendPhoneRequest(chatId, token);
             return;
         }
-
         var userInfo = new
         {
             TgId = contact.UserId,

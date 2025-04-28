@@ -1,17 +1,16 @@
 ﻿using System.Text.Json;
 using System.Text;
-using LevelUpTgBot.Interfaces;
+using Bot.Interfaces;
 
-namespace LevelUpTgBot.Services;
+namespace Bot.Services;
 
-public class BackendService :IBackendService
+public class BackendService: IBackendService
 {
     private readonly HttpClient _httpClient;
 
-    public BackendService(HttpClient httpClient, string baseAdress)
+    public BackendService(HttpClient httpClient)
     {
         _httpClient = httpClient;
-        _httpClient.BaseAddress = new Uri(baseAdress);
     }
 
     public async Task<bool> SendDataAsync(object data, string endpoint)

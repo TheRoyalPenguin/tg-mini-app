@@ -1,7 +1,7 @@
 ﻿using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types;
 
-namespace LevelUpTgBot.Interfaces;
+namespace Bot.Interfaces;
 
 public interface ITelegramService
 {

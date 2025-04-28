@@ -2,9 +2,9 @@
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types;
-using LevelUpTgBot.Interfaces;
+using Bot.Interfaces;
 
-namespace LevelUpTgBot.Services;
+namespace Bot.Services;
 
 public class TelegramService : ITelegramService
 {
