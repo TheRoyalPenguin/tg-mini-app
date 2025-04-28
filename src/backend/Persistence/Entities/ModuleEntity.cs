@@ -16,5 +16,5 @@ public class ModuleEntity
 
     public ICollection<LongreadEntity> Longreads { get; set; } = new List<LongreadEntity>();
     public ICollection<TestEntity> Tests { get; set; } = new List<TestEntity>();
-    public ICollection<ModuleBookEntity> ModuleBooks { get; set; } = new List<ModuleBookEntity>();
+    public ICollection<BookEntity> Books { get; set; } = new List<BookEntity>();
 }
