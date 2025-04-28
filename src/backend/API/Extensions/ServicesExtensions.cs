@@ -29,7 +29,7 @@ public static class ServicesExtensions
             options.InstanceName = "MdProcessor_";
         });
     }
-
+    
     public static void AddMinio(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<IStorageService, MinioStorageService>();

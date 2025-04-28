@@ -1,37 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Header from "../components/header/Header";
 import CustomButton from "../components/common/CustomButton";
-
-const longreads = [
-    { title: 'Тайм-менеджмент тим-лида' },
-    { title: 'Матрица Эйзенхауэра' },
-    { title: 'Метод ABCDE' },
-];
+import getLongreadsByModuleId from "../services/getLongreadsByModuleId";
 
 const recommendedBooks = [
     {
         author: 'Автор автор',
         description: 'Описание книги 1',
-        coverUri: 'https://minio.example.com/covers/book1.jpg',
+        coverUri: '',
     },
     {
         author: 'Автор',
         description: 'Описание книги 2',
-        coverUri: 'https://minio.example.com/covers/book2.jpg',
+        coverUri: '',
     },
     {
         author: 'Автор',
         description: 'Описание книги 3',
-        coverUri: 'https://minio.example.com/covers/book3.jpg',
+        coverUri: '',
     },
 ];
 
 const longreadColors = [
-    'bg-[#0f9fff]', // синие оттенки
+    'bg-[#0f9fff]',
     'bg-[#3ebfff]',
     'bg-[#6fcdfc]',
-
 ];
 
 const bookColors = [
@@ -43,11 +37,52 @@ const bookColors = [
 const ModulePage = function () {
     const { moduleId } = useParams();
     const navigate = useNavigate();
+    const [longreads, setLongreads] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        async function fetchLongreads() {
+            try {
+                const data = await getLongreadsByModuleId(moduleId);
+                console.log(data);
+                setLongreads(data);
+            } catch (err) {
+                setError('Не удалось загрузить лонгриды');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchLongreads();
+    }, [moduleId]);
+
+    if (loading) {
+        return (
+            <>
+                <Header />
+                <div className="max-w-2xl mx-auto p-6 mt-4 text-center">
+                    Загрузка...
+                </div>
+            </>
+        );
+    }
+
+    if (error) {
+        return (
+            <>
+                <Header />
+                <div className="max-w-2xl mx-auto p-6 mt-4 text-center text-red-500">
+                    {error}
+                </div>
+            </>
+        );
+    }
 
     return (
         <>
             <Header />
-            <div className="max-w-2xl mx-auto p-6 mt-4">
+            <div className="max-w-2xl mx-auto p-6 mt-4 bg-[#f7f8fc]  pt-8">
                 <h1 className="text-2xl font-bold mb-1 text-center">Блок 1</h1>
                 <h1 className="text-2xl font-bold mb-6 text-center">"Тайм-менеджмент"</h1>
 
@@ -59,15 +94,14 @@ const ModulePage = function () {
                             key={index}
                             text={item.title}
                             className={`${longreadColors[index % longreadColors.length]} w-full max-w-[300px]`}
-                            onClick={() => console.log(`Clicked on ${item.title}`)}
+                            onClick={() => navigate(`/longreads/${item.id}`)}
                         />
                     ))}
                 </div>
 
-
                 <div className="text-center mb-6">
                     <button
-                        className="bg-#0EAA67] border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 mt-1 mb-1"
+                        className="bg-[#0EAA67] border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 mt-1 mb-1"
                         onClick={() => navigate(`/tests/${moduleId}`)}
                     >
                         Пройти тест

@@ -47,7 +47,7 @@ const WelcomePage = function() {
     return (
         <>
         <Header/>
-            <div className="flex flex-col items-center h-screen text-center bg-[#f7f8fc] pt-4">
+            <div className="flex flex-col items-center h-screen text-center bg-[#f7f8fc] pt-12">
                 <img
                     src="/images/knowledge.png"
                     className="w-[230px] mt-[20px]"

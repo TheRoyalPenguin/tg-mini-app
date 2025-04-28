@@ -50,7 +50,7 @@ const SupportPage = () => {
     return (
         <>
             <Header/>
-        <div className="flex flex-col items-center h-full min-h-screen text-center bg-[#f7f8fc] p-4">
+        <div className="flex flex-col items-center h-full min-h-screen text-center bg-[#f7f8fc] p-4  pt-12">
             <img
                 src="/images/universal_element_2.png"
                 className="w-[200px] mt-[20px]"

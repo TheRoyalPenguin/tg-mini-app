@@ -15,6 +15,7 @@ using Persistence.Repositories;
 using Persistence.Converter;
 using FluentValidation.AspNetCore;
 using API.Validators;
+using Persistence.MinioRepositories;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -101,7 +102,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://frontend:3000", "https://levelupapp.hopto.org/", "https://levelupapp.hopto.org");
+        policy.WithOrigins("http://localhost:3000","http://localhost:3001" ,"http://frontend:3000","http://frontend:3001", "https://levelupapp.hopto.org/", "https://levelupapp.hopto.org");
         policy.AllowAnyHeader();
         policy.AllowAnyMethod();
     });
@@ -134,7 +135,7 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ICourseService, CoursesService>();
 
-
+builder.Services.AddScoped<ITestingRepository, TestingRepository>();
 builder.Services.AddScoped<ITestingService, TestingService>();
 
 builder.Services.AddScoped<ILongreadRepository, LongreadRepository>();

@@ -11,4 +11,5 @@ public interface IModuleAccessRepository : IRepository<int, ModuleAccess>
     Task<Result<ICollection<ModuleAccess>>> GetAllByCourseIdAsync(int courseId);
     Task<Result<ICollection<ModuleAccess>>> GetAllByModuleIdAsync(int moduleId);
     Task<Result<ICollection<ModuleAccess>>> GetAllByUserIdAsync(int userId);
+    Task<ModuleAccess?> GetByUserAndModuleAsync(int userId, int moduleId);
 }

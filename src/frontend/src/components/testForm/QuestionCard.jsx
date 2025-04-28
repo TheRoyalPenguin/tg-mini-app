@@ -6,7 +6,8 @@ const QuestionCard = ({
                           selectedAnswer,
                           submitted,
                           submitAttempted,
-                          onAnswerSelect
+                          onAnswerSelect,
+                          isCorrect
                       }) => {
     const isAnswered = selectedAnswer !== undefined;
     const showError = submitAttempted && !isAnswered && !submitted;
@@ -21,8 +22,8 @@ const QuestionCard = ({
                 {qIndex + 1}. {question.question}
                 {showError && (
                     <span className="ml-2 text-sm font-normal">
-            (Выберите ответ!)
-          </span>
+                        (Выберите ответ!)
+                    </span>
                 )}
             </h3>
             <div className="space-y-3">
@@ -31,7 +32,8 @@ const QuestionCard = ({
                         key={oIndex}
                         option={option}
                         isSelected={selectedAnswer === oIndex}
-                        isCorrect={oIndex === question.correctAnswer}
+                        isUserSelected={selectedAnswer === oIndex}
+                        isUserCorrect={isCorrect}
                         submitted={submitted}
                         onSelect={() => onAnswerSelect(qIndex, oIndex)}
                     />
