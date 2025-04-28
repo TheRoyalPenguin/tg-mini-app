@@ -1,20 +1,21 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Sidebar from "./components/Layout/Sidebar";
-import UserStatistics from "./components/User/UserStatistics";
-import UsersPage from "./pages/UsersPage"; 
+// App.js
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Layout from './components/Layout/Layout';
+import UsersPage from './pages/UsersPage';
+import CoursesPage from './pages/CoursesPage';
+import CourseStatistics from './components/CourseStatistics';
 
 function App() {
   return (
     <Router>
-      <div className="flex">
-        <Sidebar />
-        <div className="flex-1 p-6 overflow-auto">
-          <Routes>
-            <Route path="/users" element={<UsersPage />} />
-            <Route path="/statistics/:userId" element={<UserStatistics />} />
-          </Routes>
-        </div>
-      </div>
+      <Layout>
+        <Routes>
+          <Route path="/users" element={<UsersPage />} />
+          <Route path="/statistics" element={<CoursesPage />} />
+          <Route path="/statistics/courses/:courseId" element={<CourseStatistics />} />
+          <Route path="/" element={<UsersPage />} />
+        </Routes>
+      </Layout>
     </Router>
   );
 }

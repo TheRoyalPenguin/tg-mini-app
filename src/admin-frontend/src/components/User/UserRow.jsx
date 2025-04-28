@@ -1,9 +1,11 @@
 // UserRow.js
 import { banUser, unbanUser } from "../../api/adminApi";
 import { useState } from "react";
+import UserStatisticsModal from "./UserStatisticsModal";
 
 export default function UserRow({ user }) {
   const [isBanned, setIsBanned] = useState(user.isBanned);
+  const [showStats, setShowStats] = useState(false);
 
   const handleBan = async () => {
     try {
@@ -24,28 +26,42 @@ export default function UserRow({ user }) {
   };
 
   return (
-    <tr className="border-b">
-      <td className="p-2">{user.id}</td>
-      <td className="p-2">{user.tgId}</td>
-      <td className="p-2">{user.name}</td>
-      <td className="p-2">{user.surname}</td>
-      <td className="p-2 space-x-2">
-        {isBanned ? (
+    <>
+      <tr className="border-b hover:bg-gray-50">
+        <td className="p-2">{user.id}</td>
+        <td className="p-2">{user.tgId}</td>
+        <td className="p-2">{user.name}</td>
+        <td className="p-2">{user.surname}</td>
+        <td className="p-2 space-x-2">
           <button
-            onClick={handleUnban}
-            className="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded"
+            onClick={() => setShowStats(true)}
+            className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded"
           >
-            Разбанить
+            Статистика
           </button>
-        ) : (
-          <button
-            onClick={handleBan}
-            className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
-          >
-            Забанить
-          </button>
-        )}
-      </td>
-    </tr>
+          {isBanned ? (
+            <button
+              onClick={handleUnban}
+              className="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded"
+            >
+              Разбанить
+            </button>
+          ) : (
+            <button
+              onClick={handleBan}
+              className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
+            >
+              Забанить
+            </button>
+          )}
+        </td>
+      </tr>
+      
+      <UserStatisticsModal 
+        userId={user.id}
+        isOpen={showStats}
+        onClose={() => setShowStats(false)}
+      />
+    </>
   );
 }

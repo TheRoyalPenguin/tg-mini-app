@@ -13,7 +13,6 @@ export default function UsersPage() {
       const usersData = await getUsers();
       setUsers(usersData);
     };
-
     fetchUsers();
   }, []);
 
