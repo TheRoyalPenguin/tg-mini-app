@@ -9,6 +9,24 @@ namespace Persistence.Repositories;
 
 public class UserRepository(AppDbContext appDbContext, IMapper mapper) : IUserRepository
 {
+    public async Task<Result<User>> UpdateAsync(User model)
+    {
+        try
+        {
+            var entity = await appDbContext.Users.FindAsync(model.Id);
+            if (entity == null)
+                return Result<User>.Failure("User not found")!;
+
+            mapper.Map(model, entity);
+            var updatedModel = mapper.Map<User>(entity);
+
+            return Result<User>.Success(updatedModel);
+        }
+        catch (Exception ex)
+        {
+            return Result<User>.Failure(ex.Message)!;
+        }
+    }
 
     public async Task<Result> DeleteAsync(User model)
     {
@@ -93,7 +111,7 @@ public class UserRepository(AppDbContext appDbContext, IMapper mapper) : IUserRe
             return Result<ICollection<User>>.Failure($"Failed to get users: {ex.Message}")!;
         }
     }
-    
+
     public async Task<Result<ICollection<User>>> GetAllByCourseIdAsync(int courseId)
     {
         try
@@ -132,9 +150,9 @@ public class UserRepository(AppDbContext appDbContext, IMapper mapper) : IUserRe
                 .Include(u => u.Enrollments)
                 .Where(u => u.Enrollments.Any(e => e.CourseId == courseId))
                 .Include(u => u.ModuleAccesses)
-                .ThenInclude(ma => ma.Module)
+                    .ThenInclude(ma => ma.Module)
                 .Include(u => u.ModuleAccesses)
-                .ThenInclude(ma => ma.LongreadCompletions)
+                    .ThenInclude(ma => ma.LongreadCompletions)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
             if (userEntity == null)

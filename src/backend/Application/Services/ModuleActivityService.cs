@@ -22,7 +22,6 @@ public class ModuleActivityService(
             }
 
             var moduleAccesses = moduleAccessesResult.Data;
-            var oneWeekAgo = DateTime.UtcNow.AddDays(-7);
 
             var userModuleAccesses = moduleAccesses
                 .Where(ma => !ma.IsModuleCompleted && ma.IsModuleAvailable)
@@ -33,18 +32,30 @@ public class ModuleActivityService(
                 var userId = userGroup.Key;
                 
                 var userResult = await uow.Users.GetByIdAsync(userId);
-                if (!userResult.IsSuccess || userResult.Data.IsBanned)
+                if (!userResult.IsSuccess)
                 {
+                    logger.LogError("Failure while getting user with id {UserId}: {ErrorMessage}", userId, userResult.ErrorMessage);
                     continue;
                 }
+                    
+                if (userResult.Data.IsBanned)
+                    continue;
 
                 var user = userResult.Data;
+                var userNotificationDaysLimit = user.NotificationDaysLimit switch
+                {
+                    0 => 7,
+                    null => 7,
+                    _ => (int)user.NotificationDaysLimit
+                };
+                
+                var userNotificationTimestamp = DateTime.UtcNow.AddDays(-1 * userNotificationDaysLimit);
                 foreach (var moduleAccess in userGroup)
                 {
                     var isInactive = moduleAccess.LastActivity switch
                     {
                         null => true,
-                        var lastActivity => lastActivity <= oneWeekAgo
+                        var lastActivity => lastActivity <= userNotificationTimestamp
                     };
 
                     if (!isInactive)
@@ -56,18 +67,20 @@ public class ModuleActivityService(
                     if (notificationResult.IsSuccess)
                     {
                         logger.LogInformation(
-                            "User {UserId} has not been active in module {ModuleId} for more than a week. " +
+                            "User {UserId} has not been active in module {ModuleId} for {DaysLimit} days. " +
                             "Notification sent",
                             userId,
-                            moduleAccess.ModuleId);
+                            moduleAccess.ModuleId,
+                            userNotificationDaysLimit);
                     }
                     else
                     {
                         logger.LogError(
-                            "User {UserId} has not been active in module {ModuleId} for more than a week. " +
+                            "User {UserId} has not been active in module {ModuleId} for for {DaysLimit} days. " +
                             "Notification failed",
                             userId,
-                            moduleAccess.ModuleId);
+                            moduleAccess.ModuleId,
+                            userNotificationDaysLimit);
                     }
                 }
             }
