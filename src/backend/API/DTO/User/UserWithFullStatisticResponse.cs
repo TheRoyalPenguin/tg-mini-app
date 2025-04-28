@@ -23,7 +23,14 @@ public class UserWithFullStatisticResponse
         Patronymic = user.Patronymic;
         PhoneNumber = user.PhoneNumber;
         IsBanned = user.IsBanned;
-        var testResultsDict = testResults.GroupBy(tr => tr.Test.ModuleId).ToDictionary(group => group.Key, group => group.ToList());
+        
+        var testResultsDict = testResults
+            .Where(tr => tr != null && tr.Test != null)
+            .GroupBy(tr => tr.Test.ModuleId)
+            .ToDictionary(
+                group => group.Key, 
+                group => group.ToList()
+            );
         
         foreach (var moduleAccess in user.ModuleAccesses)
             if (!CoursesStatistic.ContainsKey(moduleAccess.Module!.CourseId))

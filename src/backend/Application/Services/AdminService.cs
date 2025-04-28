@@ -129,6 +129,7 @@ public class AdminService(IUnitOfWork uow, IMapper mapper) : IAdminService
         if (!banResult.IsSuccess)
             return Result<bool>
                 .Failure(banResult.ErrorMessage!);
+        
         await uow.SaveChangesAsync();
         
         return Result<bool>.Success(true);
@@ -140,6 +141,7 @@ public class AdminService(IUnitOfWork uow, IMapper mapper) : IAdminService
         if (!unbanResult.IsSuccess)
             return Result<bool>
                 .Failure(unbanResult.ErrorMessage!);
+        
         await uow.SaveChangesAsync();
         
         return Result<bool>.Success(true);
