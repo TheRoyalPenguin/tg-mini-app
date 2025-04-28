@@ -42,6 +42,10 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         builder.Property(u => u.RegisteredAt)
             .HasColumnName("registered_datetime");
         
+        builder.Property(u => u.NotificationDaysLimit)
+            .HasColumnName("notification_days")
+            .HasDefaultValue(7);
+        
         builder.Property(u => u.RoleId)
             .HasColumnName("role_id")
             .HasDefaultValue(0);

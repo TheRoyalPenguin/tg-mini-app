@@ -11,5 +11,6 @@ public class User
     public bool IsBanned { get; set; } = false;
     public required int RoleId { get; set; }
     public required DateTime RegisteredAt { get; set; }
+    public int? NotificationDaysLimit { get; set; } = 7;
     public List<ModuleAccess> ModuleAccesses { get; set; } = new();
 }
