@@ -1,11 +1,11 @@
-﻿using Core.Interfaces.Services;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using API.Configurations;
+using Core.Interfaces.Services;
+using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
 
-namespace Persistence.Storage;
+namespace API.Services;
 
 public class MinioStorageService : IStorageService
 {
@@ -14,25 +14,16 @@ public class MinioStorageService : IStorageService
     private readonly string _bucket;
     private readonly ILogger<MinioStorageService> _logger;
 
-    public MinioStorageService(IConfiguration cfg, ILogger<MinioStorageService> logger)
+    public MinioStorageService(IOptions<MinioSettings> options, ILogger<MinioStorageService> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        var settings = options.Value;
 
-        var endpoint = cfg["Minio:Endpoint"];
-        var publicEndpoint = cfg["Minio:PublicEndpoint"];
-        var accessKey = cfg["Minio:AccessKey"];
-        var secretKey = cfg["Minio:SecretKey"];
-        _bucket = cfg["Minio:Bucket"]!;
-
-        if (string.IsNullOrEmpty(endpoint)
-            || string.IsNullOrEmpty(accessKey)
-            || string.IsNullOrEmpty(secretKey)
-            || string.IsNullOrEmpty(_bucket)
-            || string.IsNullOrEmpty(publicEndpoint))
-        {
-            _logger.LogError("Invalid Minio configuration");
-            throw new ArgumentException("Missing Minio configuration in settings");
-        }
+        var endpoint = settings.Endpoint;
+        var publicEndpoint = settings.PublicEndpoint;
+        var accessKey = settings.AccessKey;
+        var secretKey = settings.SecretKey;
+        _bucket = settings.Bucket;
 
         _client = new MinioClient()
             .WithEndpoint(endpoint)
@@ -100,6 +91,31 @@ public class MinioStorageService : IStorageService
             _logger.LogError(ex, "Unexpected error uploading " + key);
             throw;
         }
+    }
+
+    public async Task DownloadAsync(Stream outputStream, string key, CancellationToken ct = default)
+    {
+        _logger.LogDebug("Starting download for " + key);
+        await _client.GetObjectAsync(
+            new GetObjectArgs()
+                .WithBucket(_bucket)
+                .WithObject(key)
+                .WithCallbackStream(s => s.CopyTo(outputStream)),
+            ct);
+        if (outputStream.CanSeek)
+            outputStream.Position = 0;
+        _logger.LogInformation("Downloaded " + key);
+    }
+
+    public async Task DeleteAsync(string key, CancellationToken ct = default)
+    {
+        _logger.LogDebug("Deleting object " + key);
+        await _client.RemoveObjectAsync(
+            new RemoveObjectArgs()
+                .WithBucket(_bucket)
+                .WithObject(key),
+            ct);
+        _logger.LogInformation("Deleted " + key);
     }
 
     public async Task<string> GetPresignedUrlAsync(string key)
