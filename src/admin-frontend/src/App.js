@@ -1,17 +1,16 @@
-import {BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import React from 'react';
-import AuthPage from './pages/TestPage';
-import TestPage from "./pages/TestPage";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout/Layout";
+import UsersPage from "./pages/UsersPage";
 
-
-function App() {
+export default function App() {
   return (
-      <Router>
-          <Routes>
-              <Route path="/" element={<TestPage />} />
-          </Routes>
-      </Router>
+    <Router>
+      <Layout>
+        <Routes>
+          <Route path="/users" element={<UsersPage />} />
+          {/* В будущем другие страницы */}
+        </Routes>
+      </Layout>
+    </Router>
   );
 }
-
-export default App;
