@@ -1,3 +1,4 @@
+using API.DTO.Book;
 using API.DTO.Enrollment;
 using API.DTO.ModuleRequests;
 using API.DTO.Testing;
@@ -27,12 +28,6 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.User, opt => opt.Ignore())
             .ForMember(dest => dest.Module, opt => opt.Ignore());
         CreateMap<ModuleEntity, Module>().ReverseMap();
-        //CreateMap<ResourceEntity, Resource>()
-        //    .ForMember(dest => dest.Type,
-        //        opt => opt.MapFrom(src => Enum.Parse<ResourceType>(src.Type)))
-        //    .ReverseMap()
-        //    .ForMember(dest => dest.Type,
-        //        opt => opt.MapFrom(src => src.Type.ToString()));
         CreateMap<RoleEntity, Role>().ReverseMap();
         CreateMap<TestEntity, Test>().ReverseMap();
         CreateMap<UserEntity, User>()
@@ -55,10 +50,9 @@ public class MappingProfile : Profile
             .ForMember(e => e.Module, opt => opt.Ignore());
 
         CreateMap<BookEntity, Book>()
-            .ForMember(dest => dest.ModuleIds, opt => opt.MapFrom(src => src.ModuleBooks.Select(mb => mb.ModuleId)))
             .ReverseMap()
             .ForMember(e => e.Id, opt => opt.Ignore())
-            .ForMember(e => e.ModuleBooks, opt => opt.Ignore());
+            .ForMember(e => e.Module, opt => opt.Ignore());
 
         CreateMap<NewModuleRequest, Module>()
             .ForMember(dest => dest.Id, opt => opt.Ignore());
@@ -73,5 +67,9 @@ public class MappingProfile : Profile
             .ReverseMap()
             .ForMember(dest => dest.Test, opt => opt.Ignore())
             .ForMember(dest => dest.User, opt => opt.Ignore());
+
+        CreateMap<Book, ResponseBookDto>()
+            .ForMember(dest => dest.ContentUrl, opt => opt.Ignore())
+            .ForMember(dest => dest.CoverUrl, opt => opt.Ignore());
     }
 }

@@ -1,0 +1,47 @@
+using Core.Interfaces.Services;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+
+namespace Application.Services;
+
+public class ModuleActivityBackgroundService(
+    IModuleActivityService moduleActivityService,
+    ILogger<ModuleActivityBackgroundService> logger)
+    : BackgroundService
+{
+    private readonly TimeSpan _checkInterval = TimeSpan.FromDays(1);
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        logger.LogInformation("Module Activity Background Service is starting.");
+
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            try
+            {
+                logger.LogInformation("Running module activity check...");
+                var result = await moduleActivityService.CheckAndNotifyInactiveUsersAsync();
+                
+                if (!result.IsSuccess)
+                {
+                    logger.LogError("Module activity check failed: {Error}", result.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error occurred while checking module activity");
+            }
+
+            try
+            {
+                await Task.Delay(_checkInterval, stoppingToken);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+        }
+
+        logger.LogInformation("Module Activity Background Service is stopping.");
+    }
+} 

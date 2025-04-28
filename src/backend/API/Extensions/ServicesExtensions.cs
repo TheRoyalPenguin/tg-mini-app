@@ -13,7 +13,7 @@ public static class ServicesExtensions
         services.AddDbContext<AppDbContext>(
             options => options.UseNpgsql(configuration.GetConnectionString(nameof(AppDbContext))));
     }
-    
+
     public static void AddRedis(this IServiceCollection services, IConfiguration configuration)
     {
         var redisSettings = configuration.GetSection("RedisSettings").Get<RedisSettings>();
@@ -26,7 +26,7 @@ public static class ServicesExtensions
         services.AddStackExchangeRedisCache(options =>
         {
             options.Configuration = redisConfiguration;
-            options.InstanceName = "MdProcessor_"; 
+            options.InstanceName = "MdProcessor_";
         });
     }
     

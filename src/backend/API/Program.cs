@@ -17,6 +17,7 @@ using FluentValidation.AspNetCore;
 using API.Validators;
 using Persistence.MinioRepositories;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSeqLogging();
@@ -114,6 +115,7 @@ builder.Services.AddScoped<ITestRepository, TestRepository>();
 
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStatisticService, StatisticService>();
 builder.Services.AddScoped<ITestResultRepository, TestResultRepository>();
 
@@ -128,6 +130,9 @@ builder.Services.AddScoped<IModuleService, ModuleService>();
 
 builder.Services.AddScoped<IModuleAccessRepository, ModuleAccessRepository>();
 builder.Services.AddScoped<IModuleAccessService, ModuleAccessService>();
+
+// builder.Services.AddScoped<IModuleActivityService, ModuleActivityService>();
+// builder.Services.AddHostedService<ModuleActivityBackgroundService>();
 
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 
@@ -166,7 +171,7 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
-    
+
     var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
     try
     {

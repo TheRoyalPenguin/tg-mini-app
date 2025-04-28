@@ -9,14 +9,30 @@ public class ModuleService(IUnitOfWork uow) : IModuleService
 {
     public async Task<Result<Module>> AddModuleAsync(Module module)
     {
-        var repositoryResult = await uow.Modules.AddAsync(module);
+        await uow.StartTransactionAsync();
         
-        if (!repositoryResult.IsSuccess)
-            return Result<Module>.Failure(repositoryResult.ErrorMessage!)!;
-
+        var addModuleResult = await uow.Modules.AddAsync(module);
+        if (!addModuleResult.IsSuccess)
+        {
+            await uow.RollbackTransactionAsync();
+            
+            return Result<Module>.Failure(addModuleResult.ErrorMessage!)!;
+        }
+        
+        var addedModuleModel = addModuleResult.Data;
+        var addAccessesResult = await uow.ModuleAccesses.AddAccessForModuleForEveryUsersAsync(addedModuleModel.Id);
+        
         await uow.SaveChangesAsync();
+        if (!addAccessesResult.IsSuccess)
+        {
+            await uow.RollbackTransactionAsync();
+            
+            return Result<Module>.Failure(addAccessesResult.ErrorMessage!)!;
+        }
         
-        return Result<Module>.Success(repositoryResult.Data);
+        await uow.CommitTransactionAsync();
+        
+        return Result<Module>.Success(addModuleResult.Data);
     }
 
     public async Task<Result<Module>> UpdateModuleAsync(Module module)
