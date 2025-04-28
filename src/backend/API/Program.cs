@@ -17,6 +17,7 @@ using FluentValidation.AspNetCore;
 using API.Validators;
 using Persistence.MinioRepositories;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSeqLogging();
@@ -166,7 +167,7 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
-    
+
     var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
     try
     {

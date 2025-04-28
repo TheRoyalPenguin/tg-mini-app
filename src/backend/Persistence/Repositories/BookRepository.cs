@@ -23,8 +23,7 @@ public class BookRepository : IBookRepository
         try
         {
             var entity = await _db.Books
-                                  .Include(b => b.ModuleBooks)
-                                  .ThenInclude(mb => mb.Module)
+                                  .Include(b => b.Module)
                                   .FirstOrDefaultAsync(b => b.Id == id, ct);
 
             return Result<Book>.Success(_mapper.Map<Book>(entity))!;
@@ -39,9 +38,8 @@ public class BookRepository : IBookRepository
     {
         try
         {
-            var entities = await _db.ModuleBooks
+            var entities = await _db.Books
                                      .Where(mb => mb.ModuleId == moduleId)
-                                     .Select(mb => mb.Book)
                                      .ToListAsync(ct);
 
             return Result<IReadOnlyList<Book>>.Success(_mapper.Map<List<Book>>(entities))!;
@@ -92,8 +90,10 @@ public class BookRepository : IBookRepository
     {
         try
         {
-            var entity = new BookEntity { Id = id };
-            _db.Books.Attach(entity);
+            var entity = await _db.Books.FindAsync(id, ct);
+            if (entity == null)
+                return Result.Failure($"Book with id {id} not found.");
+
             _db.Books.Remove(entity);
             await _db.SaveChangesAsync(ct);
 
