@@ -1,14 +1,17 @@
 import axiosInstance from "../axiosInstance";
 
-export async function setAnswersOfTest(courseId, moduleId) {
+export async function setAnswersOfTest(courseId, moduleId, answersArray) {
     const authToken = localStorage.getItem('authToken');
 
     try {
-        const response = await axiosInstance.get(`/courses/${courseId}/modules/${moduleId}/submit`, {
-            headers: {
-                'Authorization': `Bearer ${authToken}`
+        const response = await axiosInstance.post(`/courses/${courseId}/modules/${moduleId}/submit`,
+            { answers: answersArray },
+            {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
             }
-        });
+        );
         console.log(response.data);
         return response.data;
 
