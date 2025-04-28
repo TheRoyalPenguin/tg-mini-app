@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
-import getLongreadById from "../services/getLongreadById";
 import { useParams } from "react-router-dom";
+import getLongreadById from "../services/getLongreadById";
+import LongreadHeader from "../components/longread/LongreadHeader";
+import LongreadAudio from "../components/longread/LongreadAudio";
+import LongreadDownload from "../components/longread/LongreadDownload";
+import LongreadContent from "../components/longread/LongreadContent";
+import ReadConfirmationButton from "../components/longread/ReadConfirmationButton";
 
 function LongreadPage() {
     const { longreadId } = useParams();
     const [longread, setLongread] = useState(null);
     const [htmlContent, setHtmlContent] = useState('');
+    const [styleContent, setStyleContent] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -18,11 +24,13 @@ function LongreadPage() {
                 const htmlResponse = await fetch(data.htmlUrl);
                 const htmlText = await htmlResponse.text();
 
-                // Оставляем только body контент
                 const parser = new DOMParser();
-                const doc = parser.parseFromString(htmlText, "text/html");
-                const bodyContent = doc.body.innerHTML;
+                const doc = parser.parseFromString(htmlText, 'text/html');
 
+                const extractedStyle = doc.querySelector('style')?.innerHTML || '';
+                const bodyContent = doc.body.innerHTML || '';
+
+                setStyleContent(extractedStyle);
                 setHtmlContent(bodyContent);
             } catch (err) {
                 setError('Не удалось загрузить лонгрид');
@@ -40,28 +48,12 @@ function LongreadPage() {
     if (!longread) return <div className="text-center mt-10">Нет данных</div>;
 
     return (
-        <div className="max-w-3xl mx-auto px-4 py-8">
-            {/* Заголовок */}
-            <h1 className="text-4xl font-bold mb-4 text-center text-gray-800">{longread.title}</h1>
-
-            {/* Описание */}
-            <p className="text-lg text-gray-600 mb-8 text-center">{longread.description}</p>
-
-            {/* Чистый текст без панели */}
-            <div
-                dangerouslySetInnerHTML={{ __html: htmlContent }}
-                className="mb-10 leading-relaxed text-gray-800"
-            />
-
-            {/* Кнопка */}
-            <div className="text-center">
-                <button
-                    onClick={() => alert("Отлично!")}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition"
-                >
-                    Я прочитал(а)
-                </button>
-            </div>
+        <div className="max-w-5xl mx-auto px-4 py-8">
+            <LongreadHeader title={longread.title} description={longread.description} />
+            {longread.audioUrl && <LongreadAudio audioUrl={longread.audioUrl} />}
+            {longread.originalDocxUrl && <LongreadDownload docxUrl={longread.originalDocxUrl} />}
+            <LongreadContent styleContent={styleContent} htmlContent={htmlContent} />
+            <ReadConfirmationButton />
         </div>
     );
 }
