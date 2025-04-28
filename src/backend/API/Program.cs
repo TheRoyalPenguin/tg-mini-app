@@ -13,7 +13,6 @@ using Microsoft.OpenApi.Models;
 using Persistence;
 using Persistence.Repositories;
 using Persistence.Converter;
-using Persistence.Storage;
 using FluentValidation.AspNetCore;
 using API.Validators;
 using Persistence.MinioRepositories;
@@ -147,7 +146,6 @@ builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<IBookService, BookService>();
 
 builder.Services.AddSingleton<DocxConverter>();
-builder.Services.AddScoped<IStorageService, MinioStorageService>();
 builder.Services.AddScoped<ILongreadConverter, LongreadConverter>();
 
 builder.Services.AddPostgresDb(builder.Configuration);

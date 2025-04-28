@@ -1,5 +1,7 @@
+using API.Configurations;
+using API.Services;
+using Core.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
-using Minio;
 using Persistence;
 
 namespace API.Extensions;
@@ -30,15 +32,17 @@ public static class ServicesExtensions
     
     public static void AddMinio(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<IMinioClient>(sp =>
-        {
-            var minioSection = configuration.GetSection("Minio");
-    
-            return new MinioClient()
-                .WithEndpoint(minioSection["Endpoint"])
-                .WithCredentials(minioSection["AccessKey"], minioSection["SecretKey"])
-                .WithSSL(bool.Parse(minioSection["UseSSL"] ?? "false"))
-                .Build();
-        });
+        services.AddSingleton<IStorageService, MinioStorageService>();
+
+        services.AddOptions<MinioSettings>()
+        .Bind(configuration.GetSection("Minio"))
+        .ValidateDataAnnotations()
+        .Validate(settings =>
+            !string.IsNullOrEmpty(settings.Endpoint) &&
+            !string.IsNullOrEmpty(settings.AccessKey) &&
+            !string.IsNullOrEmpty(settings.SecretKey) &&
+            !string.IsNullOrEmpty(settings.Bucket) &&
+            !string.IsNullOrEmpty(settings.PublicEndpoint),
+            "Missing required Minio settings");
     }
 }

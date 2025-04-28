@@ -2,43 +2,32 @@
 using Core.Interfaces.Repositories;
 using Core.Models;
 using Core.Utils;
-using Microsoft.Extensions.Configuration;
-using Minio;
-using Minio.DataModel.Args;
 using Minio.Exceptions;
 using Microsoft.Extensions.Logging;
+using Core.Interfaces.Services;
 
 namespace Persistence.MinioRepositories
 {
     public class TestingRepository : ITestingRepository
     {
-        private readonly IMinioClient _minioClient;
+        private readonly IStorageService _storage;
         private readonly ILogger<TestingRepository> _logger;
-        private readonly string _bucketName;
 
-        public TestingRepository(IMinioClient minioClient, IConfiguration configuration, ILogger<TestingRepository> logger)
+        public TestingRepository(IStorageService storage, ILogger<TestingRepository> logger)
         {
-            _minioClient = minioClient;
+            _storage = storage;
             _logger = logger;
-            _bucketName = configuration["Minio:Bucket"] ?? throw new ArgumentNullException("Minio:BucketName not found in configuration");
         }
-
         public async Task<Result<List<TestingQuestion>>> GetTestAsync(int courseId, int moduleId, CancellationToken cancellationToken = default)
         {
-            var objectName = $"courses/{courseId}/modules/{moduleId}/Test.json";
+            var key = GetPath(courseId, moduleId);
             _logger.LogInformation("GetTestAsync called for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
 
             try
             {
                 using var memoryStream = new MemoryStream();
 
-                await _minioClient.GetObjectAsync(new GetObjectArgs()
-                        .WithBucket(_bucketName)
-                        .WithObject(objectName)
-                        .WithCallbackStream(stream => stream.CopyTo(memoryStream)),
-                    cancellationToken);
-
-                memoryStream.Seek(0, SeekOrigin.Begin);
+                await _storage.DownloadAsync(memoryStream, key, cancellationToken);
 
                 var test = await JsonSerializer.DeserializeAsync<List<TestingQuestion>>(memoryStream, cancellationToken: cancellationToken);
 
@@ -65,30 +54,20 @@ namespace Persistence.MinioRepositories
 
         public async Task<Result<List<int>>> GetCorrectAnswersAsync(int courseId, int moduleId, CancellationToken cancellationToken = default)
         {
-            var objectName = GetTestObjectPath(courseId, moduleId);
             _logger.LogInformation("GetCorrectAnswersAsync called for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
 
             try
             {
-                using var memoryStream = new MemoryStream();
 
-                await _minioClient.GetObjectAsync(new GetObjectArgs()
-                        .WithBucket(_bucketName)
-                        .WithObject(objectName)
-                        .WithCallbackStream(stream => stream.CopyTo(memoryStream)),
-                    cancellationToken);
+                var test = await GetTestAsync(courseId, moduleId, cancellationToken);
 
-                memoryStream.Seek(0, SeekOrigin.Begin);
-
-                var test = await JsonSerializer.DeserializeAsync<List<TestingQuestion>>(memoryStream, cancellationToken: cancellationToken);
-
-                if (test is null)
+                if (!test.IsSuccess || test.Data == null)
                 {
                     _logger.LogWarning("Failed to deserialize test for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
-                    return Result<List<int>>.Failure("Не удалось десериализовать тест.");
+                    return Result<List<int>>.Failure(test.ErrorMessage);
                 }
 
-                var correctAnswers = test.Select(q => q.CorrectAnswer).ToList();
+                var correctAnswers = test.Data.Select(q => q.CorrectAnswer).ToList();
                 _logger.LogInformation("Successfully retrieved correct answers for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
 
                 return Result<List<int>>.Success(correctAnswers);
@@ -107,33 +86,15 @@ namespace Persistence.MinioRepositories
 
         public async Task<Result> AddOrUpdateTestAsync(int courseId, int moduleId, List<TestingQuestion> testQuestions, CancellationToken cancellationToken = default)
         {
-            var objectName = GetTestObjectPath(courseId, moduleId);
+            var key = GetPath(courseId, moduleId);
             _logger.LogInformation("AddOrUpdateTestAsync called for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
 
             try
             {
-                var bucketExists = await _minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(_bucketName), cancellationToken);
-
-                if (!bucketExists)
-                {
-                    _logger.LogInformation("Bucket does not exist, creating bucket: {BucketName}", _bucketName);
-                    await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(_bucketName), cancellationToken);
-                }
-
                 var json = JsonSerializer.Serialize(testQuestions);
 
-                using var memoryStream = new MemoryStream();
-                var writer = new StreamWriter(memoryStream);
-                writer.Write(json);
-                writer.Flush();
-                memoryStream.Seek(0, SeekOrigin.Begin);
-
-                await _minioClient.PutObjectAsync(new PutObjectArgs()
-                        .WithBucket(_bucketName)
-                        .WithObject(objectName)
-                        .WithStreamData(memoryStream)
-                        .WithObjectSize(memoryStream.Length),
-                    cancellationToken);
+                using var memoryStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
+                await _storage.UploadAsync(memoryStream, key, cancellationToken);
 
                 _logger.LogInformation("Successfully added or updated test for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
                 return Result.Success();
@@ -147,15 +108,12 @@ namespace Persistence.MinioRepositories
         
         public async Task<Result> DeleteTestAsync(int courseId, int moduleId, CancellationToken cancellationToken = default)
         {
-            var objectName = GetTestObjectPath(courseId, moduleId);
+            var key = GetPath(courseId, moduleId);
             _logger.LogInformation("DeleteTestAsync called for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
 
             try
             {
-                await _minioClient.RemoveObjectAsync(new RemoveObjectArgs()
-                        .WithBucket(_bucketName)
-                        .WithObject(objectName),
-                    cancellationToken);
+                await _storage.DeleteAsync(key, cancellationToken);
 
                 _logger.LogInformation("Successfully deleted test for courseId: {courseId}, moduleId: {moduleId}", courseId, moduleId);
                 return Result.Success();
@@ -172,7 +130,7 @@ namespace Persistence.MinioRepositories
             }
         }
 
-        private static string GetTestObjectPath(int courseId, int moduleId)
+        private static string GetPath(int courseId, int moduleId)
         {
             return $"courses/{courseId}/modules/{moduleId}/Test.json";
         }
