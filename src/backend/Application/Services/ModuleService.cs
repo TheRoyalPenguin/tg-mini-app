@@ -87,40 +87,24 @@ public class ModuleService(IUnitOfWork uow) : IModuleService
     public async Task<Result<ICollection<ModuleWithAccess>>> GetModulesByCourseIdWithAccessAsync(int courseId, int userId)
     {
         if (courseId <= 0 || userId <= 0)
-        {
             return Result<ICollection<ModuleWithAccess>>.Failure("Invalid input parameters")!;
-        }
-
-        var modulesResult = await uow.Modules.GetAllByCourseIdAsync(courseId);
-
-        if (!modulesResult.IsSuccess)
-        {
-            return Result<ICollection<ModuleWithAccess>>.Failure(modulesResult.ErrorMessage!)!;
-        }
-
-        if (modulesResult.Data.Count == 0)
-        {
-            return Result<ICollection<ModuleWithAccess>>.Failure("Module data not found")!;
-        }
 
         var accessResult = await uow.ModuleAccesses.GetAllByUserIdAndCourseIdAsync(userId, courseId);
+        
+        if (!accessResult.IsSuccess)
+            return Result<ICollection<ModuleWithAccess>>.Failure(accessResult.ErrorMessage!)!;
+        
+        var accesses = accessResult.Data;
+        
+        if (accesses.Count == 0)
+            return Result<ICollection<ModuleWithAccess>>.Failure("Module data not found")!;
 
-        HashSet<int> accessesIds = new();
-        if (accessResult.IsSuccess && accessResult.Data.Count != 0)
-        {
-            accessesIds = accessResult.Data
-                .Where(a => a.IsModuleAvailable)
-                .Select(a => a.ModuleId)
-                .ToHashSet();
-        }
-
-        var result = modulesResult.Data
-            .Where(m => m != null)
-            .Select(m => new ModuleWithAccess
+        var result = accesses
+            .Select(a => new ModuleWithAccess
             {
-                Id = m.Id,
-                Title = m.Title,
-                IsAccessed = accessesIds.Contains(m.Id)
+                Id = a.ModuleId,
+                Title = a.Module!.Title,
+                IsAccessed = a.IsModuleAvailable
             })
             .ToList();
 
