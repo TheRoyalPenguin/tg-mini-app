@@ -104,4 +104,9 @@ public class LongreadService : ILongreadService
 
         return Result.Success();
     }
+
+    public async Task<Result> MarkAsReadAsync(int longreadId, int userId, int moduleId, CancellationToken ct = default)
+    {
+        return await _repository.MarkAsReadAsync(longreadId, userId, moduleId, ct);
+    }
 }

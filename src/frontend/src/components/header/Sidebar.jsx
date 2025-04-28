@@ -1,12 +1,17 @@
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import SidebarNavItem from './SidebarNavItem';
+import {parseJwt} from "../../services/parseJwt";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
     const navigate = useNavigate();
 
+    const authToken = localStorage.getItem('authToken');
+    const payload =  authToken ? parseJwt(authToken) : null;
+    const userId = payload?.nameid;
+
     const menuItems = [
-        { path: '/profile', label: 'Профиль', icon: '/images/profile.svg' },
+        { path: userId ? `/profile/${userId}` : '/profile', label: 'Профиль', icon: '/images/profile.svg' },
         { path: '/courses', label: 'Курсы', icon: '/images/course.svg' },
         { path: '/faq', label: 'FAQ', icon: '/images/faq.svg' },
         { path: '/support', label: 'Поддержка', icon: '/images/support.svg' },

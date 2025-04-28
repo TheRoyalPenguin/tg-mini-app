@@ -1,14 +1,15 @@
 const AnswerOption = ({
                           option,
                           isSelected,
-                          isCorrect,
+                          isUserSelected,
+                          isUserCorrect,
                           submitted,
                           onSelect
                       }) => {
-    let buttonStyle = "bg-white hover:bg-[#f0f0f8]";
+    let buttonStyle = "bg-white hover:bg-[#f0f0f8] border border-gray-300";
 
-    if (submitted && isSelected) {
-        buttonStyle = isCorrect
+    if (submitted && isUserSelected) {
+        buttonStyle = isUserCorrect
             ? "bg-green-100 border-2 border-green-500"
             : "bg-red-100 border-2 border-red-500";
     } else if (isSelected) {

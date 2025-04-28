@@ -48,4 +48,18 @@ public class CourseRepository : ICourseRepository
             return Result<ICollection<Course>>.Failure($"Failed to get all courses: {ex.Message}");
         }
     }
+    
+    public async Task<Result<bool>> ExistsAsync(int courseId)
+    {
+        try
+        {
+            bool exists = await context.Courses
+                .AnyAsync(c => c.Id == courseId);
+            return Result<bool>.Success(exists);
+        }
+        catch (Exception ex)
+        {
+            return Result<bool>.Failure($"Ошибка при проверке существования курса: {ex.Message}");
+        }
+    }
 }

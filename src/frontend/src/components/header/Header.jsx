@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import Sidebar from './Sidebar';
 
-const Header = ({ showBackButton = true }) => {
+const Header = ({ showBackButton = true, backgroundColor = 'bg-[#f7f8fc]' }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -11,7 +11,7 @@ const Header = ({ showBackButton = true }) => {
 
     return (
         <>
-            <div className="fixed top-0 left-0 right-0 flex justify-between items-center px-4 py-3 z-40 pointer-events-none">
+            <div className={`fixed top-0 left-0 right-0 flex justify-between items-center px-4 py-2 z-40 pointer-events-none ${backgroundColor}`}>
                 {showBackButton && (
                     <button
                         onClick={() => navigate(-1)}
@@ -29,6 +29,9 @@ const Header = ({ showBackButton = true }) => {
                     {isSidebarOpen ? <X size={28} /> : <Menu size={28} />}
                 </button>
             </div>
+
+            {/* Можно добавить заглушку если надо отступ для страниц */}
+            {/* <div className="h-14" /> */}
 
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         </>

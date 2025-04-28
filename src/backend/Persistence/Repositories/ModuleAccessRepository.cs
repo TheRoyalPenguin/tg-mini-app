@@ -49,6 +49,12 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
 
             updatedModel.CompletedLongreadsCount = moduleAccessEntity.LongreadCompletions.Count;
             updatedModel.ModuleLongreadCount = model.ModuleLongreadCount;
+            updatedModel.TestTriesCount = model.TestTriesCount;
+            moduleAccessEntity.LongreadCompletions = mapper.Map<List<LongreadCompletionEntity>>(model.LongreadCompletions);
+            
+            appDbContext.ModuleAccesses.Update(moduleAccessEntity);
+            
+            await appDbContext.SaveChangesAsync();
 
             return Result<ModuleAccess>.Success(updatedModel);
         }
@@ -206,4 +212,27 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
             return model;
         }).ToList();
     }
+    
+    public async Task<ModuleAccess?> GetByUserAndModuleAsync(int userId, int moduleId)
+    {
+        var entity = await appDbContext.ModuleAccesses
+            .Include(ma => ma.LongreadCompletions)
+            .FirstOrDefaultAsync(ma => 
+                ma.UserId == userId && 
+                ma.ModuleId == moduleId
+            );
+
+        // Если запись не найдена, возвращаем null
+        if (entity == null)
+            return null;
+
+        // Если LongreadCompletions равен null, создаём новый список
+        if (entity.LongreadCompletions == null)
+            entity.LongreadCompletions = new List<LongreadCompletionEntity>();
+
+        // Маппим сущность в модель
+        var model = mapper.Map<ModuleAccess>(entity);
+        return model;
+    }
+
 }

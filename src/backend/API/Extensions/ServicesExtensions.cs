@@ -1,3 +1,6 @@
+using API.Configurations;
+using API.Services;
+using Core.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -25,5 +28,21 @@ public static class ServicesExtensions
             options.Configuration = redisConfiguration;
             options.InstanceName = "MdProcessor_"; 
         });
+    }
+    
+    public static void AddMinio(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSingleton<IStorageService, MinioStorageService>();
+
+        services.AddOptions<MinioSettings>()
+        .Bind(configuration.GetSection("Minio"))
+        .ValidateDataAnnotations()
+        .Validate(settings =>
+            !string.IsNullOrEmpty(settings.Endpoint) &&
+            !string.IsNullOrEmpty(settings.AccessKey) &&
+            !string.IsNullOrEmpty(settings.SecretKey) &&
+            !string.IsNullOrEmpty(settings.Bucket) &&
+            !string.IsNullOrEmpty(settings.PublicEndpoint),
+            "Missing required Minio settings");
     }
 }
