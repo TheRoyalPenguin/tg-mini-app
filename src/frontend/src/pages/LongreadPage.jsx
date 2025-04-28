@@ -20,6 +20,8 @@ function LongreadPage() {
         async function fetchLongread() {
             try {
                 const data = await getLongreadById(longreadId);
+                console.log(data);
+
                 setLongread(data);
 
                 const htmlResponse = await fetch(data.htmlUrl);
@@ -56,7 +58,7 @@ function LongreadPage() {
                 {longread.audioUrl && <LongreadAudio audioUrl={longread.audioUrl}/>}
                 {longread.originalDocxUrl && <LongreadDownload docxUrl={longread.originalDocxUrl}/>}
                 <LongreadContent styleContent={styleContent} htmlContent={htmlContent}/>
-                <ReadConfirmationButton/>
+                <ReadConfirmationButton longreadId={longreadId} moduleId={longread.moduleId}/>
             </div>
         </>
 

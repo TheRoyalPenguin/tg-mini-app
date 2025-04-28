@@ -129,6 +129,7 @@ builder.Services.AddScoped<ITestRepository, TestRepository>();
 
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStatisticService, StatisticService>();
 builder.Services.AddScoped<ITestResultRepository, TestResultRepository>();
 
@@ -143,6 +144,9 @@ builder.Services.AddScoped<IModuleService, ModuleService>();
 
 builder.Services.AddScoped<IModuleAccessRepository, ModuleAccessRepository>();
 builder.Services.AddScoped<IModuleAccessService, ModuleAccessService>();
+
+// builder.Services.AddScoped<IModuleActivityService, ModuleActivityService>();
+// builder.Services.AddHostedService<ModuleActivityBackgroundService>();
 
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 

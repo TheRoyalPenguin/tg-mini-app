@@ -14,6 +14,7 @@ public class UserEntity
     public string PhoneNumber { get; set; } = null!;
     public bool IsBanned { get; set; } = false;
     public DateTime RegisteredAt { get; set; }
+    public int? NotificationDaysLimit { get; set; }
 
     [OnDelete(DeleteBehavior.Restrict)]
     public int RoleId { get; set; }

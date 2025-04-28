@@ -4,8 +4,10 @@ import TestResults from "../components/testForm/TestResults";
 import Header from "../components/header/Header";
 import { getTest } from "../services/getTest";
 import axiosInstance from "../axiosInstance";
+import {useParams} from "react-router-dom";
+import {setAnswersOfTest} from "../services/setAnswersOfTest";
 
-const TestFormPage = ({ courseId, moduleId }) => {
+const TestFormPage = () => {
     const [testData, setTestData] = useState([]);
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [submitted, setSubmitted] = useState(false);
@@ -13,11 +15,12 @@ const TestFormPage = ({ courseId, moduleId }) => {
     const [correctness, setCorrectness] = useState([]);
     const [correctCount, setCorrectCount] = useState(0);
     const resultsRef = useRef(null);
+    const { courseId, moduleId } = useParams();
 
     useEffect(() => {
         async function fetchTest() {
             try {
-                const data = await getTest(1, 1);
+                const data = await getTest(courseId, moduleId);
                 setTestData(data);
             } catch (error) {
                 console.error("Ошибка загрузки теста:", error);
@@ -47,17 +50,8 @@ const TestFormPage = ({ courseId, moduleId }) => {
 
         try {
             const answersArray = testData.map((_, index) => selectedAnswers[index]);
-            const authToken = localStorage.getItem('authToken');
-            const response = await axiosInstance.post(`/courses/${1}/modules/${1}/submit`,
-                { answers: answersArray },
-                {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                }
-            );
+            const { correctCount, answerCount, correctness } = await setAnswersOfTest(courseId, moduleId, answersArray);
 
-            const { correctCount, answerCount, correctness } = response.data;
             setCorrectCount(correctCount);
             setCorrectness(correctness);
             setSubmitted(true);

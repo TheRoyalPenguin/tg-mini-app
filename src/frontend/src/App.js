@@ -17,8 +17,8 @@ function App() {
               <Route path="/" element={<AuthPage />} />
               <Route path="/courses" element={<WelcomePage />} />
               <Route path="/courses/:courseId" element={<CoursePage />} />
-              <Route path="/tests/:testId" element={<TestFormPage />} />
-              <Route path="/modules/:moduleId" element={<ModulePage />} />
+              <Route path="/courses/:courseId/tests/:moduleId" element={<TestFormPage />} />
+              <Route path="/courses/:courseId/modules/:moduleId" element={<ModulePage />} />
               <Route path="/faq" element={<FAQPage/>} />
               <Route path="/support" element={<SupportPage/>} />
               <Route path="/profile/:userId" element={<ProfilePage />} />
