@@ -75,6 +75,8 @@ public class TestResultRepository(
         try
         {
             var testResultEntity = await appDbContext.TestResults
+                .Include(t => t.Test)
+                    .ThenInclude(t => t.Module)
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (testResultEntity == null)
             {
@@ -94,7 +96,10 @@ public class TestResultRepository(
     {
         try
         {
-            var testResultEntities = await appDbContext.TestResults.ToListAsync();
+            var testResultEntities = await appDbContext.TestResults
+                .Include(x => x.Test)
+                    .ThenInclude(t => t.Module)
+                .ToListAsync();
             var results = mapper.Map<ICollection<TestResult>>(testResultEntities);
             return Result<ICollection<TestResult>>.Success(results);
         }
@@ -109,6 +114,8 @@ public class TestResultRepository(
         try
         {
             var testResultEntities = await appDbContext.TestResults
+                .Include(x => x.Test)
+                    .ThenInclude(t => t.Module)
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
                 

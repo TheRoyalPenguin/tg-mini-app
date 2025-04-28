@@ -11,13 +11,11 @@ public class StatisticService(IUnitOfWork uow) : IStatisticService
     {
         var repoResult = await uow.TestResults.AddAsync(entity);
 
-        if (repoResult.IsSuccess)
-        {
-            await uow.SaveChangesAsync();
+        if (!repoResult.IsSuccess) return Result<TestResult>.Failure(repoResult.ErrorMessage!)!;
+        
+        await uow.SaveChangesAsync();
             
-            return Result<TestResult>.Success(entity);
-        }
-        return Result<TestResult>.Failure(repoResult.ErrorMessage!)!;
+        return Result<TestResult>.Success(entity);
     }
     
     public async Task<Result<ICollection<User>>> GetUsersInCourseStatisticAsync(int courseId)
