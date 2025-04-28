@@ -8,14 +8,20 @@ namespace Application.Services;
 public class LongreadService : ILongreadService
 {
     private readonly ILongreadRepository _repository;
+    private readonly IModuleRepository _moduleRepository;
     private readonly ILongreadConverter _converter;
+    private readonly IUnitOfWork _uow;
 
     public LongreadService(
         ILongreadRepository repository,
-        ILongreadConverter converter)
+        ILongreadConverter converter,
+        IModuleRepository moduleRepository,
+        IUnitOfWork uow)
     {
         _repository = repository;
         _converter = converter;
+        _moduleRepository = moduleRepository;
+        _uow = uow;
     }
 
     public async Task<Result<Longread>> GetByIdAsync(int id, CancellationToken ct = default)
@@ -42,8 +48,10 @@ public class LongreadService : ILongreadService
         return Result<IReadOnlyList<Longread>>.Success(longreadsResult.Data)!;
     }
 
-    public async Task<Result<int>> AddAsync(CreateLongreadModel model, CancellationToken ct = default)
+    public async Task<Result<int>> AddAsync(int moduleId, CreateLongreadModel model, CancellationToken ct = default)
     {
+        await _uow.StartTransactionAsync();
+
         try
         {
             var conv = await _converter.ConvertAsync(
@@ -70,13 +78,38 @@ public class LongreadService : ILongreadService
 
             if (!result.IsSuccess)
             {
+                await _uow.RollbackTransactionAsync();
                 return Result<int>.Failure(result.ErrorMessage);
             }
 
+            var moduleGetResult = await _moduleRepository.GetByIdAsync(moduleId);
+            if (!moduleGetResult.IsSuccess)
+            {
+                await _uow.RollbackTransactionAsync();
+                return Result<int>.Failure(result.ErrorMessage);
+            }
+
+            var module = moduleGetResult.Data;
+            if (module == null)
+            {
+                return Result<int>.Failure("Не удалось найти модуль с указанным id=" + moduleId);
+            }
+
+            module.LongreadCount++;
+
+            var moduleUpdateResult = await _moduleRepository.UpdateAsync(module);
+            if (!moduleUpdateResult.IsSuccess)
+            {
+                await _uow.RollbackTransactionAsync();
+                return Result<int>.Failure(result.ErrorMessage);
+            }
+
+            await _uow.CommitTransactionAsync();
             return Result<int>.Success(longread.Id);
         }
         catch (Exception ex)
         {
+            await _uow.RollbackTransactionAsync();
             return Result<int>.Failure($"Ошибка при создании лонгрида: {ex.Message}");
         }
     }

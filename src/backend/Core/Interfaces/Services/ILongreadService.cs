@@ -7,7 +7,7 @@ public interface ILongreadService
 {
     Task<Result<Longread>> GetByIdAsync(int id, CancellationToken ct = default);
     Task<Result<IReadOnlyList<Longread>>> ListByModuleAsync(int moduleId, CancellationToken ct = default);
-    Task<Result<int>> AddAsync(CreateLongreadModel model, CancellationToken ct = default);
+    Task<Result<int>> AddAsync(int moduleId, CreateLongreadModel model, CancellationToken ct = default);
     Task<Result> UpdateAsync(Longread longread, CancellationToken ct = default);
     Task<Result> DeleteAsync(int id, CancellationToken ct = default);
     Task<Result> MarkAsReadAsync(int longreadId, int userId, int moduleId, CancellationToken ct = default);
