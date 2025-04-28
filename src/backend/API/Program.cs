@@ -16,6 +16,7 @@ using Persistence.Converter;
 using FluentValidation.AspNetCore;
 using API.Validators;
 using Persistence.MinioRepositories;
+using FluentValidation;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -95,9 +96,13 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-builder.Services.AddControllers()
-    .AddFluentValidation(fv =>
-        fv.RegisterValidatorsFromAssemblyContaining<CreateLongreadDtoValidator>());
+
+builder.Services.AddControllers();
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateLongreadDtoValidator>();
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
