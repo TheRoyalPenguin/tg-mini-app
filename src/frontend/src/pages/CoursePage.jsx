@@ -62,7 +62,7 @@ const CoursePage = function () {
                             if (!isAccessible) {
                                 setIsModalOpen(true);
                             } else {
-                                navigate(`/modules/${module.id}`)
+                                navigate(`/courses/${courseId}/modules/${module.id}`);
                             }
                         };
 

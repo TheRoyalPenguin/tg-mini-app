@@ -35,7 +35,7 @@ const bookColors = [
 ];
 
 const ModulePage = function () {
-    const { moduleId } = useParams();
+    const { courseId, moduleId } = useParams();
     const navigate = useNavigate();
     const [longreads, setLongreads] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -102,7 +102,7 @@ const ModulePage = function () {
                 <div className="text-center mb-6">
                     <button
                         className="bg-[#0EAA67] border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 mt-1 mb-1"
-                        onClick={() => navigate(`/tests/${moduleId}`)}
+                        onClick={() => navigate(`/courses/${courseId}/tests/${moduleId}`)}
                     >
                         Пройти тест
                     </button>

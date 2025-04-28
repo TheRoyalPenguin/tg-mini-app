@@ -16,6 +16,7 @@ const ProfilePage = () => {
         const fetchUserData = async () => {
             try {
                 const data = await getUserProgress(userId);
+                console.log(data);
                 setUserData(data);
             } catch (error) {
                 console.error('Ошибка при загрузке данных пользователя:', error);
@@ -99,7 +100,7 @@ const ProfilePage = () => {
                                 if (!isAvailable) {
                                     setIsModalOpen(true);
                                 } else {
-                                    navigate(`/modules/${module.moduleId}`);
+                                    navigate(`/courses/1/modules/${module.moduleId}`);
                                 }
                             };
 
