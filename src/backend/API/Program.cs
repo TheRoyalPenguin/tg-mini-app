@@ -111,6 +111,7 @@ builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateLongreadDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateBookDtoValidator>();
 
 builder.Services.AddCors(options =>
 {
