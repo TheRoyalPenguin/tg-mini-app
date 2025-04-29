@@ -1,11 +1,12 @@
 using Core.Interfaces.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Services;
 
 public class ModuleActivityBackgroundService(
-    IModuleActivityService moduleActivityService,
+    IServiceScopeFactory serviceScopeFactory,
     ILogger<ModuleActivityBackgroundService> logger)
     : BackgroundService
 {
@@ -19,6 +20,18 @@ public class ModuleActivityBackgroundService(
         {
             try
             {
+                await Task.Delay(_checkInterval, stoppingToken);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+            
+            try
+            {
+                using var scope = serviceScopeFactory.CreateScope();
+                var moduleActivityService = scope.ServiceProvider.GetRequiredService<IModuleActivityService>();
+                
                 logger.LogInformation("Running module activity check...");
                 var result = await moduleActivityService.CheckAndNotifyInactiveUsersAsync();
                 
@@ -30,15 +43,6 @@ public class ModuleActivityBackgroundService(
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error occurred while checking module activity");
-            }
-
-            try
-            {
-                await Task.Delay(_checkInterval, stoppingToken);
-            }
-            catch (OperationCanceledException)
-            {
-                break;
             }
         }
 

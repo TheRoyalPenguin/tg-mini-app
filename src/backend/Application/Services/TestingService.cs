@@ -11,6 +11,7 @@ public class TestingService(
     IModuleRepository moduleRepository,
     ITestingRepository testingRepository,
     IModuleAccessRepository moduleAccessRepository,
+    IUnitOfWork uow,
     ILogger<TestingService> logger)
     : ITestingService
 {
@@ -93,7 +94,7 @@ public class TestingService(
         if (moduleAccess == null)
         {
             _logger.LogWarning("Доступ к модулю для пользователя ID {UserId}, модуля ID {ModuleId} не найден.", command.UserId, command.ModuleId);
-            return Result<SubmitAnswersResult>.Failure("Доступ к модулю не найден.");
+            return Result<SubmitAnswersResult>.Failure("Доступ к модулю не найден.")!;
         }
 
         if (isSuccess)
@@ -116,7 +117,7 @@ public class TestingService(
                     if (!nextModuleUpdateResult.IsSuccess)
                     {
                         _logger.LogWarning("Не удалось обновить доступ к следующему модулю для пользователя ID {UserId}, модуля ID {ModuleId}. Ошибка: {ErrorMessage}", command.UserId, nextModule.Id, nextModuleUpdateResult.ErrorMessage);
-                        return Result<SubmitAnswersResult>.Failure("Не удалось обновить доступ к следующему модулю.");
+                        return Result<SubmitAnswersResult>.Failure("Не удалось обновить доступ к следующему модулю.")!;
                     }
                 }
             }
@@ -150,6 +151,23 @@ public class TestingService(
             correctness
         );
 
+        var testResultModel = new TestResult
+        {
+            AttemptNumber = moduleAccess.TestTriesCount,
+            UserId = moduleAccess.UserId,
+            TotalQuestionsCount = correctAnswers.Count,
+            CorrectAnswersCount = correctCount,
+            WrongAnswersCount = correctAnswers.Count - correctCount,
+            Score = (float)correctPercentage,
+            Timestamp = DateTime.UtcNow,
+        };
+        
+        var repoResult = await uow.TestResults.AddAsync(testResultModel);
+
+        if (!repoResult.IsSuccess) return Result<SubmitAnswersResult>.Failure(repoResult.ErrorMessage!)!;
+        
+        await uow.SaveChangesAsync();
+        
         _logger.LogInformation("Результат сдачи теста: {IsSuccess}. Пользователь ID {UserId}, модуль ID {ModuleId}.", isSuccess, command.UserId, command.ModuleId);
         return Result<SubmitAnswersResult>.Success(result);
     }
