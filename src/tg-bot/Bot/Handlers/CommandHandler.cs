@@ -1,8 +1,8 @@
-﻿using LevelUpTgBot.Interfaces;
+﻿using Bot.Interfaces;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types;
 
-namespace LevelUpTgBot.Handlers;
+namespace Bot.Handlers;
 
 public class CommandHandler
 {

@@ -71,7 +71,7 @@ public class ModuleActivityService(
                         $"Привет, {user.Name}! \ud83c\udf1f Вы давно не заходили на платформу. {moduleAccess.Module!.Title} «[Название модуля]» скучает по вам — там остались важные темы и задания! Загляните, чтобы не пропустить ничего интересного. \ud83d\ude0a";
                     
                     var notificationResult =
-                        await notificationService.NotifyUserAboutModuleAsync(user.TgId, message);
+                        await notificationService.NotifyUser(user.TgId, message);
                     
                     if (notificationResult.IsSuccess)
                     {

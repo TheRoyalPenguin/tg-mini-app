@@ -1,4 +1,4 @@
-﻿namespace LevelUpTgBot.Interfaces;
+﻿namespace Bot.Interfaces;
 
 public interface IBackendService
 {

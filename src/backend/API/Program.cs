@@ -16,6 +16,7 @@ using Persistence.Converter;
 using FluentValidation.AspNetCore;
 using API.Validators;
 using Persistence.MinioRepositories;
+using FluentValidation;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -95,9 +96,23 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-builder.Services.AddControllers()
-    .AddFluentValidation(fv =>
-        fv.RegisterValidatorsFromAssemblyContaining<CreateLongreadDtoValidator>());
+
+builder.Services
+    .AddHttpClient<IBotGateway, BotGateway>(client =>
+    {
+        var apiUrl = builder.Configuration["BOT_API_URL"];
+        client.BaseAddress = new Uri(apiUrl!);
+    });
+builder.Services.AddScoped<ITelegramNotificationService, TelegramNotificationService>();
+
+
+builder.Services.AddControllers();
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateLongreadDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateBookDtoValidator>();
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -131,8 +146,8 @@ builder.Services.AddScoped<IModuleService, ModuleService>();
 builder.Services.AddScoped<IModuleAccessRepository, ModuleAccessRepository>();
 builder.Services.AddScoped<IModuleAccessService, ModuleAccessService>();
 
-// builder.Services.AddScoped<IModuleActivityService, ModuleActivityService>();
-// builder.Services.AddHostedService<ModuleActivityBackgroundService>();
+builder.Services.AddScoped<IModuleActivityService, ModuleActivityService>();
+builder.Services.AddHostedService<ModuleActivityBackgroundService>();
 
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 

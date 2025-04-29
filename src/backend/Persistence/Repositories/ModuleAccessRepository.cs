@@ -204,7 +204,7 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
     public async Task<Result<ICollection<ModuleAccess>>> GetAllAsync() 
         => await GetModuleAccessesAsync(_ => true, "Failed to get modules accesses");
 
-    public async Task<Result<ICollection<ModuleAccess>>> GetAllByUserIdAndCourseIdAsync(int courseId, int userId)
+    public async Task<Result<ICollection<ModuleAccess>>> GetAllByUserIdAndCourseIdAsync(int userId, int courseId)
         => await GetModuleAccessesAsync(
             ma => ma.Module.CourseId == courseId && ma.UserId == userId,
             $"Failed to get modules accesses with UserId {userId} and CourseId {courseId}");
@@ -261,6 +261,7 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
     public async Task<ModuleAccess?> GetByUserAndModuleAsync(int userId, int moduleId)
     {
         var entity = await appDbContext.ModuleAccesses
+            .Include(ma => ma.Module)
             .Include(ma => ma.LongreadCompletions)
             .FirstOrDefaultAsync(ma => 
                 ma.UserId == userId && 
@@ -273,10 +274,12 @@ public class ModuleAccessRepository(AppDbContext appDbContext, IMapper mapper) :
 
         // Если LongreadCompletions равен null, создаём новый список
         if (entity.LongreadCompletions == null)
-            entity.LongreadCompletions = new List<LongreadCompletionEntity>();
+            entity.LongreadCompletions = [];
 
         // Маппим сущность в модель
         var model = mapper.Map<ModuleAccess>(entity);
+        model.CompletedLongreadsCount = entity.LongreadCompletions.Count;
+        model.ModuleLongreadCount = entity.Module.LongreadCount;
         return model;
     }
 
