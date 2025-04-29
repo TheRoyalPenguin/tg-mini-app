@@ -19,7 +19,7 @@ export default function QuestionsPage() {
     if (!courseId || !moduleId) return setMessage('Введите ID курса и модуля');
     setLoading(true);
     try {
-      const res = await fetch(`/api/courses/${courseId}/modules/${moduleId}/questions`);
+      const res = await fetch(`http://localhost:5000/api/courses/${courseId}/modules/${moduleId}/questions`);
       const data = await res.json();
       setQuestions(data);
       setMessage(`Найдено ${data.length} вопросов`);
@@ -38,7 +38,7 @@ export default function QuestionsPage() {
     
     setLoading(true);
     try {
-      const res = await fetch(`/api/courses/${courseId}/modules/${moduleId}/questions`, {
+      const res = await fetch(`http://localhost:5000/api/courses/${courseId}/modules/${moduleId}/questions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ export default function QuestionsPage() {
     if (!courseId || !moduleId) return setMessage('Введите ID курса и модуля');
     setLoading(true);
     try {
-      await fetch(`/api/courses/${courseId}/modules/${moduleId}/questions`, {
+      await fetch(`http://localhost:5000/api/courses/${courseId}/modules/${moduleId}/questions`, {
         method: 'DELETE',
       });
       setMessage('Все вопросы модуля удалены');
