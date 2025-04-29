@@ -25,7 +25,8 @@ public class UserWithFullStatisticResponse
         IsBanned = user.IsBanned;
         
         var testResultsDict = testResults
-            .GroupBy(tr => tr.Test.ModuleId)
+            .Where(tr => tr.Test != null)
+            .GroupBy(tr => tr.Test!.ModuleId)
             .ToDictionary(
                 group => group.Key, 
                 group => group.ToList()
@@ -33,17 +34,25 @@ public class UserWithFullStatisticResponse
         
         foreach (var moduleAccess in user.ModuleAccesses)
         {
-            if (!CoursesStatistic.ContainsKey(moduleAccess.Module!.CourseId))
+            if (moduleAccess.Module == null)
             {
-                CoursesStatistic[moduleAccess.Module!.CourseId] = [];
+                continue;
             }
-            
-            var courseId = moduleAccess.Module!.CourseId;
-            var testResultsForCourse = testResultsDict.ContainsKey(courseId) 
-                ? testResultsDict[courseId] 
-                : new List<TestResult>();
-                
-            CoursesStatistic[courseId].Add(new UserFullModuleStatistic(moduleAccess, testResultsForCourse));
+
+            var courseId = moduleAccess.Module.CourseId;
+            if (!CoursesStatistic.ContainsKey(courseId))
+            {
+                CoursesStatistic[courseId] = [];
+            }
+
+            if (testResultsDict.TryGetValue(moduleAccess.ModuleId, out var moduleResults))
+            {
+                CoursesStatistic[courseId].Add(new UserFullModuleStatistic(moduleAccess, moduleResults));
+            }
+            else
+            {
+                CoursesStatistic[courseId].Add(new UserFullModuleStatistic(moduleAccess, []));
+            }
         }
     }
 }

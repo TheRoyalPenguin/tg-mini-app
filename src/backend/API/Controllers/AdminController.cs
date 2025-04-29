@@ -60,7 +60,7 @@ public class AdminController(
         }
     }
 
-    [HttpGet("test-statistic/user/{userId:int}")]
+    /*[HttpGet("test-statistic/user/{userId:int}")]
     public async Task<IActionResult> GetTestResultsByUserAsync(int userId)
     {
         var serviceResult = await adminService.GetTestResultsByUser(userId);
@@ -77,7 +77,7 @@ public class AdminController(
         {
             return Problem(e.Message);
         }
-    }
+    }*/
 
     [HttpGet("test-statistic/course/{courseId:int}/user/{userId:int}")]
     public async Task<IActionResult> GetTestResultsForUserByCourseAsync(int userId, int courseId)
