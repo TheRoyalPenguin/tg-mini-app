@@ -3,8 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import QuestionCard from "../components/testForm/QuestionCard";
 import TestResults from "../components/testForm/TestResults";
 import Header from "../components/header/Header";
+import Modal from "../components/common/Modal"; // <-- Добавил
 import { getTest } from "../services/getTest";
-import {setAnswersOfTest} from "../services/setAnswersOfTest";
+import { setAnswersOfTest } from "../services/setAnswersOfTest";
 
 const TestFormPage = () => {
     const [testData, setTestData] = useState([]);
@@ -14,6 +15,12 @@ const TestFormPage = () => {
     const [correctness, setCorrectness] = useState([]);
     const [isSuccess, setIsSuccess] = useState(false);
     const [correctCount, setCorrectCount] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const [showModal, setShowModal] = useState(false);
+    const [modalMessage, setModalMessage] = useState("");
+
     const resultsRef = useRef(null);
     const { courseId, moduleId } = useParams();
     const navigate = useNavigate();
@@ -25,6 +32,9 @@ const TestFormPage = () => {
                 setTestData(data);
             } catch (error) {
                 console.error("Ошибка загрузки теста:", error);
+                setError('Не удалось загрузить тест');
+            } finally {
+                setLoading(false);
             }
         }
         fetchTest();
@@ -60,6 +70,8 @@ const TestFormPage = () => {
 
         } catch (error) {
             console.error("Ошибка отправки теста:", error);
+            setModalMessage("Произошла ошибка при отправке ответов. Попробуйте позже.");
+            setShowModal(true);
         }
     };
 
@@ -75,13 +87,57 @@ const TestFormPage = () => {
         }
     }, [submitted]);
 
-    const handleRetry = () => {
-        window.location.reload();
+    const handleRetry = async () => {
+        setLoading(true);
+        try {
+            const data = await getTest(courseId, moduleId);
+            setTestData(data);
+            setSelectedAnswers({});
+            setSubmitted(false);
+            setSubmitAttempted(false);
+            setCorrectness([]);
+            setIsSuccess(false);
+            setCorrectCount(0);
+        } catch (error) {
+            console.error("Ошибка перезагрузки теста:", error);
+
+            if (error.response && error.response.status === 500) {
+                setModalMessage("Вы исчерпали 3 попытки прохождения теста. Прочитайте лонгриды заново и попробуйте снова.");
+                setShowModal(true);
+            } else {
+                setModalMessage("Не удалось перезагрузить тест. Попробуйте позже.");
+                setShowModal(true);
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleExit = () => {
         navigate(`/courses/${courseId}`);
     };
+
+    if (loading) {
+        return (
+            <>
+                <Header backgroundColor="bg-[#d7defc]" />
+                <div className="flex justify-center items-center min-h-screen bg-[#d7defc]">
+                    <div className="text-xl text-gray-600">Загрузка...</div>
+                </div>
+            </>
+        );
+    }
+
+    if (error) {
+        return (
+            <>
+                <Header backgroundColor="bg-[#d7defc]" />
+                <div className="flex justify-center items-center min-h-screen bg-[#d7defc]">
+                    <div className="text-xl text-red-500">{error}</div>
+                </div>
+            </>
+        );
+    }
 
     return (
         <>
@@ -97,7 +153,7 @@ const TestFormPage = () => {
                             submitted={submitted}
                             submitAttempted={submitAttempted}
                             onAnswerSelect={handleSelectAnswer}
-                            isCorrect={correctness[qIndex]} // <-- Новое!
+                            isCorrect={correctness[qIndex]}
                         />
                     ))}
 
@@ -107,9 +163,9 @@ const TestFormPage = () => {
                             disabled={!allQuestionsAnswered}
                             className={`w-full text-white py-3 px-6 rounded-xl text-lg font-bold ${
                                 allQuestionsAnswered
-                                    ? 'bg-green-500'
+                                    ? 'bg-green-500 hover:bg-green-600'
                                     : 'bg-gray-400 cursor-not-allowed'
-                            }`}
+                            } transition`}
                         >
                             Проверить ответы
                         </button>
@@ -127,6 +183,13 @@ const TestFormPage = () => {
                     />
                 )}
             </div>
+
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title="Внимание!"
+                message={modalMessage}
+            />
         </>
     );
 };

@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Header from "../components/header/Header";
 import CustomButton from "../components/common/CustomButton";
+import Modal from "../components/common/Modal"; // <-- Добавил
 import getLongreadsByModuleId from "../services/getLongreadsByModuleId";
 import getBooks from "../services/getBooks";
+import { getTest } from "../services/getTest"; // <-- Добавил
 
 const longreadColors = [
     'bg-[#0f9fff]',
@@ -14,12 +16,16 @@ const longreadColors = [
 const ModulePage = function () {
     const { courseId, moduleId } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const { moduleTitle } = location.state || {};
+
     const [longreads, setLongreads] = useState([]);
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const location = useLocation();
-    const { moduleTitle } = location.state || {};
+
+    const [showModal, setShowModal] = useState(false);
+    const [modalMessage, setModalMessage] = useState("");
 
     useEffect(() => {
         async function fetchData() {
@@ -28,7 +34,6 @@ const ModulePage = function () {
                     getLongreadsByModuleId(moduleId),
                     getBooks(moduleId),
                 ]);
-
                 setLongreads(longreadsData);
                 setBooks(booksData);
             } catch (err) {
@@ -41,6 +46,23 @@ const ModulePage = function () {
 
         fetchData();
     }, [moduleId]);
+
+    const handleTestButtonClick = async () => {
+        try {
+            await getTest(courseId, moduleId);
+            navigate(`/courses/${courseId}/tests/${moduleId}`);
+        } catch (error) {
+            if (error.response && error.response.status === 500 &&
+                error.response.data?.detail?.includes("Прочитайте все лонгриды")) {
+                setModalMessage("Чтобы пройти тест, сначала прочитайте все лонгриды.");
+                setShowModal(true);
+            } else {
+                console.error('Ошибка при попытке начать тест:', error);
+                setModalMessage("Произошла ошибка. Попробуйте позже.");
+                setShowModal(true);
+            }
+        }
+    };
 
     if (loading) {
         return (
@@ -86,13 +108,12 @@ const ModulePage = function () {
 
                 <div className="text-center mt-2 mb-6">
                     <button
-                        className="w-full max-w-[120px] bg-[#0EAA67] text-white font-semibold py-2 rounded-xl border border-[#0EAA67]"
-                        onClick={() => navigate(`/courses/${courseId}/tests/${moduleId}`)}
+                        className="w-full max-w-[120px] bg-[#0EAA67] text-white font-semibold py-2 rounded-xl border border-[#0EAA67] hover:bg-green-600 transition"
+                        onClick={handleTestButtonClick}
                     >
                         Пройти тест
                     </button>
                 </div>
-
 
                 <h3 className="text-lg font-semibold mb-4 text-gray-700 border-b pb-2">Список рекомендуемых книг</h3>
 
@@ -123,6 +144,13 @@ const ModulePage = function () {
                     ))}
                 </div>
             </div>
+
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title="Внимание!"
+                message={modalMessage}
+            />
         </>
     );
 };
