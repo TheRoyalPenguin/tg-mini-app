@@ -30,15 +30,6 @@ public class UserWithFullStatisticResponse
                 group => group.Key, 
                 group => group.ToList()
             );
-
-        Console.WriteLine();
-        Console.WriteLine("Test Results:");
-        foreach (var idResultsPair in testResultsDict)
-        {
-            Console.WriteLine(idResultsPair.Key);
-            foreach (var testResult in idResultsPair.Value)
-                Console.WriteLine(testResult.Test.ModuleId);
-        }
         
         foreach (var moduleAccess in user.ModuleAccesses)
         {
