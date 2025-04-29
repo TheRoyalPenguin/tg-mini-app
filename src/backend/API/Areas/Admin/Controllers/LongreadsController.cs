@@ -60,7 +60,7 @@ public class LongreadsController : ControllerBase
             AudioFileName = dto.AudioFile?.FileName
         };
 
-        var result = await _service.AddAsync(cmd, ct);
+        var result = await _service.AddAsync(moduleId, cmd, ct);
         if (!result.IsSuccess)
         {
             return Problem(result.ErrorMessage);
