@@ -141,11 +141,25 @@ export default function LongreadsPage() {
             {loading ? 'Загрузка...' : 'Получить'}
           </button>
           {longreads.length > 0 && (
-            <ul className="mt-2">
+            <div className="mt-4 space-y-4">
               {longreads.map(longread => (
-                <li key={longread.id}>{longread.title} (ID: {longread.id})</li>
+                <div key={longread.id} className="p-4 border rounded">
+                  <h3 className="font-bold">{longread.title}</h3>
+                  <p className="text-gray-600">{longread.description}</p>
+                  <div className="mt-2 text-sm">
+                    <p><span className="font-semibold">ID:</span> {longread.id}</p>
+                    <p><span className="font-semibold">HTML контент:</span> {longread.htmlContentKey}</p>
+                    <p><span className="font-semibold">DOCX файл:</span> {longread.originalDocxKey}</p>
+                    {longread.audioContentKey && (
+                      <p><span className="font-semibold">Аудио файл:</span> {longread.audioContentKey}</p>
+                    )}
+                    {longread.imageKeys.length > 0 && (
+                      <p><span className="font-semibold">Изображения:</span> {longread.imageKeys.join(', ')}</p>
+                    )}
+                  </div>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
       )}
@@ -167,14 +181,40 @@ export default function LongreadsPage() {
             {loading ? 'Загрузка...' : 'Получить'}
           </button>
           {selectedLongread && (
-            <div className="mt-2 p-2 border">
-              <p>Название: {selectedLongread.title}</p>
-              <p>Описание: {selectedLongread.description}</p>
+            <div className="mt-4 p-4 border rounded">
+              <h3 className="text-xl font-bold mb-2">{selectedLongread.title}</h3>
+              <p className="mb-4">{selectedLongread.description}</p>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p><span className="font-semibold">ID:</span> {selectedLongread.id}</p>
+                  <p><span className="font-semibold">ID модуля:</span> {selectedLongread.moduleId}</p>
+                </div>
+                <div>
+                  <p><span className="font-semibold">HTML контент:</span> {selectedLongread.htmlContentKey}</p>
+                  <p><span className="font-semibold">DOCX файл:</span> {selectedLongread.originalDocxKey}</p>
+                </div>
+                {selectedLongread.audioContentKey && (
+                  <p className="col-span-2">
+                    <span className="font-semibold">Аудио файл:</span> {selectedLongread.audioContentKey}
+                  </p>
+                )}
+                {selectedLongread.imageKeys.length > 0 && (
+                  <div className="col-span-2">
+                    <p className="font-semibold">Изображения:</p>
+                    <ul className="list-disc pl-5">
+                      {selectedLongread.imageKeys.map((img, index) => (
+                        <li key={index}>{img}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
       )}
 
+      {/* Остальные формы (create, update, delete) остаются без изменений */}
       {action === 'create' && (
         <div className="mb-4">
           <input

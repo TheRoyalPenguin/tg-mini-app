@@ -142,11 +142,24 @@ export default function BooksPage() {
             {loading ? 'Загрузка...' : 'Получить'}
           </button>
           {books.length > 0 && (
-            <ul className="mt-2">
+            <div className="mt-4 space-y-4">
               {books.map(book => (
-                <li key={book.id}>{book.title} (ID: {book.id})</li>
+                <div key={book.id} className="p-4 border rounded">
+                  <h3 className="font-bold">{book.title}</h3>
+                  <div className="grid grid-cols-2 gap-4 mt-2 text-sm">
+                    <div>
+                      <p><span className="font-semibold">ID:</span> {book.id}</p>
+                      <p><span className="font-semibold">Автор:</span> {book.author}</p>
+                      <p><span className="font-semibold">ID модуля:</span> {book.moduleId}</p>
+                    </div>
+                    <div>
+                      <p><span className="font-semibold">Файл книги:</span> {book.contentKey}</p>
+                      <p><span className="font-semibold">Обложка:</span> {book.coverKey}</p>
+                    </div>
+                  </div>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
       )}
@@ -168,9 +181,19 @@ export default function BooksPage() {
             {loading ? 'Загрузка...' : 'Получить'}
           </button>
           {selectedBook && (
-            <div className="mt-2 p-2 border">
-              <p>Название: {selectedBook.title}</p>
-              <p>Автор: {selectedBook.author}</p>
+            <div className="mt-4 p-4 border rounded">
+              <h3 className="text-xl font-bold mb-2">{selectedBook.title}</h3>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p><span className="font-semibold">ID:</span> {selectedBook.id}</p>
+                  <p><span className="font-semibold">Автор:</span> {selectedBook.author}</p>
+                  <p><span className="font-semibold">ID модуля:</span> {selectedBook.moduleId}</p>
+                </div>
+                <div>
+                  <p><span className="font-semibold">Файл книги:</span> {selectedBook.contentKey}</p>
+                  <p><span className="font-semibold">Обложка:</span> {selectedBook.coverKey}</p>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -206,13 +229,13 @@ export default function BooksPage() {
             onChange={(e) => setAuthor(e.target.value)}
             className="border p-2 mb-2 block"
           />
-          <p>книга:</p>
+          <p>Файл книги:</p>
           <input
             type="file"
             onChange={(e) => setContentFile(e.target.files[0])}
             className="mb-2 block"
           />
-          <p>обложка:</p>
+          <p>Обложка (необязательно):</p>
           <input
             type="file"
             onChange={(e) => setCoverFile(e.target.files[0])}
@@ -265,12 +288,13 @@ export default function BooksPage() {
             onChange={(e) => setAuthor(e.target.value)}
             className="border p-2 mb-2 block"
           />
-          <p>книга:</p>
+          <p>Файл книги:</p>
           <input
             type="file"
             onChange={(e) => setContentFile(e.target.files[0])}
             className="mb-2 block"
           />
+          <p>Обложка:</p>
           <input
             type="file"
             onChange={(e) => setCoverFile(e.target.files[0])}
