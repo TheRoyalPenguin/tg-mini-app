@@ -4,9 +4,13 @@ export default function QuestionsPage() {
   const [action, setAction] = useState('getAll');
   const [courseId, setCourseId] = useState('');
   const [moduleId, setModuleId] = useState('');
-  const [question, setQuestion] = useState('');
-  const [options, setOptions] = useState(['', '', '', '']);
-  const [correctAnswer, setCorrectAnswer] = useState(0);
+  const [questionsList, setQuestionsList] = useState([
+    {
+      question: '',
+      options: ['', '', '', ''],
+      correctAnswer: 0
+    }
+  ]);
   const [questions, setQuestions] = useState([]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,8 +30,9 @@ export default function QuestionsPage() {
     }
   };
 
-  const handleAddQuestion = async () => {
-    if (!courseId || !moduleId || !question || options.some(opt => !opt)) {
+  const handleAddQuestions = async () => {
+    if (!courseId || !moduleId || 
+        questionsList.some(q => !q.question || q.options.some(opt => !opt))) {
       return setMessage('Заполните все поля');
     }
     
@@ -38,17 +43,19 @@ export default function QuestionsPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          Question: question,
-          Options: options,
-          CorrectAnswer: correctAnswer
-        }),
+        body: JSON.stringify(questionsList.map(q => ({
+          Question: q.question,
+          Options: q.options,
+          CorrectAnswer: q.correctAnswer
+        }))),
       });
       const data = await res.json();
-      setMessage(`Вопрос добавлен! ID: ${data.id}`);
-      setQuestion('');
-      setOptions(['', '', '', '']);
-      setCorrectAnswer(0);
+      setMessage(`Добавлено ${data.length} вопросов`);
+      setQuestionsList([{
+        question: '',
+        options: ['', '', '', ''],
+        correctAnswer: 0
+      }]);
     } catch (err) {
       setMessage('Ошибка: ' + err.message);
     } finally {
@@ -72,10 +79,31 @@ export default function QuestionsPage() {
     }
   };
 
-  const handleOptionChange = (index, value) => {
-    const newOptions = [...options];
-    newOptions[index] = value;
-    setOptions(newOptions);
+  const handleQuestionChange = (index, field, value) => {
+    const newQuestions = [...questionsList];
+    newQuestions[index][field] = value;
+    setQuestionsList(newQuestions);
+  };
+
+  const handleOptionChange = (qIndex, optIndex, value) => {
+    const newQuestions = [...questionsList];
+    newQuestions[qIndex].options[optIndex] = value;
+    setQuestionsList(newQuestions);
+  };
+
+  const addQuestionForm = () => {
+    setQuestionsList([...questionsList, {
+      question: '',
+      options: ['', '', '', ''],
+      correctAnswer: 0
+    }]);
+  };
+
+  const removeQuestionForm = (index) => {
+    if (questionsList.length <= 1) return;
+    const newQuestions = [...questionsList];
+    newQuestions.splice(index, 1);
+    setQuestionsList(newQuestions);
   };
 
   return (
@@ -88,7 +116,7 @@ export default function QuestionsPage() {
         className="border p-2 mb-4"
       >
         <option value="getAll">Получить вопросы модуля</option>
-        <option value="add">Добавить вопрос</option>
+        <option value="add">Добавить вопросы</option>
         <option value="delete">Удалить все вопросы</option>
       </select>
 
@@ -134,39 +162,56 @@ export default function QuestionsPage() {
 
       {action === 'add' && (
         <div>
-          <input
-            type="text"
-            placeholder="Вопрос"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            className="border p-2 mb-2 w-full"
-          />
-          {options.map((opt, index) => (
-            <div key={index} className="mb-2">
+          {questionsList.map((q, qIndex) => (
+            <div key={qIndex} className="mb-6 p-4 border rounded">
+              <div className="flex justify-between mb-2">
+                <h3 className="font-bold">Вопрос {qIndex + 1}</h3>
+                <button 
+                  onClick={() => removeQuestionForm(qIndex)}
+                  className="text-red-500"
+                >
+                  Удалить
+                </button>
+              </div>
               <input
                 type="text"
-                placeholder={`Вариант ${index + 1}`}
-                value={opt}
-                onChange={(e) => handleOptionChange(index, e.target.value)}
-                className="border p-2 w-full"
+                placeholder="Текст вопроса"
+                value={q.question}
+                onChange={(e) => handleQuestionChange(qIndex, 'question', e.target.value)}
+                className="border p-2 mb-2 w-full"
               />
+              {q.options.map((opt, optIndex) => (
+                <div key={optIndex} className="mb-2 flex items-center">
+                  <input
+                    type="text"
+                    placeholder={`Вариант ${optIndex + 1}`}
+                    value={opt}
+                    onChange={(e) => handleOptionChange(qIndex, optIndex, e.target.value)}
+                    className="border p-2 flex-1"
+                  />
+                  <input
+                    type="radio"
+                    name={`correctAnswer-${qIndex}`}
+                    checked={q.correctAnswer === optIndex}
+                    onChange={() => handleQuestionChange(qIndex, 'correctAnswer', optIndex)}
+                    className="ml-2"
+                  />
+                </div>
+              ))}
             </div>
           ))}
-          <select
-            value={correctAnswer}
-            onChange={(e) => setCorrectAnswer(parseInt(e.target.value))}
-            className="border p-2 mb-2"
+          <button
+            onClick={addQuestionForm}
+            className="bg-gray-200 p-2 mb-2"
           >
-            {options.map((_, index) => (
-              <option key={index} value={index}>Вариант {index + 1}</option>
-            ))}
-          </select>
+            + Добавить еще вопрос
+          </button>
           <button 
-            onClick={handleAddQuestion} 
+            onClick={handleAddQuestions} 
             disabled={loading}
-            className="bg-green-500 text-white p-2"
+            className="bg-green-500 text-white p-2 block w-full"
           >
-            {loading ? 'Добавление...' : 'Добавить вопрос'}
+            {loading ? 'Добавление...' : 'Добавить все вопросы'}
           </button>
         </div>
       )}
