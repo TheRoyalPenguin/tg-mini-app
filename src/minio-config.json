@@ -1,0 +1,9 @@
+{
+  "api": {
+    "cors_allow_origin": ["https://levelupapp.hopto.org:443"],
+    "cors_allow_methods": ["GET"],
+    "cors_allow_headers": ["*"],
+    "cors_expose_headers": ["ETag","Content-Length"],
+    "cors_max_age_seconds": 3600
+  }
+}
