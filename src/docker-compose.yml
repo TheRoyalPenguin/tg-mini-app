@@ -71,10 +71,11 @@ services:
       dockerfile: Bot/Dockerfile
     ports:
       - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - BACKEND_URL=http://backend:8080
     depends_on:
       - backend
-    environment:
-      - BACKEND_URL=http://backend:8080
 
   seq:
     image: datalust/seq
